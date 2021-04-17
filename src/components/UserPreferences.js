@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
+import FormAlert from "./FormAlert";
 import FormField from "./FormField";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
@@ -45,6 +46,24 @@ function UserPreferences(props) {
   const onSubmit = (data) => {
     // Show pending indicator
     setPending(true);
+    let passVerificationChecks = true;
+
+    // verify phone number is Canadian
+    let phoneNumberRegex = /^((([0-9]{1})*[- .(]*([0-9]{3})[- .)]*[0-9]{3}[- .]*[0-9]{4})+)*$/
+
+    // verify postal code
+    let postalCodeRegex = /^([ABCEGHJKLMNPRSTVXY][0-9][A-Z] [0-9][A-Z][0-9])*$/;
+
+    passVerificationChecks = phoneNumberRegex.test(data.phone) && postalCodeRegex.test(data.postalcode.toUpperCase());
+
+    if (!passVerificationChecks) {
+      onStatus({
+        type: "error",
+        message: "Phone Number or Postal Code is not valid",
+      });
+      setPending(false);
+      return;
+    }
 
     return auth
       .updateProfile(data)
@@ -78,6 +97,11 @@ function UserPreferences(props) {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
+
+      {formAlert && (
+        <FormAlert type={formAlert.type} message={formAlert.message} />
+      )}
+    
       <Form.Group controlId="formName">
         <FormField
           name="name"
@@ -96,13 +120,13 @@ function UserPreferences(props) {
         <FormField
           name="phone"
           type="text"
-          label="Phone Number"
+          label="Phone Number (i.e. 4161231234)"
           defaultValue={auth.user.phone}
-          placeholder="Phone Number"
+          placeholder="4161231234"
           error={errors.phone}
           size="lg"
           inputRef={register({
-            required: "Please enter your phone number",
+            required: "Please enter your phone number as '4161231234' format",
           })}
         />
       </Form.Group>
@@ -110,13 +134,13 @@ function UserPreferences(props) {
         <FormField
           name="postalcode"
           type="text"
-          label="Postal Code"
+          label="Postal Code (i.e. A1A 1A1)"
           defaultValue={auth.user.postalcode}
-          placeholder="Postal Code"
+          placeholder="A1A 1A1"
           error={errors.postalcode}
           size="lg"
           inputRef={register({
-            required: "Please enter your Postal Code",
+            required: "Please enter your Postal Code in 'A1A 1A1' format",
           })}
         />
       </Form.Group>
