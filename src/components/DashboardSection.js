@@ -37,7 +37,7 @@ function DashboardSection(props) {
         <Row>
           <Col lg={12}>
             {accountConfigured ? `Your account is ready and you'll receive notifications at ${auth.user.phone}` : "Please configure your account below to start receiving text notifications"}
-            <UserPreferences />
+            <UserPreferences newUser={!accountConfigured} />
           </Col>
         </Row>
       </Container>

@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
+import sendAccountActivatedMessage from "./../util/twilio"
 
 function UserPreferences(props) {
   const auth = useAuth();
@@ -43,7 +44,7 @@ function UserPreferences(props) {
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // Show pending indicator
     setPending(true);
     let passVerificationChecks = true;
@@ -63,6 +64,10 @@ function UserPreferences(props) {
       });
       setPending(false);
       return;
+    }
+
+    if (props.newUser) {
+      sendAccountActivatedMessage({receiver: data.phone});
     }
 
     return auth
@@ -122,7 +127,7 @@ function UserPreferences(props) {
           type="text"
           label="Phone Number (i.e. 4161231234)"
           defaultValue={auth.user.phone}
-          placeholder="4161231234"
+          placeholder="i.e. 4161231234"
           error={errors.phone}
           size="lg"
           inputRef={register({
@@ -136,7 +141,7 @@ function UserPreferences(props) {
           type="text"
           label="Postal Code (i.e. A1A 1A1)"
           defaultValue={auth.user.postalcode}
-          placeholder="A1A 1A1"
+          placeholder="i.e. A1A 1A1"
           error={errors.postalcode}
           size="lg"
           inputRef={register({
