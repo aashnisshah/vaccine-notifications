@@ -2,6 +2,7 @@ import React from "react";
 import Section from "./Section";
 import Container from "react-bootstrap/Container";
 import SectionHeader from "./SectionHeader";
+import OptOut from "./OptOut";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -35,9 +36,12 @@ function DashboardSection(props) {
         />
 
         <Row>
-          <Col lg={12}>
+          <Col lg={8}>
             {accountConfigured ? `Your account is ready and you'll receive notifications at ${auth.user.phone}` : "Please configure your account below to start receiving text notifications"}
             <UserPreferences newUser={!accountConfigured} />
+          </Col>
+          <Col lg={4}>
+            <OptOut newUser={!accountConfigured} />
           </Col>
         </Row>
       </Container>
