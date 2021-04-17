@@ -33,9 +33,11 @@ function NavbarCustom(props) {
                   <NavDropdown.Item active={false}>Dashboard</NavDropdown.Item>
                 </LinkContainer>
 
-                <LinkContainer to="/settings/general">
-                  <NavDropdown.Item active={false}>Settings</NavDropdown.Item>
-                </LinkContainer>
+                {auth.user && auth.user.admin && (
+                  <LinkContainer to="/posts">
+                    <NavDropdown.Item active={false}>Posts</NavDropdown.Item>
+                  </LinkContainer>
+                )}
 
                 <Dropdown.Divider />
 

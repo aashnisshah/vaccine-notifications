@@ -4,7 +4,7 @@ import NavbarCustom from "./../components/NavbarCustom";
 import IndexPage from "./index";
 import ContactPage from "./contact";
 import DashboardPage from "./dashboard";
-import SettingsPage from "./settings";
+import PostsPage from "./posts";
 import AuthPage from "./auth";
 import { Switch, Route, Router } from "./../util/router.js";
 import FirebaseActionPage from "./firebase-action.js";
@@ -32,7 +32,7 @@ function App(props) {
 
             <Route exact path="/dashboard" component={DashboardPage} />
 
-            <Route exact path="/settings/:section" component={SettingsPage} />
+            <Route exact path="/posts" component={PostsPage} />
 
             <Route exact path="/auth/:type" component={AuthPage} />
 
