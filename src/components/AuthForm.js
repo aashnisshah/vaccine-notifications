@@ -30,26 +30,22 @@ function AuthForm(props) {
     return error[errorType];
   }
 
-  const submit = (e, onSubmit) => {
-    e.preventDefault()
-    console.log("hi")
+  const onSubmit = ({phoneNumber, postal}) => {
+    // e.preventDefault()
     if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
       setGroupError(true);
-
       const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
-      for (var i = 0; i < allCheckBoxes.length; i++) {
-        allCheckBoxes[i].addEventListener("change", function() {
-          if (this.checked) {
-            setGroupError(false);
-          }
+      for (let i = 0; i < allCheckBoxes.length; i++) {
+        allCheckBoxes[i].addEventListener("click", function() {
+          // if (this.checked) {
+          //   setGroupError(false);
+          // }
         });
       }
     } else {
       setGroupError(false);
       setPending(true);
     }
-
-    handleSubmit("onSubmit");
   }
 
   // const submitHandlersByType = {
@@ -91,7 +87,7 @@ function AuthForm(props) {
   // }
 
   return (
-    <Form onSubmit={(e) => submit(e)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       {["signup", "signin"].includes(props.type) && (
         <Form.Group controlId="phoneNumber">
           <FormField
@@ -179,9 +175,9 @@ function AuthForm(props) {
             </Form.Group> 
           </div>
 
-          {groupError && (
+          {true && (
             <Form.Control.Feedback type="invalid" className="text-left">
-              {error("age group or eligibility group", "required")}
+              hi
             </Form.Control.Feedback>
           )}
         </>
