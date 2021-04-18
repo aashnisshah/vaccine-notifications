@@ -30,7 +30,7 @@ function Auth(props) {
         onFormAlert={handleFormAlert}
       />
 
-      {["signup", "signin"].includes(props.type) && (
+      {/* {["signup", "signin"].includes(props.type) && (
         <>
           {props.providers && props.providers.length && (
             <>
@@ -53,7 +53,7 @@ function Auth(props) {
 
           <AuthFooter type={props.type} typeValues={props.typeValues} />
         </>
-      )}
+      )} */}
     </>
   );
 }

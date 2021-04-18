@@ -67,6 +67,61 @@ function useAuthProvider() {
     return user;
   };
 
+  const setUpRecaptcha = () => {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: function (response) {
+          console.log("Captcha Resolved");
+        },
+        defaultCountry: "IN",
+      }
+    );
+  };
+
+  const requestOTPCode = (phoneNumber) => {
+    console.log(phoneNumber);
+    let appVerifier = window.recaptchaVerifier;
+    firebase
+      .auth()
+      .signInWithPhoneNumber(phoneNumber, appVerifier)
+      .then(function (confirmationResult) {
+        // SMS sent. Prompt user to type the code from the message, then sign the
+        // user in with confirmationResult.confirm(code).
+        window.confirmationResult = confirmationResult;
+        console.log(confirmationResult);
+        console.log("OTP is sent");
+        return true;
+      })
+      .catch(function (error) {
+        console.log(error);
+        return false;
+      });
+  }
+
+  const submitOTPCode = async (otpCode, userData) => {
+    const otpConfirm = window.confirmationResult;
+    try {
+        const result = await otpConfirm.confirm(otpCode);
+        const user = result.user;
+        userData.phoneNumber = user.phoneNumber;
+        userData.displayName = user.phoneNumber;
+        console.log(userData);
+        await createUser(user.uid, userData)
+        return true;
+    } catch (err) {
+        const error = err.toString();
+        if (error.includes("FirebaseError")) {
+          alert("Error creating the user");
+        } else {
+          alert("Incorrect OTP");
+        }
+        console.log(error);
+        return false;
+    }
+  }
+
   const signup = (email, password) => {
     return firebase
       .auth()
@@ -148,28 +203,31 @@ function useAuthProvider() {
     setUser(firebase.auth().currentUser);
   };
 
-  useEffect(() => {
-    // Subscribe to user on mount
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(false);
-      }
-    });
+  // useEffect(() => {
+  //   // Subscribe to user on mount
+  //   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+  //     if (user) {
+  //       setUser(user);
+  //     } else {
+  //       setUser(false);
+  //     }
+  //   });
 
-    // Unsubscribe on cleanup
-    return () => unsubscribe();
-  }, []);
+  //   // Unsubscribe on cleanup
+  //   return () => unsubscribe();
+  // }, []);
 
   return {
     user: finalUser,
+    setUpRecaptcha,
     signup,
     signin,
     signinWithProvider,
     signout,
     sendPasswordResetEmail,
     confirmPasswordReset,
+    requestOTPCode,
+    submitOTPCode,
     updateEmail,
     updatePassword,
     updateProfile,
