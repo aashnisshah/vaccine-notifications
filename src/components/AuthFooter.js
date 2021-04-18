@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "./../util/router.js";
-import "./AuthFooter.scss";
+import "./Auth.scss";
 
 function AuthFooter(props) {
   return (

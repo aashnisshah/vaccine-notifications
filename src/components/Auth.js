@@ -32,7 +32,7 @@ function Auth(props) {
 
       {["signup", "signin"].includes(props.type) && (
         <>
-          {props.providers && props.providers.length && (
+          {/* {props.providers && props.providers.length && (
             <>
               <small className="text-center d-block my-3">OR</small>
               <AuthSocial
@@ -49,7 +49,7 @@ function Auth(props) {
                 }}
               />
             </>
-          )}
+          )} */}
 
           <AuthFooter type={props.type} typeValues={props.typeValues} />
         </>
