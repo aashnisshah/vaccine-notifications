@@ -40,15 +40,6 @@ function IndexPage(props) {
         title="Frequently Asked Questions"
         subtitle=""
       />
-      <TestimonialsSection
-        bg="light"
-        textColor="dark"
-        size="md"
-        bgImage=""
-        bgImageOpacity={1}
-        title="Here's what people are saying"
-        subtitle=""
-      />
     </>
   );
 }
