@@ -20,6 +20,24 @@ function OptOut(props) {
     OTHER_OPT_OUT_REASON
   ];
 
+  const processOptIn = async (event) => {
+    event.preventDefault();
+    setFormAlert(null);
+
+    setPending(true);
+
+    optInUser()
+      .then(() => {
+        setSuccessMessage("You have successfully opted in to notifications.");
+      })
+      .catch((error) => {
+        setErrorMessage("There was an error updating your preferences. Please try again.");
+      })
+      .finally(() => {
+        setPending(false);
+      });
+  }
+
   const processOptOut = async (event) => {
     event.preventDefault();
     setFormAlert(null);
@@ -29,13 +47,13 @@ function OptOut(props) {
 
     let optOutReason = event.target[0].value;
     if (!OPT_OUT_REASONS.includes(optOutReason)) {
-      setFormErrorMessage("Please select a reason for opting out");
+      setErrorMessage("Please select a reason for opting out");
       setPending(false);
       return;
     }
 
     if (auth.user.optout) {
-      setOptOutSuccessMessage("You have already opted out of notifications.")
+      setSuccessMessage("You have already opted out of notifications.")
       setPending(false);
       return;
     }
@@ -43,14 +61,19 @@ function OptOut(props) {
     optOutUser()
       .then(() => {
         trackOptOutReason(optOutReason);
-        setOptOutSuccessMessage("You have successfully opted out of notifications.");
+        setSuccessMessage("You have successfully opted out of notifications.");
       })
       .catch((error) => {
-        setFormErrorMessage("There was an error updating your preferences. Please try again.");
+        setErrorMessage("There was an error updating your preferences. Please try again.");
       })
       .finally(() => {
         setPending(false);
       });
+  }
+
+  const optInUser = async () => {
+    let data = { optout: false };
+    await updateUser(auth.user.uid, data);
   }
 
   const optOutUser = async () => {
@@ -58,14 +81,14 @@ function OptOut(props) {
     await updateUser(auth.user.uid, data);
   }
 
-  const setFormErrorMessage = (message) => {
+  const setErrorMessage = (message) => {
     setFormAlert({
       type: "error",
       message: message,
     });
   }
 
-  const setOptOutSuccessMessage = (message) => {
+  const setSuccessMessage = (message) => {
     setFormAlert({
       type: "success",
       message: message,
@@ -77,45 +100,65 @@ function OptOut(props) {
   }
 
   return (
-    <div>
-      <p>Opt out of notifications</p>
+    (auth.user.optout === false) ?
+      <div>
+        <p>Opt out of notifications</p>
 
-      <Form onSubmit={processOptOut}>
+          <Form onSubmit={processOptOut}>
 
-        {formAlert && (
-          <FormAlert type={formAlert.type} message={formAlert.message} />
-        )}
+            {formAlert && (
+              <FormAlert type={formAlert.type} message={formAlert.message} />
+            )}
 
-        <Form.Group controlId="optOutReason">
-          <Form.Label>Opt out reason:</Form.Label>
-          <Form.Control
-            as="select"
-            name="optOutReason"
-            defaultValue="Select a reason"
-          >
-            <option disabled>Select a reason</option>
-            <option value={RECEIVED_DOSE_OPT_OUT_REASON}>Received vaccine dose or appointment</option>
-            <option value={OTHER_OPT_OUT_REASON}>Other</option>
-          </Form.Control>
-        </Form.Group>
+            <Form.Group controlId="optOutReason">
+              <Form.Label>Opt out reason:</Form.Label>
+              <Form.Control as="select" name="optOutReason" defaultValue="Select a reason">
+                <option disabled>Select a reason</option>
+                <option value={RECEIVED_DOSE_OPT_OUT_REASON}>Received vaccine dose or appointment</option>
+                <option value={OTHER_OPT_OUT_REASON}>Other</option>
+              </Form.Control>
+            </Form.Group>
 
-        <Button type="submit" disabled={pending}>
-          <span>Opt out</span>
+            <Button type="submit" disabled={pending}>
+              <span>Opt out</span>
 
-          {pending && (
-            <Spinner
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden={true}
-              className="ml-2 align-baseline"
-            >
-            <span className="sr-only">Updating...</span>
-            </Spinner>
+              {pending && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden={true}
+                  className="ml-2 align-baseline"
+                >
+                <span className="sr-only">Updating...</span>
+                </Spinner>
+              )}
+            </Button>
+          </Form>
+        </div>
+    :
+      <div>
+        <p>Opt in to notifications</p>
+        <Form>
+          {formAlert && (
+            <FormAlert type={formAlert.type} message={formAlert.message} />
           )}
-        </Button>
-      </Form>
-    </div>
+          <Button type="submit" disabled={pending} onClick={processOptIn}>
+            <span>Opt in</span>
+            {pending && (
+              <Spinner
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden={true}
+                className="ml-2 align-baseline"
+              >
+              <span className="sr-only">Updating...</span>
+              </Spinner>
+            )}
+          </Button>
+        </Form>
+      </div>
   );
 }
 
