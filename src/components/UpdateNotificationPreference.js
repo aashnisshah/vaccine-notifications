@@ -7,7 +7,7 @@ import analytics from "./../util/analytics.js";
 import { updateUser } from "./../util/db";
 import { useAuth } from './../util/auth.js';
 
-function OptOut(props) {
+function UpdateNotificationPreference(props) {
   const [pending, setPending] = useState(false);
   const [formAlert, setFormAlert] = useState(null);
 
@@ -99,67 +99,71 @@ function OptOut(props) {
     analytics.track('optOut', { reason: optOutReason });
   }
 
-  return (
-    (auth.user.optout === false) ?
+  const renderOptOutForm = () => {
+    return (
       <div>
         <p>Opt out of notifications</p>
 
-          <Form onSubmit={processOptOut}>
+        <Form onSubmit={processOptOut}>
 
-            {formAlert && (
-              <FormAlert type={formAlert.type} message={formAlert.message} />
-            )}
+          {formAlert && renderFormAlert()}
 
-            <Form.Group controlId="optOutReason">
-              <Form.Label>Opt out reason:</Form.Label>
-              <Form.Control as="select" name="optOutReason" defaultValue="Select a reason">
-                <option disabled>Select a reason</option>
-                <option value={RECEIVED_DOSE_OPT_OUT_REASON}>Received vaccine dose or appointment</option>
-                <option value={OTHER_OPT_OUT_REASON}>Other</option>
-              </Form.Control>
-            </Form.Group>
+          <Form.Group controlId="optOutReason">
+            <Form.Label>Opt out reason:</Form.Label>
+            <Form.Control as="select" name="optOutReason" defaultValue="Select a reason">
+              <option disabled>Select a reason</option>
+              <option value={RECEIVED_DOSE_OPT_OUT_REASON}>Received vaccine dose or appointment</option>
+              <option value={OTHER_OPT_OUT_REASON}>Other</option>
+            </Form.Control>
+          </Form.Group>
 
-            <Button type="submit" disabled={pending}>
-              <span>Opt out</span>
-
-              {pending && (
-                <Spinner
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden={true}
-                  className="ml-2 align-baseline"
-                >
-                <span className="sr-only">Updating...</span>
-                </Spinner>
-              )}
-            </Button>
-          </Form>
-        </div>
-    :
-      <div>
-        <p>Opt in to notifications</p>
-        <Form>
-          {formAlert && (
-            <FormAlert type={formAlert.type} message={formAlert.message} />
-          )}
-          <Button type="submit" disabled={pending} onClick={processOptIn}>
-            <span>Opt in</span>
-            {pending && (
-              <Spinner
-                animation="border"
-                size="sm"
-                role="status"
-                aria-hidden={true}
-                className="ml-2 align-baseline"
-              >
-              <span className="sr-only">Updating...</span>
-              </Spinner>
-            )}
+          <Button type="submit" disabled={pending}>
+            <span>Opt out</span>
+            {pending && renderSpinner()}
           </Button>
         </Form>
       </div>
+    )
+  }
+
+  const renderOptInForm = () => {
+    return (
+      <div>
+        <p>Opt in to notifications</p>
+        <Form>
+          {formAlert && renderFormAlert()}
+          <Button type="submit" disabled={pending} onClick={processOptIn}>
+            <span>Opt in</span>
+            {pending && renderSpinner()}
+          </Button>
+        </Form>
+      </div>
+    )
+  }
+
+  const renderFormAlert = () => {
+    return (
+      <FormAlert type={formAlert.type} message={formAlert.message} />
+    )
+  }
+
+  const renderSpinner = () => {
+    return (
+      <Spinner
+        animation="border"
+        size="sm"
+        role="status"
+        aria-hidden={true}
+        className="ml-2 align-baseline"
+      >
+        <span className="sr-only">Updating...</span>
+      </Spinner>
+    )
+  }
+
+  return (
+    (auth.user.optout === false) ? renderOptOutForm() : renderOptInForm()
   );
 }
 
-export default OptOut;
+export default UpdateNotificationPreference;
