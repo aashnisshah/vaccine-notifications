@@ -22,15 +22,6 @@ function IndexPage(props) {
         buttonColor="primary"
         buttonPath="/auth/signin"
       />
-      <ClientsSection
-        bg="light"
-        textColor="dark"
-        size="sm"
-        bgImage=""
-        bgImageOpacity={1}
-        title=""
-        subtitle=""
-      />
       <FeaturesSection
         bg="white"
         textColor="dark"
