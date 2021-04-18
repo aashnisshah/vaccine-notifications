@@ -19,7 +19,7 @@ function Footer(props) {
           <div className="copyright left">{props.copyright}</div>
           <div className="links right">
             <Link to="/about">About</Link>
-            <Link to="/faq">FAQ</Link>
+            <Link to="/#faq">FAQ</Link>
             <Link to="/contact">Contact</Link>
           </div>
           <div className="social right">

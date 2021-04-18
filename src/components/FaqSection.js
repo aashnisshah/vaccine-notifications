@@ -50,6 +50,7 @@ function FaqSection(props) {
       size={props.size}
       bgImage={props.bgImage}
       bgImageOpacity={props.bgImageOpacity}
+      id="faq"
     >
       <Container>
         <SectionHeader
