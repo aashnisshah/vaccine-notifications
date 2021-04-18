@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import FormField from "./FormField";
 import { Row, Col, Form, Button, Container } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth } from "./../util/auth.js";
-import { useForm } from "react-hook-form";
-import firebase from "./../util/firebase";
 
 function AuthForm(props) {
   const auth = useAuth();
 
   const [pending, setPending] = useState(false);
   const [state, setState] = useState({
-    phoneNumber: "",
+    phoneNumber: "+16473782640",
     otp: "",
   })
   
@@ -24,8 +21,7 @@ function AuthForm(props) {
   const requestOTPCode = (e) => {
     e.preventDefault();
     auth.setUpRecaptcha();
-    const phoneNumber = "+1" + "6473782640";
-    auth.requestOTPCode(phoneNumber);
+    auth.requestOTPCode(state.phoneNumber);
   }
 
   const onSubmitOtp = async (e) => {
@@ -36,6 +32,7 @@ function AuthForm(props) {
       province: "ON"
     }
     const success = await auth.submitOTPCode(otpInput, userData);
+    console.log(success);
   };
 
   return (
@@ -45,7 +42,6 @@ function AuthForm(props) {
             <Col xs={12} md={6} lg={5}>
               <h2 className="mb-3">Login</h2>
               <Form className="form" onSubmit={requestOTPCode}>
-                <div id="recaptcha-container"></div>
                 <Form.Group>
                   <Form.Control
                     type="number"
@@ -76,6 +72,7 @@ function AuthForm(props) {
               </Form>
             </Col>
           </Row>
+          <div id="recaptcha-container"></div>
         </Container>
       </div>
   );
