@@ -22,6 +22,18 @@ function Footer(props) {
             <Link to="/faq">FAQ</Link>
             <Link to="/contact">Contact</Link>
           </div>
+          <div className="social right">
+            <a
+              href="https://twitter.com/vaccinenotifications"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="icon">
+                <i className="fab fa-twitter" />
+              </span>
+            </a>
+          </div>
+          <div className="copyright left">{props.copyright}</div>
         </div>
       </Container>
     </Section>
