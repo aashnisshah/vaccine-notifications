@@ -80,24 +80,27 @@ function useAuthProvider() {
     );
   };
 
-  const requestOTPCode = (phoneNumber) => {
+  const requestOTPCode = async (phoneNumber) => {
     console.log(phoneNumber);
     let appVerifier = window.recaptchaVerifier;
-    firebase
-      .auth()
-      .signInWithPhoneNumber(phoneNumber, appVerifier)
-      .then(function (confirmationResult) {
+    try{
+      const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
         console.log(confirmationResult);
         console.log("OTP is sent");
         return true;
-      })
-      .catch(function (error) {
-        console.log(error);
-        return false;
-      });
+    } catch (error) {
+      if (error.toString().includes("reCAPTCHA has already been rendered in this element")) {
+        console.log("recaptcha already completed")
+        return true;
+      }
+      console.log(error);
+      alert(error);
+      return false;
+    }
+      
   }
 
   const submitOTPCode = async (otpCode, userData) => {
@@ -109,6 +112,7 @@ function useAuthProvider() {
         userData.displayName = user.phoneNumber;
         console.log(userData);
         await createUser(user.uid, userData)
+        setUser(user);
         return true;
     } catch (err) {
         const error = err.toString();
@@ -203,19 +207,19 @@ function useAuthProvider() {
     setUser(firebase.auth().currentUser);
   };
 
-  // useEffect(() => {
-  //   // Subscribe to user on mount
-  //   const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-  //     if (user) {
-  //       setUser(user);
-  //     } else {
-  //       setUser(false);
-  //     }
-  //   });
+  useEffect(() => {
+    // Subscribe to user on mount
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(false);
+      }
+    });
 
-  //   // Unsubscribe on cleanup
-  //   return () => unsubscribe();
-  // }, []);
+    // Unsubscribe on cleanup
+    return () => unsubscribe();
+  }, []);
 
   return {
     user: finalUser,
@@ -247,17 +251,18 @@ function usePrepareUser(user) {
     // Data we want to include from auth user object
     let finalUser = {
       uid: user.uid,
-      email: user.email,
-      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      // email: user.email,
+      // emailVerified: user.emailVerified,
       name: user.displayName,
-      picture: user.photoURL,
+      // picture: user.photoURL,
     };
 
     // Include an array of user's auth providers, such as ["password", "google", etc]
     // Components can read this to prompt user to re-auth with the correct provider
-    finalUser.providers = user.providerData.map(({ providerId }) => {
-      return allProviders.find((p) => p.id === providerId).name;
-    });
+    // finalUser.providers = user.providerData.map(({ providerId }) => {
+    //   return allProviders.find((p) => p.id === providerId).name;
+    // });
 
     // If merging user data from database is enabled ...
     if (MERGE_DB_USER) {
