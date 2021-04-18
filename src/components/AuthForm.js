@@ -177,7 +177,7 @@ function AuthForm(props) {
 
           {true && (
             <Form.Control.Feedback type="invalid" className="text-left">
-              hi
+              {error("age group or eligibility group", "required")}
             </Form.Control.Feedback>
           )}
         </>
