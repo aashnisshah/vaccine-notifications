@@ -81,14 +81,12 @@ function useAuthProvider() {
   };
 
   const requestOTPCode = async (phoneNumber) => {
-    console.log(phoneNumber);
     let appVerifier = window.recaptchaVerifier;
     try{
       const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
-        console.log(confirmationResult);
         console.log("OTP is sent");
         return true;
     } catch (error) {
