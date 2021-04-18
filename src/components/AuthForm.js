@@ -8,12 +8,6 @@ import "./Auth.scss";
 function AuthForm(props) {
   const auth = useAuth();
 
-  // this.phoneNumber = React.createRef();
-  // this.postalCode = React.createRef();
-  // this.province = React.createRef();
-  const ageGroupField = useRef();
-  const eligibilityGroupField = useRef();
-
   const ageGroups = ["18-49", "50-59", "60-79", "80+"]
   const eligibilityGroups = ["Congregate living for seniors", "Health care workers", "Adults in First Nations, Métis and Inuit populations", "Adult chronic home care recipients", "High-risk congregate settings", "Individuals with high-risk chronic conditions and their caregivers"]
   const provinces= [ "AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT"]
@@ -22,69 +16,43 @@ function AuthForm(props) {
   const [groupError, setGroupError] = useState(false);
   const { handleSubmit, register, errors, getValues } = useForm();
 
-  const error = (field="", errorType) => {
+  const error = (errorType, field="") => {
     const error = {
       required: `Please enter a ${field}`,
-      invalid: `Please enter a valid ${field}`
+      invalid: `Please enter a valid ${field}`,
+      noGroup: "Please select at least one age group or eligibility group"
     }
     return error[errorType];
   }
 
-  const onSubmit = ({phoneNumber, postal}) => {
-    // e.preventDefault()
+  const onSubmit = (data) => {
     if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
       setGroupError(true);
       const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
       for (let i = 0; i < allCheckBoxes.length; i++) {
         allCheckBoxes[i].addEventListener("click", function() {
-          // if (this.checked) {
-          //   setGroupError(false);
-          // }
+          setGroupError(!this.checked)
         });
       }
     } else {
       setGroupError(false);
       setPending(true);
     }
+
+    const selectedAgeGroups = [];
+    document.querySelectorAll('input[type=checkbox].ageGroupField:checked').forEach(group => {
+      group.id && selectedAgeGroups.push(group.id);
+    })
+    data["ageGroups"] = selectedAgeGroups;
+
+    const selectedEligibilityGroups = [];
+    document.querySelectorAll('input[type=checkbox].eligibilityGroupField:checked').forEach(group => {
+      group.id && selectedEligibilityGroups.push(group.id);
+    })
+    data["eligibilityGroups"] = selectedEligibilityGroups;
+
+    console.log(data)
   }
-
-  // const submitHandlersByType = {
-  //   signin: ({ email, pass }) => {
-  //     return auth.signin(email, pass).then((user) => {
-  //       // Call auth complete handler
-  //       props.onAuth(user);
-  //     });
-  //   },
-  //   signup: ({ email, pass }) => {
-  //     return auth.signup(email, pass).then((user) => {
-  //       // Call auth complete handler
-  //       props.onAuth(user);
-  //     });
-  //   },
-  // };
-
-  // // Handle form submission
-  // const onSubmit = ({ email, pass }) => {
-  //   // Show pending indicator
-  //   setPending(true);
-
-  //   // Call submit handler for auth type
-  //   submitHandlersByType[props.type]({
-  //     email,
-  //     pass,
-  //   }).catch((error) => {
-  //     setPending(false);
-  //     // Show error alert message
-  //     props.onFormAlert({
-  //       type: "error",
-  //       message: error.message,
-  //     });
-  //   });
-  // };
-
-  // const handleSubmit = () => {
-  //   verifyField();
-  // }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -97,10 +65,10 @@ function AuthForm(props) {
             placeholder="000-000-000"
             error={errors.phoneNumber}
             inputRef={register({
-              required: error("phone number", "required"),
+              required: error("required", "phone number"),
               pattern: {
                 value: /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/,
-                message: error("phone number", "invalid")
+                message: error("invalid", "phone number")
               }
             })}
           />
@@ -117,10 +85,10 @@ function AuthForm(props) {
                 error={errors.postal}
                 placeholder="A0A 0A0"
                 inputRef={register({
-                  required: error("postal code", "required"),
+                  required: error("required", "postal code"),
                   pattern: {
                     value: /^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$/,
-                    message: error("postal code", "invalid")
+                    message: error("invalid", "postal code")
                   }
                 })}
               />
@@ -136,7 +104,7 @@ function AuthForm(props) {
                 inputRef={register({
                   pattern: {
                     value: /^((?!--).)*$/,
-                    message: error("province", "required")
+                    message: error("required", "province")
                   }
                 })}
               />
@@ -149,7 +117,7 @@ function AuthForm(props) {
               {ageGroups.map((ageGroup) => (
                 <div key={ageGroup} >
                   <Form.Check 
-                    className="mr-3"
+                    className="mr-3 ageGroupField"
                     type="checkbox"
                     id={ageGroup}
                     label={ageGroup}
@@ -163,9 +131,9 @@ function AuthForm(props) {
             <h2 className="selectGroupText">Select all eligibility groups groups to recieve notifications for.</h2>
             <Form.Group controlId="eligibilityGroup" required>
               {eligibilityGroups.map((eligibilityGroup) => (
-                <div key={eligibilityGroup} >
+                <div key={eligibilityGroup}>
                   <Form.Check 
-                    className="my-2"
+                    className="my-2 eligibilityGroupField"
                     type="checkbox"
                     id={eligibilityGroup}
                     label={eligibilityGroup}
@@ -175,9 +143,9 @@ function AuthForm(props) {
             </Form.Group> 
           </div>
 
-          {true && (
-            <Form.Control.Feedback type="invalid" className="text-left">
-              {error("age group or eligibility group", "required")}
+          {groupError && (
+            <Form.Control.Feedback className="text-left groupError">
+              {error("noGroup")}
             </Form.Control.Feedback>
           )}
         </>
