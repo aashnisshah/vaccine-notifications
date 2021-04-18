@@ -29,6 +29,7 @@ function Auth(props) {
         onAuth={handleAuth}
         onFormAlert={handleFormAlert}
       />
+      <AuthFooter type={props.type} typeValues={props.typeValues} />
     </>
   );
 }
