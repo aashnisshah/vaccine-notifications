@@ -40,16 +40,20 @@ function AuthForm(props) {
     }
 
     const selectedAgeGroups = [];
-    document.querySelectorAll('input[type=checkbox].ageGroupField:checked').forEach(group => {
-      group.id && selectedAgeGroups.push(group.id);
-    })
-    data["ageGroups"] = selectedAgeGroups;
-
     const selectedEligibilityGroups = [];
-    document.querySelectorAll('input[type=checkbox].eligibilityGroupField:checked').forEach(group => {
-      group.id && selectedEligibilityGroups.push(group.id);
+
+    const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked')
+    console.log(allSelectedGroups);
+    allSelectedGroups.forEach((group) => {
+      if (ageGroups.includes(group.id)) {
+        selectedAgeGroups.push(group.id);
+      } else if (eligibilityGroups.includes(group.id)) {
+        selectedEligibilityGroups.push(group.id);
+      }
     })
-    data["eligibilityGroups"] = selectedEligibilityGroups;
+
+    data.selectedAgeGroups = selectedAgeGroups;
+    data.eligibilityGroups = selectedEligibilityGroups;
 
     console.log(data)
   }
