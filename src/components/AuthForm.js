@@ -47,9 +47,7 @@ function AuthForm(props) {
   };
 
   const requestOTPCode = async (data) => {
-    if (groupError) {
-      return;
-    }
+    
     setUserData(data);
     setPending(true);
     await auth.setUpRecaptcha();
@@ -61,7 +59,8 @@ function AuthForm(props) {
   }
 
   const sendOTPCode = async (phoneNumber) => {
-    return await auth.requestOTPCode(phoneNumber);
+    const isSignIn = props.type === "signin";
+    return await auth.requestOTPCode(phoneNumber, isSignIn);
   }
 
   const resetRecaptcha = () => {
@@ -111,10 +110,10 @@ function AuthForm(props) {
         data.ageGroups = selectedAgeGroups;
         data.eligibilityGroups = selectedEligibilityGroups;
         data.postal = data.postal.replace(/\s/g, "").toUpperCase();
-        requestOTPCode(data);
+        requestOTPCode(data, false);
       }
     } else if (props.type === "signin") {
-      requestOTPCode(data);
+      requestOTPCode(data, true);
     }
   }
 

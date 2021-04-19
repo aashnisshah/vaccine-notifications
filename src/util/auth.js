@@ -79,7 +79,11 @@ function useAuthProvider() {
     );
   };
 
-  const requestOTPCode = async (phoneNumber) => {
+  const requestOTPCode = async (phoneNumber, isSignIn) => {
+    if (isSignIn && !await findUserByPhoneNumber(phoneNumber)) {
+      return;
+    }
+
     let appVerifier = window.recaptchaVerifier;
     try {
       phoneNumber = validatePhoneNumber(phoneNumber);
@@ -96,6 +100,17 @@ function useAuthProvider() {
       return false;
     }
       
+  }
+
+  const findUserByPhoneNumber = async (phoneNumber) => {
+    try {
+      const userRecord = await firebase.auth().getUserByPhoneNumber(phoneNumber);
+      console.log(`Successfully fetched user data:  ${userRecord.toJSON()}`);
+      return true;
+    } catch (error) {
+      console.log('Error fetching user data:', error);
+      return false;
+    }
   }
 
   const validatePhoneNumber = (phoneNumber) => {
