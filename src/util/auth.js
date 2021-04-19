@@ -104,23 +104,24 @@ function useAuthProvider() {
   const submitOTPCode = async (otpCode, userData) => {
     const otpConfirm = window.confirmationResult;
     try {
-        const result = await otpConfirm.confirm(otpCode);
-        const user = result.user;
-        userData.phoneNumber = user.phoneNumber;
-        userData.displayName = user.phoneNumber;
-        console.log(userData);
-        await createUser(user.uid, userData)
-        setUser(user);
-        return true;
+      const result = await otpConfirm.confirm(otpCode);
+      const user = result.user;
+      userData.phoneNumber = user.phoneNumber;
+      userData.displayName = user.phoneNumber;
+      console.log(userData);
+      await createUser(user.uid, userData)
+      setUser(user);
+      return true;
     } catch (err) {
-        const error = err.toString();
-        if (error.includes("FirebaseError")) {
-          alert("Error creating the user");
-        } else {
-          alert("Incorrect OTP");
-        }
-        console.log(error);
-        return false;
+      const error = err.toString();
+      
+      if (error.includes("FirebaseError")) {
+        alert("Error creating the user");
+      } else {
+        alert("Incorrect OTP");
+      }
+      console.log(error);
+      return false;
     }
   }
 

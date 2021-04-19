@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import FormAlert from "./FormAlert";
 import AuthForm from "./AuthForm";
-import AuthSocial from "./AuthSocial";
 import AuthFooter from "./AuthFooter";
 import { useRouter } from "./../util/router.js";
 

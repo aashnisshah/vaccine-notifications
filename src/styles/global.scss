@@ -2,7 +2,7 @@
 
 // COLORS
 $theme-colors: (
-  "primary": #0074d9,
+  "primary": rgb(59, 60, 212),
   "secondary": #6c757d,
   "success": #28a745,
   "danger": #ff4136,
@@ -11,12 +11,11 @@ $theme-colors: (
   "light": #f8f9fa,
   "dark": #343a40,
   "white": #ffffff,
-  "transparent": transparent,
+  "transparent": transparent
 );
 
 // TEXT
-$font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-family-serif: Georgia, "Times New Roman", Times, serif;
+$font-family-sans-serif: "DM Sans", DM Sans, Arial, sans-serif;
 $font-family-base: $font-family-sans-serif;
 $font-size-base: 1rem;
 
@@ -37,6 +36,7 @@ $grid-breakpoints: (
 
 // IMPORT FONT AWESOME
 @import url("https://use.fontawesome.com/releases/v5.10.1/css/all.css");
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 
 #root {
   // Full height of screen and flex so that we can push footer
@@ -66,4 +66,11 @@ input::-webkit-inner-spin-button {
 // Firefox 
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.formContainer {
+  border-radius: 10px;
+  background-color: #f7f7ff;
+  width: 55%;
+  padding: 40px 80px;
 }
