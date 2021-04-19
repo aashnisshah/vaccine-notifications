@@ -73,7 +73,6 @@ function useAuthProvider() {
       {
         size: "invisible",
         callback: function (response) {
-          console.log("Captcha Resolved");
         },
         defaultCountry: "CA",
       }
@@ -84,19 +83,15 @@ function useAuthProvider() {
     let appVerifier = window.recaptchaVerifier;
     try {
       phoneNumber = validatePhoneNumber(phoneNumber);
-      console.log('this is phone number: ' + phoneNumber)
       const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
-        console.log("OTP is sent");
         return true;
     } catch (error) {
       if (error.toString().includes("reCAPTCHA has already been rendered in this element")) {
-        console.log("recaptcha already completed")
         return true;
       }
-      console.log(error);
       alert(error);
       return false;
     }
@@ -120,7 +115,6 @@ function useAuthProvider() {
         const user = result.user;
         userData.phoneNumber = user.phoneNumber;
         userData.displayName = user.phoneNumber;
-        console.log(userData);
         await createUser(user.uid, userData)
         setUser(user);
         return true;
@@ -131,7 +125,6 @@ function useAuthProvider() {
         } else {
           alert("Incorrect OTP");
         }
-        console.log(error);
         return false;
     }
   }
