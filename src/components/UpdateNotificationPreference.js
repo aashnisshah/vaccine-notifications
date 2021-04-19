@@ -102,14 +102,14 @@ function UpdateNotificationPreference(props) {
   const renderOptOutForm = () => {
     return (
       <div>
-        <p>Opt out of notifications</p>
+        <p>You are set to receive notifications.</p>
 
         <Form onSubmit={processOptOut}>
 
           {formAlert && renderFormAlert()}
 
           <Form.Group controlId="optOutReason">
-            <Form.Label>Opt out reason:</Form.Label>
+            <Form.Label>Stop receiving notifications:</Form.Label>
             <Form.Control as="select" name="optOutReason" defaultValue="Select a reason">
               <option disabled>Select a reason</option>
               <option value={RECEIVED_DOSE_OPT_OUT_REASON}>Received vaccine dose or appointment</option>

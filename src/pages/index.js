@@ -20,7 +20,7 @@ function IndexPage(props) {
         image="https://uploads.divjoy.com/undraw-japan_ubgk.svg"
         buttonText="Get Started"
         buttonColor="primary"
-        buttonPath="/auth/signin"
+        buttonPath="/auth/signup"
       />
       <FeaturesSection
         bg="white"
