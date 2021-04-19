@@ -3,7 +3,7 @@
   "name": "Receivie text notifications when vaccine bookings are available in your area.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "VNFavicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
