@@ -39,6 +39,7 @@ function AuthForm(props) {
     if (groupError) {
       return;
     }
+    data.optout = false;
     setUserData(data);
     setPending(true);
     await auth.setUpRecaptcha();
@@ -238,35 +239,51 @@ function AuthForm(props) {
     </Form>
     {showOTP && 
       <Form className="form" onSubmit={onSubmitOtp}>
-                <h2 className="mb-3">Enter OTP</h2>
-                  <Form.Group>
-                    <Form.Control
-                      id="otp"
-                      type="number"
-                      name="otp"
-                      placeholder="OTP"
-                      onChange={onChangeHandler}
-                    />
-                    <Button variant="secondary" onClick={() => {resetRecaptcha();sendOTPCode(userData.phoneNumber)} }>Resend Code</Button>
-                  </Form.Group>
-                  <Button variant="primary" type="submit">
-                    {!pending && <span>Submit</span>}
-                      {pending && (
-                        <>
-                          <Spinner
-                            animation="border"
-                            size="sm"
-                            role="status"
-                            aria-hidden={true}
-                            className="align-baseline mr-1"
-                          >
-                          </Spinner>
-                          <span>Loading...</span>
-                        </>
-                      )}
-                  </Button>
-                  <Button variant="secondary" onClick={()=>setShowOTP(false)}>Go Back</Button>
-                </Form>
+        <h2 className="mb-3">Enter OTP</h2>
+        <Form.Group>
+          <Form.Control
+            id="otp"
+            type="number"
+            name="otp"
+            placeholder="OTP"
+            onChange={onChangeHandler}
+          />
+            <Button variant="primary" type="submit">
+            {!pending && <span>Submit</span>}
+              {pending && (
+                <>
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden={true}
+                    className="align-baseline mr-1"
+                  >
+                  </Spinner>
+                  <span>Loading...</span>
+                </>
+              )}
+          </Button>
+        </Form.Group>
+        <Button 
+          variant="secondary"
+          size="small"
+          onClick={() => {
+            resetRecaptcha();
+            sendOTPCode(userData.phoneNumber)
+          }
+        }>
+          Resend Code
+        </Button>
+        &nbsp;
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={()=>setShowOTP(false)}
+        >
+          Go Back
+        </Button>
+      </Form>
           }
           {renderRecaptcha && <div id="recaptcha-container"></div>}
     </div>
