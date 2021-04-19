@@ -2,28 +2,27 @@ import React from "react";
 import Form from "react-bootstrap/Form";
 
 function FormField(props) {
-  const { error, type, inputRef, options, defaultValue, ...inputProps } = props;
+  const { error, type, inputRef, options, defaultValue, helpText, ...inputProps } = props;
 
   return (
     <>
-      {props.label && <Form.Label>{props.label}</Form.Label>}
+      {props.label && <Form.Label className="mb-1">{props.label}</Form.Label>}
 
       {type === "select" && (
         <>
-          <Form.Group controlId="exampleForm.ControlSelect1">
-            <Form.Control
-              as="select"
-              type="select"
-              defaultValue={defaultValue} 
-              isInvalid={error ? true : undefined}
-              ref={inputRef}
-              {...inputProps}
-            >
-              {props.options.map(option => (
-                <option value={option} key={option}>{option}</option>
-              ))}
-            </Form.Control>
-          </Form.Group>
+          <Form.Control
+            as="select"
+            type="select"
+            defaultValue={defaultValue} 
+            isInvalid={error ? true : undefined}
+            ref={inputRef}
+            {...inputProps}
+          >
+            <option disabled selected value={defaultValue}>{defaultValue}</option>
+            {props.options.map(option => (
+              <option value={option} key={option}>{option}</option>
+            ))}
+          </Form.Control>
         </>
       )}
 
@@ -37,6 +36,8 @@ function FormField(props) {
           {...inputProps}
         />
       )}
+
+      {helpText && <Form.Text muted>{helpText}</Form.Text>} 
 
       {error && (
         <Form.Control.Feedback type="invalid" className="text-left">

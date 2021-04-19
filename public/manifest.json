@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Vaccine Notifications",
+  "name": "Receivie text notifications when vaccine bookings are available in your area.",
   "icons": [
     {
       "src": "favicon.ico",

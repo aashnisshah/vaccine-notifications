@@ -16,42 +16,19 @@ function Footer(props) {
     >
       <Container>
         <div className="FooterComponent__inner">
-          <div className="brand left">
-            <Link to="/">
-              <img src={props.logo} alt="Logo" />
-            </Link>
-          </div>
+          <div className="copyright left">{props.copyright}</div>
           <div className="links right">
-            <Link to="/about">About</Link>
-            <Link to="/faq">FAQ</Link>
+            <Link to="/#faq">FAQ</Link>
             <Link to="/contact">Contact</Link>
           </div>
           <div className="social right">
             <a
-              href="https://twitter.com/divjoy"
+              href="https://twitter.com/vaccinenotifications"
               target="_blank"
               rel="noopener noreferrer"
             >
               <span className="icon">
                 <i className="fab fa-twitter" />
-              </span>
-            </a>
-            <a
-              href="https://facebook.com/DivjoyOfficial"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="icon">
-                <i className="fab fa-facebook-f" />
-              </span>
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="icon">
-                <i className="fab fa-instagram" />
               </span>
             </a>
           </div>
