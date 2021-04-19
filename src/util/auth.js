@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import queryString from "query-string";
 import firebase from "./firebase";
-import { useUser, createUser, updateUser } from "./db";
+import { useUser, createUser, updateUser, findUserByPhoneNumber } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 
@@ -73,55 +73,73 @@ function useAuthProvider() {
       {
         size: "invisible",
         callback: function (response) {
-          console.log("Captcha Resolved");
         },
-        defaultCountry: "IN",
+        defaultCountry: "CA",
       }
     );
   };
 
-  const requestOTPCode = async (phoneNumber) => {
-    let appVerifier = window.recaptchaVerifier;
-    try{
+  const requestOTPCode = async (phoneNumber, isSignIn) => {
+    
+    try {
+      phoneNumber = validatePhoneNumber(phoneNumber);
+      if (isSignIn && !await isExistingUser(phoneNumber)) {
+        throw Error ("No account exists, please create a new account")
+      }
+  
+      let appVerifier = window.recaptchaVerifier;
       const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
         window.confirmationResult = confirmationResult;
-        console.log("OTP is sent");
         return true;
     } catch (error) {
       if (error.toString().includes("reCAPTCHA has already been rendered in this element")) {
-        console.log("recaptcha already completed")
         return true;
       }
-      console.log(error);
       alert(error);
       return false;
     }
       
   }
 
+  const isExistingUser = async (phoneNumber) => {
+    try {
+      return await findUserByPhoneNumber(phoneNumber);
+    } catch (error) {
+      console.log('Error fetching user data:', error);
+      return false;
+    }
+  }
+
+  const validatePhoneNumber = (phoneNumber) => {
+    // Multi country support will need to change this +1 to corresponding country code, works for US and Canada
+    if (!phoneNumber.startsWith("+1") && phoneNumber.length === 10) { 
+      phoneNumber = "+1" + phoneNumber;
+    } else if (phoneNumber.startsWith("+1") && phoneNumber.length !== 12) {
+      throw Error("Please enter a valid phone number");
+    }
+    return phoneNumber;
+  }
+
   const submitOTPCode = async (otpCode, userData) => {
     const otpConfirm = window.confirmationResult;
     try {
-      const result = await otpConfirm.confirm(otpCode);
-      const user = result.user;
-      userData.phoneNumber = user.phoneNumber;
-      userData.displayName = user.phoneNumber;
-      console.log(userData);
-      await createUser(user.uid, userData)
-      setUser(user);
-      return true;
+        const result = await otpConfirm.confirm(otpCode);
+        const user = result.user;
+        userData.phoneNumber = user.phoneNumber;
+        userData.displayName = user.phoneNumber;
+        await createUser(user.uid, userData)
+        setUser(user);
+        return true;
     } catch (err) {
-      const error = err.toString();
-      
-      if (error.includes("FirebaseError")) {
-        alert("Error creating the user");
-      } else {
-        alert("Incorrect OTP");
-      }
-      console.log(error);
-      return false;
+        const error = err.toString();
+        if (error.includes("FirebaseError")) {
+          alert("Error creating the user");
+        } else {
+          alert("Incorrect OTP");
+        }
+        return false;
     }
   }
 

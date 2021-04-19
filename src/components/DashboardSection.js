@@ -2,7 +2,7 @@ import React from "react";
 import Section from "./Section";
 import Container from "react-bootstrap/Container";
 import SectionHeader from "./SectionHeader";
-import OptOut from "./OptOut";
+import UpdateNotificationPreference from "./UpdateNotificationPreference";
 import Alert from "react-bootstrap/Alert";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -14,8 +14,8 @@ import { useAuth } from "./../util/auth.js";
 function DashboardSection(props) {
   const auth = useAuth();
   const router = useRouter();
-  
-  let accountConfigured = auth.user.phone && auth.user.province && auth.user.postalcode;
+
+  let accountConfigured = auth.user.phoneNumber && auth.user.province && auth.user.postal;
 
 
   return (
@@ -37,11 +37,11 @@ function DashboardSection(props) {
 
         <Row>
           <Col lg={8}>
-            {accountConfigured ? `Your account is ready and you'll receive notifications at ${auth.user.phone}` : "Please configure your account below to start receiving text notifications"}
+            {accountConfigured ? `Your account is ready and you'll receive notifications at the number below.` : "Please configure your account below to start receiving text notifications"}
             <UserPreferences newUser={!accountConfigured} />
           </Col>
           <Col lg={4}>
-            <OptOut newUser={!accountConfigured} />
+            <UpdateNotificationPreference newUser={!accountConfigured} />
           </Col>
         </Row>
       </Container>

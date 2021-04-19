@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {Form, Button, Spinner} from "react-bootstrap";
 import FormField from "./FormField";
 import { useAuth } from "./../util/auth.js";
@@ -15,10 +15,22 @@ function AuthForm(props) {
 
   const [pending, setPending] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
+  const [renderRecaptcha, setRenderRecaptcha] = useState(true);
   const [userData, setUserData] = useState({})
   const [otpCode, setOtpCode] = useState({});
   const [groupError, setGroupError] = useState(false);
   const { handleSubmit, register, errors, getValues } = useForm();
+
+  useEffect(() => {
+    return () => {
+      const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
+      allCheckBoxes.forEach((checkBox) => {
+        checkBox.removeEventListener("click", function() {
+          setGroupError(!this.checked)
+        });
+      })
+    };
+  }, []);
 
   const error = (errorType, field="") => {
     const error = {
@@ -29,66 +41,85 @@ function AuthForm(props) {
     return error[errorType];
   }
 
-  const onSubmit = (data) => {
-    if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
-      setGroupError(true);
-      const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
-      for (let i = 0; i < allCheckBoxes.length; i++) {
-        allCheckBoxes[i].addEventListener("click", function() {
-          setGroupError(!this.checked)
-        });
-      }
-    } else {
-      setGroupError(false);
-      setPending(true);
-    }
-
-    const selectedAgeGroups = [];
-    const selectedEligibilityGroups = [];
-
-    const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked')
-    console.log(allSelectedGroups);
-    allSelectedGroups.forEach((group) => {
-      if (ageGroups.includes(group.id)) {
-        selectedAgeGroups.push(group.id);
-      } else if (eligibilityGroups.includes(group.id)) {
-        selectedEligibilityGroups.push(group.id);
-      }
-    })
-
-    data.selectedAgeGroups = selectedAgeGroups;
-    data.eligibilityGroups = selectedEligibilityGroups;
-    
-    requestOTPCode(data);
-  }
-
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setOtpCode({[name]: value });
   };
-  
+
   const requestOTPCode = async (data) => {
-    // e.preventDefault();
     setUserData(data);
     setPending(true);
-    auth.setUpRecaptcha();
-    const otpRequestSent = await auth.requestOTPCode("+1" + data.phoneNumber);
+    await auth.setUpRecaptcha();
+    const otpRequestSent = await sendOTPCode(data.phoneNumber);
     setPending(false);
     if (otpRequestSent) {
       setShowOTP(true);
     } 
   }
 
+  const sendOTPCode = async (phoneNumber) => {
+    const isSignIn = props.type === "signin";
+    return await auth.requestOTPCode(phoneNumber, isSignIn);
+  }
+
+  const resetRecaptcha = () => {
+    setRenderRecaptcha(false);
+    setRenderRecaptcha(true);
+  }
+
   const onSubmitOtp = async (e) => {
     e.preventDefault();
-    console.log(otpCode)
     setPending(true);
-    let otpInput = otpCode.otp;
+    const otpInput = otpCode.otp;
+
     const success = await auth.submitOTPCode(otpInput, userData);
     setPending(false)
     if (success) {
       onAuth();
     }
+  };
+
+  const onSubmit = (data) => {
+    data.phoneNumber = data.phoneNumber.replace(/[- )(]/g,'')
+    if (props.type === "signup") {
+      if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
+        setGroupError(true);
+        const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
+        for (let i = 0; i < allCheckBoxes.length; i++) {
+          allCheckBoxes[i].addEventListener("click", function() {
+            setGroupError(!this.checked)
+          });
+        }
+      } else {
+        setGroupError(false);
+        setPending(true);
+
+        const selectedAgeGroups = [];
+        const selectedEligibilityGroups = [];
+    
+        const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked')
+        allSelectedGroups.forEach((group) => {
+          if (ageGroups.includes(group.id)) {
+            selectedAgeGroups.push(group.id);
+          } else if (eligibilityGroups.includes(group.id)) {
+            selectedEligibilityGroups.push(group.id);
+          }
+        })
+    
+        data.ageGroups = selectedAgeGroups;
+        data.eligibilityGroups = selectedEligibilityGroups;
+        data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+        requestOTPCode(data, false);
+      }
+    } else if (props.type === "signin") {
+      requestOTPCode(data, true);
+    }
+  }
+
+  const selectAll = (className) => {
+    document.querySelectorAll(`.${className} input[type='checkbox']`).forEach(checkbox => {
+      checkbox.checked = true;
+    })
   };
 
   return (
@@ -120,12 +151,13 @@ function AuthForm(props) {
               <FormField
                 name="postal"
                 label="Postal Code"
+                style={{textTransform: 'uppercase'}}
                 error={errors.postal}
                 placeholder="A0A 0A0"
                 inputRef={register({
                   required: error("required", "postal code"),
                   pattern: {
-                    value: /^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$/,
+                    value: /(^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$)|(^\d{5}$)/,
                     message: error("invalid", "postal code")
                   }
                 })}
@@ -150,7 +182,7 @@ function AuthForm(props) {
           </Form.Row>
 
           <div className="my-4">
-            <h2 className="selectGroupText">Select all age groups to recieve notifications for. </h2>
+            <h2 className="selectGroupText">Select all relevant age groups to recieve notifications for. </h2>
             <Form.Row controlId="ageGroup" className="mx-0">
               {ageGroups.map((ageGroup) => (
                 <div key={ageGroup} >
@@ -163,10 +195,11 @@ function AuthForm(props) {
                 </div>
               ))}
             </Form.Row>
+            <Button onClick={() => selectAll("ageGroupField")} variant="link" className="p-0">Select all</Button>
           </div>
           
           <div className="my-4">
-            <h2 className="selectGroupText">Select all eligibility groups groups to recieve notifications for.</h2>
+            <h2 className="selectGroupText">Select all relevant eligibility groups to recieve notifications for.</h2>
             <Form.Group controlId="eligibilityGroup" required>
               {eligibilityGroups.map((eligibilityGroup) => (
                 <div key={eligibilityGroup}>
@@ -178,7 +211,8 @@ function AuthForm(props) {
                   />
                 </div>
               ))}
-            </Form.Group> 
+            </Form.Group>
+            <Button onClick={() => selectAll("eligibilityGroupField")} variant="link" className="p-0">Select all</Button>
           </div>
 
           {groupError && (
@@ -252,7 +286,10 @@ function AuthForm(props) {
             </Button>
             <Button 
               variant="link" 
-              onClick={()=>setShowOTP(false)} // TO DO
+              onClick={() => {
+                resetRecaptcha();
+                sendOTPCode(userData.phoneNumber)
+              }}
               // size="lg"
             >
               <u>Resend Link</u>
@@ -267,8 +304,7 @@ function AuthForm(props) {
             </Button> */}
         </Form>
       }
-
-      {!showOTP && <div id="recaptcha-container"></div>}
+    {renderRecaptcha && <div id="recaptcha-container"></div>}
     </div>
   );
 }
