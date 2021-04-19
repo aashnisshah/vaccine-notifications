@@ -25,6 +25,16 @@ export function createUser(uid, data) {
     .set({ uid, ...data }, { merge: true });
 }
 
+// Find a user by phone number
+export async function findUserByPhoneNumber(phoneNumber) {
+  try {
+    const querySnapshot = await firestore.collection("users").where("phoneNumber", "==", phoneNumber).get()
+    return querySnapshot.docs.length > 0;
+  } catch (error) {
+    console.log("Error getting documents: ", error);
+  }
+}
+
 /**** ITEMS ****/
 /* Example query functions (modify to your needs) */
 
