@@ -17,29 +17,29 @@ function FaqSection(props) {
 
   const items = [
     {
-      question: "Integer ornare neque mauris?",
+      question: "Is this service free?",
       answer:
-        "Integer ornare neque mauris, ac vulputate lacus venenatis et. Pellentesque ut ultrices purus. Suspendisse ut tincidunt eros. In velit mi, rhoncus dictum neque a, tincidunt lobortis justo.",
+        "100%.",
     },
     {
-      question: "Lorem ipsum dolor sit amet?",
+      question: "What regions do you provide alerts for?",
       answer:
-        "Nunc nulla mauris, laoreet vel cursus lacinia, consectetur sit amet tellus. Suspendisse ut tincidunt eros. In velit mi, rhoncus dictum neque a, tincidunt lobortis justo.",
+        "All regions in Canada.",
     },
     {
-      question: "Suspendisse ut tincidunt?",
+      question: "Will my information be shared with any third parties?",
       answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In lobortis, metus et mattis ullamcorper. Suspendisse ut tincidunt eros. In velit mi, rhoncus dictum neque a, tincidunt lobortis justo.",
+        "No. We will only use your information for the purpose of sending you alerts, and nothing else.",
     },
     {
-      question: "Ut enim ad minim veniam?",
+      question: "How can I turn off notifications?",
       answer:
-        "Suspendisse ut tincidunt eros. In velit mi, rhoncus dictum neque a, tincidunt lobortis justo.",
+        "When you sign in with your phone number, you will see an opt out button on the right side of your dashboard.",
     },
     {
-      question: "In velit mi, rhoncus dictum neque?",
+      question: "Can I get alerts for multiple regions and/or age groups?",
       answer:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.",
+        "Yes! Simply add all the groups you want notifications for from your dashboard, and you'll receive notifications for all of them.",
     },
   ];
 
@@ -50,6 +50,7 @@ function FaqSection(props) {
       size={props.size}
       bgImage={props.bgImage}
       bgImageOpacity={props.bgImageOpacity}
+      id="faq"
     >
       <Container>
         <SectionHeader
