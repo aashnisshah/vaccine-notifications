@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import queryString from "query-string";
 import firebase from "./firebase";
-import { useUser, createUser, updateUser } from "./db";
+import { useUser, createUser, updateUser, findUserByPhoneNumber } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 
@@ -79,10 +79,15 @@ function useAuthProvider() {
     );
   };
 
-  const requestOTPCode = async (phoneNumber) => {
-    let appVerifier = window.recaptchaVerifier;
+  const requestOTPCode = async (phoneNumber, isSignIn) => {
+    
     try {
       phoneNumber = validatePhoneNumber(phoneNumber);
+      if (isSignIn && !await isExistingUser(phoneNumber)) {
+        throw Error ("No account exists, please create a new account")
+      }
+  
+      let appVerifier = window.recaptchaVerifier;
       const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
@@ -96,6 +101,15 @@ function useAuthProvider() {
       return false;
     }
       
+  }
+
+  const isExistingUser = async (phoneNumber) => {
+    try {
+      return await findUserByPhoneNumber(phoneNumber);
+    } catch (error) {
+      console.log('Error fetching user data:', error);
+      return false;
+    }
   }
 
   const validatePhoneNumber = (phoneNumber) => {
