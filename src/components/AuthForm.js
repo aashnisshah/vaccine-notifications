@@ -34,7 +34,7 @@ function AuthForm(props) {
     const { name, value } = event.target;
     setOtpCode({[name]: value });
   };
-  
+
   const requestOTPCode = async (data) => {
     if (groupError) {
       return;
@@ -99,7 +99,8 @@ function AuthForm(props) {
         data.selectedAgeGroups = selectedAgeGroups;
         data.eligibilityGroups = selectedEligibilityGroups;
         data.postal = data.postal.replace(/\s/g, "").toUpperCase();
-        
+        data.phoneNumber = data.phoneNumber.replace(/[- )(]/g,'')
+        console.log(data)
         requestOTPCode(data);
       }
     } else if (props.type === "signin") {
@@ -173,7 +174,7 @@ function AuthForm(props) {
           </Form.Row>
 
           <div className="my-4">
-            <h2 className="selectGroupText">Select all age groups to recieve notifications for. </h2>
+            <h2 className="selectGroupText">Select all relevant age groups to recieve notifications for. </h2>
             <Form.Row controlId="ageGroup" className="mx-0">
               {ageGroups.map((ageGroup) => (
                 <div key={ageGroup} >
@@ -190,7 +191,7 @@ function AuthForm(props) {
           </div>
           
           <div className="my-4">
-            <h2 className="selectGroupText">Select all eligibility groups groups to recieve notifications for.</h2>
+            <h2 className="selectGroupText">Select all relevant eligibility groups to recieve notifications for.</h2>
             <Form.Group controlId="eligibilityGroup" required>
               {eligibilityGroups.map((eligibilityGroup) => (
                 <div key={eligibilityGroup}>
