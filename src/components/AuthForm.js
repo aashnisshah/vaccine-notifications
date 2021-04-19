@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {Form, Button, Spinner} from "react-bootstrap";
 import FormField from "./FormField";
 import { useAuth } from "./../util/auth.js";
@@ -20,6 +20,17 @@ function AuthForm(props) {
   const [otpCode, setOtpCode] = useState({});
   const [groupError, setGroupError] = useState(false);
   const { handleSubmit, register, errors, getValues } = useForm();
+
+  useEffect(() => {
+    return () => {
+      const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
+      allCheckBoxes.forEach((checkBox) => {
+        checkBox.removeEventListener("click", function() {
+          setGroupError(!this.checked)
+        });
+      })
+    };
+  }, []);
 
   const error = (errorType, field="") => {
     const error = {
@@ -97,7 +108,7 @@ function AuthForm(props) {
           }
         })
     
-        data.selectedAgeGroups = selectedAgeGroups;
+        data.ageGroups = selectedAgeGroups;
         data.eligibilityGroups = selectedEligibilityGroups;
         data.postal = data.postal.replace(/\s/g, "").toUpperCase();
         requestOTPCode(data);
@@ -111,7 +122,7 @@ function AuthForm(props) {
     document.querySelectorAll(`.${className} input[type='checkbox']`).forEach(checkbox => {
       checkbox.checked = true;
     })
-  }
+  };
 
   return (
     <div>
