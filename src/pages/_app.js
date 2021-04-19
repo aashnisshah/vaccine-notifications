@@ -12,6 +12,7 @@ import NotFoundPage from "./not-found.js";
 import Footer from "./../components/Footer";
 import "./../util/analytics.js";
 import { AuthProvider } from "./../util/auth.js";
+import logo from "./../images/VNLogo.png"
 
 function App(props) {
   return (
@@ -22,7 +23,7 @@ function App(props) {
             bg="white"
             variant="light"
             expand="md"
-            logo="https://uploads.divjoy.com/logo.svg"
+            logo={logo}
           />
 
           <Switch>
