@@ -75,14 +75,16 @@ function useAuthProvider() {
         callback: function (response) {
           console.log("Captcha Resolved");
         },
-        defaultCountry: "IN",
+        defaultCountry: "CA",
       }
     );
   };
 
   const requestOTPCode = async (phoneNumber) => {
     let appVerifier = window.recaptchaVerifier;
-    try{
+    try {
+      phoneNumber = validatePhoneNumber(phoneNumber);
+      console.log('this is phone number: ' + phoneNumber)
       const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
@@ -99,6 +101,16 @@ function useAuthProvider() {
       return false;
     }
       
+  }
+
+  const validatePhoneNumber = (phoneNumber) => {
+    // Multi country support will need to change this +1 to corresponding country code, works for US and Canada
+    if (!phoneNumber.startsWith("+1") && phoneNumber.length === 10) { 
+      phoneNumber = "+1" + phoneNumber;
+    } else if (phoneNumber.startsWith("+1") && phoneNumber.length !== 12) {
+      throw Error("Please enter a valid phone number");
+    }
+    return phoneNumber;
   }
 
   const submitOTPCode = async (otpCode, userData) => {

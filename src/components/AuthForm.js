@@ -15,6 +15,7 @@ function AuthForm(props) {
 
   const [pending, setPending] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
+  const [renderRecaptcha, setRenderRecaptcha] = useState(true);
   const [userData, setUserData] = useState({})
   const [otpCode, setOtpCode] = useState({});
 
@@ -24,14 +25,27 @@ function AuthForm(props) {
   };
   const requestOTPCode = async (data) => {
     // e.preventDefault();
+    data.postal = data.postal.toUpperCase();
     setUserData(data);
     setPending(true);
-    auth.setUpRecaptcha();
-    const otpRequestSent = await auth.requestOTPCode("+1" + data.phoneNumber);
+    // auth.setUpRecaptcha();
+    await auth.setUpRecaptcha();
+    console.log(data)
+    const otpRequestSent = await sendOTPCode(data.phoneNumber);
     setPending(false);
     if (otpRequestSent) {
       setShowOTP(true);
     } 
+  }
+
+  const sendOTPCode = async (phoneNumber) => {
+    // await auth.setUpRecaptcha();
+    return await auth.requestOTPCode(phoneNumber);
+  }
+
+  const resetRecaptcha = () => {
+    setRenderRecaptcha(false);
+    setRenderRecaptcha(true);
   }
 
   const onSubmitOtp = async (e) => {
@@ -124,12 +138,13 @@ function AuthForm(props) {
               <FormField
                 name="postal"
                 label="Postal Code"
+                style={{textTransform: 'uppercase'}}
                 error={errors.postal}
                 placeholder="A0A 0A0"
                 inputRef={register({
                   required: error("required", "postal code"),
                   pattern: {
-                    value: /^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$/,
+                    value: /(^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$)|(^\d{5}$)/,
                     message: error("invalid", "postal code")
                   }
                 })}
@@ -226,6 +241,7 @@ function AuthForm(props) {
                       placeholder="OTP"
                       onChange={onChangeHandler}
                     />
+                    <Button variant="secondary" onClick={() => {resetRecaptcha();sendOTPCode(userData.phoneNumber)} }>Resend Code</Button>
                   </Form.Group>
                   <Button variant="primary" type="submit">
                     {!pending && <span>Submit</span>}
@@ -246,7 +262,7 @@ function AuthForm(props) {
                   <Button variant="secondary" onClick={()=>setShowOTP(false)}>Go Back</Button>
                 </Form>
           }
-          {!showOTP && <div id="recaptcha-container"></div>}
+          {renderRecaptcha && <div id="recaptcha-container"></div>}
     </div>
   );
 }
