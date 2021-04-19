@@ -67,6 +67,68 @@ function useAuthProvider() {
     return user;
   };
 
+  const setUpRecaptcha = () => {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        size: "invisible",
+        callback: function (response) {
+        },
+        defaultCountry: "CA",
+      }
+    );
+  };
+
+  const requestOTPCode = async (phoneNumber) => {
+    let appVerifier = window.recaptchaVerifier;
+    try {
+      phoneNumber = validatePhoneNumber(phoneNumber);
+      const confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier);
+        // SMS sent. Prompt user to type the code from the message, then sign the
+        // user in with confirmationResult.confirm(code).
+        window.confirmationResult = confirmationResult;
+        return true;
+    } catch (error) {
+      if (error.toString().includes("reCAPTCHA has already been rendered in this element")) {
+        return true;
+      }
+      alert(error);
+      return false;
+    }
+      
+  }
+
+  const validatePhoneNumber = (phoneNumber) => {
+    // Multi country support will need to change this +1 to corresponding country code, works for US and Canada
+    if (!phoneNumber.startsWith("+1") && phoneNumber.length === 10) { 
+      phoneNumber = "+1" + phoneNumber;
+    } else if (phoneNumber.startsWith("+1") && phoneNumber.length !== 12) {
+      throw Error("Please enter a valid phone number");
+    }
+    return phoneNumber;
+  }
+
+  const submitOTPCode = async (otpCode, userData) => {
+    const otpConfirm = window.confirmationResult;
+    try {
+        const result = await otpConfirm.confirm(otpCode);
+        const user = result.user;
+        userData.phoneNumber = user.phoneNumber;
+        userData.displayName = user.phoneNumber;
+        await createUser(user.uid, userData)
+        setUser(user);
+        return true;
+    } catch (err) {
+        const error = err.toString();
+        if (error.includes("FirebaseError")) {
+          alert("Error creating the user");
+        } else {
+          alert("Incorrect OTP");
+        }
+        return false;
+    }
+  }
+
   const signup = (email, password) => {
     return firebase
       .auth()
@@ -164,12 +226,15 @@ function useAuthProvider() {
 
   return {
     user: finalUser,
+    setUpRecaptcha,
     signup,
     signin,
     signinWithProvider,
     signout,
     sendPasswordResetEmail,
     confirmPasswordReset,
+    requestOTPCode,
+    submitOTPCode,
     updateEmail,
     updatePassword,
     updateProfile,
@@ -189,17 +254,18 @@ function usePrepareUser(user) {
     // Data we want to include from auth user object
     let finalUser = {
       uid: user.uid,
-      email: user.email,
-      emailVerified: user.emailVerified,
+      phoneNumber: user.phoneNumber,
+      // email: user.email,
+      // emailVerified: user.emailVerified,
       name: user.displayName,
-      picture: user.photoURL,
+      // picture: user.photoURL,
     };
 
     // Include an array of user's auth providers, such as ["password", "google", etc]
     // Components can read this to prompt user to re-auth with the correct provider
-    finalUser.providers = user.providerData.map(({ providerId }) => {
-      return allProviders.find((p) => p.id === providerId).name;
-    });
+    // finalUser.providers = user.providerData.map(({ providerId }) => {
+    //   return allProviders.find((p) => p.id === providerId).name;
+    // });
 
     // If merging user data from database is enabled ...
     if (MERGE_DB_USER) {
