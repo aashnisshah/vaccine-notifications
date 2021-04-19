@@ -106,9 +106,11 @@ function AuthForm(props) {
           }
         })
     
+        data.optout = false;
         data.ageGroups = selectedAgeGroups;
         data.eligibilityGroups = selectedEligibilityGroups;
         data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+        data.postalShort = data.postal.substring(0, 3);
         requestOTPCode(data, false);
       }
     } else if (props.type === "signin") {
