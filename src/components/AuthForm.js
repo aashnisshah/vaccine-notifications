@@ -71,6 +71,7 @@ function AuthForm(props) {
   };
 
   const onSubmit = (data) => {
+    data.phoneNumber = data.phoneNumber.replace(/[- )(]/g,'')
     if (props.type === "signup") {
       if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
         setGroupError(true);
@@ -99,8 +100,6 @@ function AuthForm(props) {
         data.selectedAgeGroups = selectedAgeGroups;
         data.eligibilityGroups = selectedEligibilityGroups;
         data.postal = data.postal.replace(/\s/g, "").toUpperCase();
-        data.phoneNumber = data.phoneNumber.replace(/[- )(]/g,'')
-        console.log(data)
         requestOTPCode(data);
       }
     } else if (props.type === "signin") {
