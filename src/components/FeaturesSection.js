@@ -6,26 +6,40 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
 import "./FeaturesSection.scss";
+import getNotificationsImage from "./../images/email-campaign-rafiki.svg";
+import preferencesImage from "./../images/preferences-amico.svg";
+import phoneImage from "./../images/mobile-login-pana.svg";
+import vaccineImage from "./../images/vaccine-bro.svg";
 
 function FeaturesSection(props) {
   const items = [
     {
-      title: "Verify Your Phone Number",
-      description: "",
-      image: "https://uploads.divjoy.com/undraw-mind_map_cwng.svg",
+      title: "Create An Account",
+      description: "Create an account so we know how to reach you",
+      image: phoneImage,
+      alt: "image of person verifying login credentials",
     },
     {
-      title: "Submit Details",
+      title: "Set Your Notification Preferences",
       description:
-        "Let us know a few details like your postal code so we can send you relevant information",
-      image: "https://uploads.divjoy.com/undraw-personal_settings_kihd.svg",
+        "Select which updates you want to receive based on your eligibility groups and postal code",
+      image: preferencesImage,
+      alt: "image of person toggling phone preferences",
     },
     {
-      title: "Let Your Friends Know",
+      title: "Get notifications",
       description:
-        "The best way to get back to normal is if we get everyone vaccinated asap.",
-      image: "https://uploads.divjoy.com/undraw-having_fun_iais.svg",
+        "Receive text messages with vaccine information as soon as we get them",
+      image: getNotificationsImage,
+      alt: "image of person with a loudspeaker next to a phone",
     },
+    {
+      title: "Get the vaccine",
+      description:
+        "Follow the link or call the number in the text to book your vaccine appointment",
+      image: vaccineImage,
+      alt: "image of a person receiving a COVID-19 vaccine",
+    }
   ];
 
   return (
@@ -58,13 +72,18 @@ function FeaturesSection(props) {
               </Col>
               <Col>
                 <figure className="FeaturesSection__image-container">
-                  <Image src={item.image} alt={item.title} fluid={true} />
+                  <Image src={item.image} alt={item.alt} fluid={true} />
                 </figure>
               </Col>
             </Row>
           ))}
         </div>
       </Container>
+      <div class="text-center">
+        <a href="https://storyset.com/device">
+          Illustrations by Freepik Storyset
+        </a>
+      </div>
     </Section>
   );
 }
