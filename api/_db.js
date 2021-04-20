@@ -15,6 +15,24 @@ function getAllVerifiedUsers() {
   return firestore.collection("users").where("verified", "==", "true").get().then(format);
 }
 
+function getTargettedUsers(province, postalCodes, ageGroups, eligibilityGroups) {
+  let query = firestore.collection("users").where("optout", "==", false);
+
+  if (province && province != "CA") {
+    query = query.where("province", "==", province);
+  } else if (postalCodes.length > 0) {
+    query = query.where("postalShort", "in", postalCodes);
+  }
+
+  let resp = query.get().then(format);
+
+  console.log(`data: ${JSON.stringify(resp)}`);
+
+  return resp;
+}
+
+
+
 /**** HELPERS ****/
 
 // Format Firestore response (handles a collection or single doc)
@@ -34,5 +52,6 @@ function getDoc(doc) {
 module.exports = {
   getUserByPhoneNumber,
   getAllUsers,
-  getAllVerifiedUsers
+  getAllVerifiedUsers,
+  getTargettedUsers
 };
