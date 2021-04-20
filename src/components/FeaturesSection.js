@@ -79,7 +79,7 @@ function FeaturesSection(props) {
           ))}
         </div>
       </Container>
-      <div class="text-center">
+      <div className="text-center">
         <a href="https://storyset.com/device">
           Illustrations by Freepik Storyset
         </a>

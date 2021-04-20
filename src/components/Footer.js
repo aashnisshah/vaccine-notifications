@@ -16,14 +16,14 @@ function Footer(props) {
     >
       <Container>
         <div className="FooterComponent__inner">
-          <div className="copyright left">{props.copyright}</div>
-          <div className="links right">
-            <Link to="/#faq">FAQ</Link>
-            <Link to="/contact">Contact</Link>
+          <div className="copyright left">
+            {props.copyright}<br />
+
+            
           </div>
-          <div className="social right">
+          <div className="links right">
             <a
-              href="https://twitter.com/vaccinenotifications"
+              href="https://twitter.com/vaccinenotifs"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -31,8 +31,12 @@ function Footer(props) {
                 <i className="fab fa-twitter" />
               </span>
             </a>
+            <Link to="/#faq">FAQ</Link>
+            <Link to="/contact">Contact</Link>
           </div>
-          <div className="copyright left">{props.copyright}</div>
+          <div className="social right">
+            Made with ❤️ by&nbsp;<a href="https://elixirlabs.org" target="_blank" rel="noopener noreferrer">Elixir Labs</a>
+          </div>
         </div>
       </Container>
     </Section>

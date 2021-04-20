@@ -6,7 +6,6 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
-import sendAccountActivatedMessage from "./../util/twilio";
 
 function UserPreferences(props) {
   const auth = useAuth();

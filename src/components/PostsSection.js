@@ -6,7 +6,8 @@ import { useForm } from "react-hook-form";
 import FormField from "./FormField";
 import Section from "./Section";
 import SectionHeader from "./SectionHeader";
-import { ageGroups, eligibilityGroups, provinces, error, selectAll } from "./formConstants";
+import { ageGroups, eligibilityGroups, provinces, provincesWAll, error, selectAll } from "./formConstants";
+import { sendTargettedMessages } from "./../util/twilio";
 
 function PostsSection(props) {
   const auth = useAuth();
@@ -20,7 +21,7 @@ function PostsSection(props) {
 
   let accountConfigured = auth.user.phone && auth.user.province && auth.user.postalcode;
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const allPostalCodes = document.querySelectorAll(".postalCodesInput");
     const province = document.querySelector(".province");
 
@@ -36,7 +37,7 @@ function PostsSection(props) {
 
     data.postal = [];
     allPostalCodes.forEach((postal) => {
-      if (!data.postal.includes(postal)) {
+      if (!data.postal.includes(postal.value.toUpperCase()) && postal.value != "") {
         data.postal.push(postal.value.toUpperCase())
       }
     })
@@ -77,10 +78,11 @@ function PostsSection(props) {
 
       data.selectedAgeGroups = selectedAgeGroups;
       data.eligibilityGroups = selectedEligibilityGroups;  
-      data.province === "All" ? data.province = "CA" : data.province = "";
+      data.province = province.value === "All" ? "CA" : province.value;
 
       if (auth.user.admin) {
         auth.postMessage(data);
+        sendTargettedMessages(data);
       }
     }
   }
@@ -109,7 +111,7 @@ function PostsSection(props) {
                   name="messageType"
                   type="select"
                   label="Message Type"
-                  options={["Placeholder 1", "Placeholder 2", "Placeholder 3"]}
+                  options={["Appointments Available", "Walk In's Accepted", "Waitlist Open"]}
                   error={errors.messageType}
                   inputRef={register({
                     required: error("required", "message type"),
@@ -211,7 +213,7 @@ function PostsSection(props) {
                       name="province"
                       className="province"
                       type="select"
-                      options={provinces}
+                      options={provincesWAll}
                       defaultValue="--"
                       label="Province"
                       error={errors.province}
