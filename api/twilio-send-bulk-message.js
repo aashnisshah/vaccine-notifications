@@ -11,14 +11,12 @@ const {
  */
 exports.handler = async (event, context, callback) => {
 
-  let ageGroups = ["18-49"];
-  let province = "CA";
-  let postalCodes = [];
-  let postalShort = [];
-  let eligibilityGroups = [];
+  let ageGroups = [];
+  let province = "";
+  let postalCodes = ["L9E"];
+  let eligibilityGroups = ['Congregate living for seniors'];
 
   let users = await getTargettedUsers(province, postalCodes, ageGroups, eligibilityGroups);
-  console.log(`targetted users: ${JSON.stringify(users)}`);
 
   return {
     statusCode: 200,
