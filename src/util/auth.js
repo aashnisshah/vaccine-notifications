@@ -1,13 +1,7 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useContext,
-  createContext,
-} from "react";
+import React, {useState, useEffect, useMemo, useContext, createContext,} from "react";
 import queryString from "query-string";
 import firebase from "./firebase";
-import { useUser, createUser, updateUser, findUserByPhoneNumber } from "./db";
+import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 
@@ -66,6 +60,7 @@ function useAuthProvider() {
     setUser(user);
     return user;
   };
+
 
   const setUpRecaptcha = () => {
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
@@ -238,6 +233,17 @@ function useAuthProvider() {
     return () => unsubscribe();
   }, []);
 
+  const postMessage = async (message) => {
+    function randomString(length, chars) {
+      let result = '';
+      for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+      return result;
+    }
+    const rString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  
+    await createMessage(rString, message)
+  }
+
   return {
     user: finalUser,
     setUpRecaptcha,
@@ -252,9 +258,10 @@ function useAuthProvider() {
     updateEmail,
     updatePassword,
     updateProfile,
+    postMessage
   };
 }
-
+  
 // Format final user object and merge extra data from database
 function usePrepareUser(user) {
   // Fetch extra data from database (if enabled and auth user has been fetched)
