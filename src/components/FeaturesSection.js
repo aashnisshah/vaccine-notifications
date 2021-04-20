@@ -14,7 +14,7 @@ import vaccineImage from "./../images/vaccine-bro.svg";
 function FeaturesSection(props) {
   const items = [
     {
-      title: "Create An Account",
+      title: "Create an Account",
       description: "Create an account so we know how to reach you",
       image: phoneImage,
       alt: "image of person verifying login credentials",
@@ -27,14 +27,14 @@ function FeaturesSection(props) {
       alt: "image of person toggling phone preferences",
     },
     {
-      title: "Get notifications",
+      title: "Get Notifications",
       description:
         "Receive text messages with vaccine information as soon as we get them",
       image: getNotificationsImage,
       alt: "image of person with a loudspeaker next to a phone",
     },
     {
-      title: "Get the vaccine",
+      title: "Get the Vaccine",
       description:
         "Follow the link or call the number in the text to book your vaccine appointment",
       image: vaccineImage,
