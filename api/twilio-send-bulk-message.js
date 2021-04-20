@@ -14,6 +14,8 @@ let messageFooter = "Manage your account at vaccinenotifications.org to stop rec
  */
 exports.handler = async (event, context, callback) => {
 
+  // these variables are temp - we should be getting them 
+  //  anytime a new post is created
   let selectedAgeGroups = ["18-49"];
   let province = "";
   let postalCodes = ["M5B", "L9E"];
