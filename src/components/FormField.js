@@ -19,7 +19,7 @@ function FormField(props) {
             {...inputProps}
           >
             <option value={defaultValue}>{defaultValue}</option>
-            {props.options.map(option => (
+            {props && props.options && props.options.map(option => (
               <option value={option} key={option}>{option}</option>
             ))}
           </Form.Control>
