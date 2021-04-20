@@ -17,7 +17,12 @@ function getAllVerifiedUsers() {
 }
 
 async function getTargettedUsers(province, postalCodes, ageGroups, eligibilityGroups) {
-  console.log(`query: province: ${province} postalCodes: ${postalCodes} ageGroups: ${ageGroups} eligibilityGroups: ${eligibilityGroups} `)
+  console.log(`query: province: ${province},
+    postalCodes: ${postalCodes},
+    ageGroups: ${ageGroups},
+    eligibilityGroups: ${eligibilityGroups}
+  `);
+  
   let query = firestore.collection("users").where("optout", "==", false);
 
   if (province && province != "CA") {

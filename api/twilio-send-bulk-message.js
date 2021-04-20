@@ -11,38 +11,68 @@ const {
  */
 exports.handler = async (event, context, callback) => {
 
-  let ageGroups = [];
+  let selectedAgeGroups = [];
   let province = "CA";
   let postalCodes = [];
   let eligibilityGroups = [];
 
-  let users = await getTargettedUsers(province, postalCodes, ageGroups, eligibilityGroups);
-  let userBindings = users.map(user => JSON.stringify({
-    binding_type: 'sms',
-    address: user.phoneNumber,
-    identity: user.id,
-  }));
+  let getUserBindings = async (
+    province,
+    postalCodes,
+    selectedAgeGroups,
+    eligibilityGroups
+  ) => {
 
-  console.log(`userBindings: ${userBindings}`)
+    let users = await getTargettedUsers(
+      province,
+      postalCodes,
+      selectedAgeGroups,
+      eligibilityGroups
+    );
 
-  return await client.notify.services(process.env.TWILIO_NOTIFY_SID)
-  .notifications.create({
-    toBinding: userBindings,
-    body: 'Testing sending bulk messages!'
-  })
-  .then(notification => {
-    console.log(notification.sid, JSON.stringify(notification));
-    return {
-      statusCode: 200,
-      body: `Message {messageId} sent to ${users.length}`,
-    };
-  })
-  .catch(error => {
-    console.log(error)
-    return {
-      statusCode: 500,
-      body: `Error Sending Message: ${JSON.stringify(error)}`
-    }
-  });
+    let bindings = users.map(user => JSON.stringify({
+      binding_type: 'sms',
+      address: user.phoneNumber,
+      identity: user.id,
+    }));
+
+    return bindings;
+  }
+
+  let getMessageBody = () => {
+    return 'Testing sending bulk messages';
+  }
+
+  let sendMessages = async (userBindings, messageBody) => {
+    return await client.notify.services(process.env.TWILIO_NOTIFY_SID)
+    .notifications.create({
+      toBinding: userBindings,
+      body: messageBody
+    })
+    .then(notification => {
+      console.log(notification.sid, 'successfully sent');
+      return {
+        statusCode: 200,
+        body: `Message sent to ${userBindings.length}`,
+      };
+    })
+    .catch(error => {
+      console.log(error)
+      return {
+        statusCode: 500,
+        body: `Error Sending Message: ${JSON.stringify(error)}`
+      }
+    });
+  }
+
+  let userBindings = await getUserBindings(
+    province,
+    postalCodes,
+    selectedAgeGroups,
+    eligibilityGroups
+  );
+  let messageBody = getMessageBody();
+
+  return sendMessages(userBindings, messageBody);
 
 }
