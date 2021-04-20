@@ -48,7 +48,10 @@ async function getTargettedUsers(province, postalCodes, ageGroups, eligibilityGr
       }
 
       if (isTarget && userData.phoneNumber) {
-        targettedUsers.push(userData.phoneNumber);
+        targettedUsers.push(
+          {id: userData.uid,
+          phoneNumber: userData.phoneNumber
+        });
       }
     });
   });
