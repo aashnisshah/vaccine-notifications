@@ -35,6 +35,15 @@ export async function findUserByPhoneNumber(phoneNumber) {
   }
 }
 
+// Create a new message
+export function createMessage(id, data) {
+  console.log("firestore")
+  return firestore
+    .collection("messages")
+    .doc(id)
+    .set({ id, ...data }, { merge: true });
+}
+
 /**** ITEMS ****/
 /* Example query functions (modify to your needs) */
 

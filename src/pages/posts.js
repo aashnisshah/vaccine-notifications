@@ -10,7 +10,7 @@ function PostsPage(props) {
       size="md"
       bgImage=""
       bgImageOpacity={1}
-      title="Dashboard"
+      title="Post a Message"
       subtitle=""
     />
   );

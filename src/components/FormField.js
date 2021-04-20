@@ -18,7 +18,7 @@ function FormField(props) {
             ref={inputRef}
             {...inputProps}
           >
-            <option disabled selected value={defaultValue}>{defaultValue}</option>
+            <option value={defaultValue}>{defaultValue}</option>
             {props.options.map(option => (
               <option value={option} key={option}>{option}</option>
             ))}

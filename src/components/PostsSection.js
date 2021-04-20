@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Container, Form, Spinner, Button, Row, Col } from "react-bootstrap";
 import { Link, useRouter } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
@@ -13,12 +13,17 @@ function PostsSection(props) {
   const router = useRouter();
   const { handleSubmit, register, errors } = useForm();
 
+  const [numPostals, setNumPostals] = useState(1);
   const [pending, setPending] = useState(false);
   const [groupError, setGroupError] = useState(false); 
+  const [areaError, setAreaError] = useState(false);
 
   let accountConfigured = auth.user.phone && auth.user.province && auth.user.postalcode;
 
   const onSubmit = (data) => {
+    const allPostalCodes = document.querySelectorAll(".postalCodesInput");
+    const province = document.querySelector(".province");
+
     if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
       setGroupError(true);
       const allCheckBoxes = document.querySelectorAll('input[type="checkbox"]');
@@ -27,7 +32,38 @@ function PostsSection(props) {
           setGroupError(!this.checked)
         });
       }
-    } else {
+    }
+
+    data.postal = [];
+    allPostalCodes.forEach((postal) => {
+      if (!data.postal.includes(postal)) {
+        data.postal.push(postal.value.toUpperCase())
+      }
+    })
+
+    if (province.value && province.value != "--" && data.postal) {
+      setAreaError(true);
+
+      for (let i = 0; i < allPostalCodes.length; i++) {                                                                    
+        allPostalCodes[i].addEventListener("change", function(postal) {
+          if (!province.value && postal.value || province.value && !postal.value) {
+            setAreaError(false)
+          } else {
+            setAreaError(true);
+          }
+        });
+      }
+
+      province.addEventListener("change", function(postal) {
+        if (!province.value && postal.value || province.value && !postal.value) {
+          setAreaError(false)
+        } else {
+          setAreaError(true);
+        }
+      });
+
+    } 
+    else {
       setGroupError(false);
       setPending(true);
 
@@ -42,10 +78,13 @@ function PostsSection(props) {
           selectedEligibilityGroups.push(group.id);
         }
       })
-  
+
       data.selectedAgeGroups = selectedAgeGroups;
-      data.eligibilityGroups = selectedEligibilityGroups;
-      data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+      data.eligibilityGroups = selectedEligibilityGroups;  
+
+      if (auth.user.admin) {
+        auth.postMessage(data);
+      }
     }
   }
 
@@ -66,8 +105,128 @@ function PostsSection(props) {
           className="text-center"
         /> 
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <Row className="my-4">
-            <Col lg={7} className="border-right">
+          <Row className="my-4">  
+            <Col className="border-right">
+              <Form.Group controlId="messageType" className="flex-fill">
+                <FormField
+                  name="messageType"
+                  type="select"
+                  label="Message Type"
+                  options={["Placeholder 1", "Placeholder 2", "Placeholder 3"]}
+                  error={errors.messageType}
+                  inputRef={register({
+                    required: error("required", "message type"),
+                  })}
+                />
+              </Form.Group>
+              <Form.Group controlId="message">
+                <FormField
+                  name="message"
+                  type="textarea"
+                  rows={5}
+                  label="Message"
+                  placeholder="Provide a short message here."
+                  error={errors.message}
+                  inputRef={register({
+                    required: error("required", "message")
+                  })}
+                />
+              </Form.Group>
+              <Form.Group controlId="linkToBooking">
+                <FormField
+                  name="linkToBooking"
+                  label="Link To Booking"
+                  helpText="If there's a website users can access to book an appointment, add it here."
+                  error={errors.linkToBooking}
+                  inputRef={register({
+                    pattern: {
+                      value: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                      message: error("invalid", "link to booking")
+                    }
+                  })}
+                />
+              </Form.Group>
+              <Form.Group controlId="numberToBooking">
+                <FormField
+                  name="numberToBooking"
+                  type="tel"
+                  label="Phone Number to Booking"
+                  placeholder="000-000-000"
+                  helpText="If there's a phone number users can call to book an appointment, add it here."
+                  error={errors.numberToBooking}
+                  inputRef={register({
+                    pattern: {
+                      value: /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/,
+                      message: error("invalid", "phone number")
+                    }
+                  })}
+                />
+              </Form.Group>
+              <Form.Group controlId="linkToSrc">
+                <FormField
+                  name="linkToSrc"
+                  label="Link To Source"
+                  helpText="If you have a link that users can access to learn more, add it here."
+                  error={errors.linkToSrc}
+                  inputRef={register({
+                    pattern: {
+                      value: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+                      message: error("invalid", "link to source")
+                    }
+                  })}
+                />
+              </Form.Group>
+            </Col>
+            <Col className="pl-4">
+              <h2 className="selectGroupText">Select a province OR enter the first 3 digits of the postal codes that this message is relevant for.</h2>
+              <Form.Row className="m-0 justify-content-between">
+                <Col className="p-0 pr-2">
+                  <Form.Label className="mb-1">Postal Code</Form.Label>
+                  {[...Array(numPostals)].map(() => 
+                    <Form.Group controlId="formPostal">
+                      <FormField
+                        name="postal"
+                        style={{textTransform: 'uppercase'}}
+                        error={errors.postal}
+                        placeholder="A0A"
+                        className="postalCodesInput"
+                        inputRef={register({
+                          pattern: {
+                            value: /^[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/,
+                            message: "Please enter 3 digits of a postal code"
+                          }
+                        })}
+                      />
+                    </Form.Group>
+                  )}
+                  <Form.Text muted>Add up to 10 postal codes</Form.Text>
+                  <Button 
+                    variant="link" 
+                    className="px-0" 
+                    onClick={() => setNumPostals(numPostals < 10 ? numPostals + 1 : numPostals)}
+                  >
+                    Add another postal code
+                  </Button>
+                </Col>
+                <Col className="p-0">
+                  <Form.Group controlId="province">
+                    <FormField
+                      name="province"
+                      className="province"
+                      type="select"
+                      options={provinces}
+                      defaultValue="--"
+                      label="Province"
+                      error={errors.province}
+                    />
+                  </Form.Group>
+                </Col>
+                {areaError && (
+                  <Form.Control.Feedback className="text-left groupError">
+                    {error("areaError")}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Row>
               <div className="my-4">
                 <h2 className="selectGroupText">Select all age groups that this message is relevant to.</h2>
                 <Form.Row controlId="ageGroup" className="mx-0">
@@ -101,98 +260,10 @@ function PostsSection(props) {
                 </Form.Group>
                 <Button onClick={() => selectAll("eligibilityGroupField")} variant="link" className="p-0">Select all</Button>
               </div>
-            </Col>    
-            <Col className="pl-4">
-              <Form.Row className="m-0 justify-content-between">
-                <Form.Group controlId="messageType" className="mr-2 flex-fill">
-                  <FormField
-                    name="messageType"
-                    type="select"
-                    label="Message Type"
-                    options={["Placeholder 1", "Placeholder 2", "Placeholder 3"]}
-                    error={errors.messageType}
-                    inputRef={register({
-                      required: error("required", "message type"),
-                    })}
-                  />
-                </Form.Group>
-                <Form.Group controlId="province">
-                  <FormField
-                    name="province"
-                    type="select"
-                    options={provinces}
-                    defaultValue="--"
-                    label="Province"
-                    error={errors.province}
-                    inputRef={register({
-                      pattern: {
-                        value: /^((?!--).)*$/,
-                        message: error("required", "province")
-                      }
-                    })}
-                  />
-                </Form.Group>
-              </Form.Row>
-              <Form.Group controlId="message">
-                <FormField
-                  name="message"
-                  type="textarea"
-                  label="Message"
-                  placeholder="Provide a short message here."
-                  error={errors.message}
-                  inputRef={register({
-                    required: error("required", "message")
-                  })}
-                />
-              </Form.Group>
-              <Form.Group controlId="linkToBooking">
-                <FormField
-                  name="linkToBooking"
-                  label="Link To Booking"
-                  error={errors.postal}
-                  inputRef={register({
-                    pattern: {
-                      value: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-                      message: error("invalid", "link to booking")
-                    }
-                  })}
-                />
-              </Form.Group>
-              <Form.Group controlId="phoneNumber">
-                <FormField
-                  name="phoneNumber"
-                  type="tel"
-                  label="Phone Number to Booking"
-                  placeholder="000-000-000"
-                  error={errors.phoneNumber}
-                  inputRef={register({
-                    pattern: {
-                      value: /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/,
-                      message: error("invalid", "phone number")
-                    }
-                  })}
-                />
-              </Form.Group>
-              {/* <Form.Group controlId="formPostal">
-                <FormField
-                  name="postal"
-                  label="Postal Code"
-                  style={{textTransform: 'uppercase'}}
-                  error={errors.postal}
-                  placeholder="A0A 0A0"
-                  inputRef={register({
-                    required: error("required", "postal code"),
-                    pattern: {
-                      value: /(^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$)|(^\d{5}$)/,
-                      message: error("invalid", "postal code")
-                    }
-                  })}
-                /> */}
-              {/* </Form.Group> */}
-            </Col>
+            </Col>  
           </Row>
 
-          {groupError && (
+          { groupError && (
             <Form.Control.Feedback className="text-left groupError">
               {error("noGroup")}
             </Form.Control.Feedback>

@@ -7,7 +7,8 @@ const error = (errorType, field="") => {
   const error = {
     required: `Please enter a ${field}`,
     invalid: `Please enter a valid ${field}`,
-    noGroup: "Please select at least one age group or eligibility group"
+    noGroup: "Please select at least one age group or eligibility group",
+    areaError: "You may only select a province OR input a postal code"
   }
   return error[errorType];
 }
