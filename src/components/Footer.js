@@ -32,7 +32,7 @@ function Footer(props) {
               </span>
             </a>
             <Link to="/#faq">FAQ</Link>
-            <Link to="/contact">Contact</Link>
+            {/* <Link to="/contact">Contact</Link> */}
           </div>
           <div className="social right">
             Made with ❤️ by&nbsp;<a href="https://elixirlabs.org" target="_blank" rel="noopener noreferrer">Elixir Labs</a>
