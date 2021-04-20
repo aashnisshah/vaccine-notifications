@@ -19,6 +19,7 @@ function IndexPage(props) {
         title="Get Vaccine Notifications Straight To Your Phone"
         subtitle="Receive text notifications whenever vaccines appointments are available in your area."
         image={heroImage}
+        imageAlt="image of a person with a loudspeaker in front of a phone"
         buttonText="Get Started"
         buttonColor="primary"
         buttonPath="/auth/signup"

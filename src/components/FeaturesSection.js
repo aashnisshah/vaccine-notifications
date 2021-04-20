@@ -17,24 +17,28 @@ function FeaturesSection(props) {
       title: "Verify Your Phone Number",
       description: "",
       image: phoneImage,
+      alt: "image of person verifying login credentials",
     },
     {
       title: "Set Your Notification Preferences",
       description:
         "Let us know a few details like your postal code so we can send you relevant information",
       image: preferencesImage,
+      alt: "image of person toggling phone preferences",
     },
     {
       title: "Get notifications",
       description:
         "Receive text notifications relevant to you straight to your phone",
       image: getNotificationsImage,
+      alt: "image of person with a loudspeaker next to a phone",
     },
     {
       title: "Get the vaccine",
       description:
         "Sign up to receive the vaccine once it becomes available to you",
       image: vaccineImage,
+      alt: "image of a person receiving a COVID-19 vaccine",
     }
   ];
 
@@ -68,7 +72,7 @@ function FeaturesSection(props) {
               </Col>
               <Col>
                 <figure className="FeaturesSection__image-container">
-                  <Image src={item.image} alt={item.title} fluid={true} />
+                  <Image src={item.image} alt={item.alt} fluid={true} />
                 </figure>
               </Col>
             </Row>
