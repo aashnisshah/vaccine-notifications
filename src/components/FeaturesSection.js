@@ -6,26 +6,36 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
 import "./FeaturesSection.scss";
+import getNotificationsImage from "./../images/email-campaign-rafiki.svg";
+import preferencesImage from "./../images/preferences-amico.svg";
+import phoneImage from "./../images/mobile-login-pana.svg";
+import vaccineImage from "./../images/vaccine-bro.svg";
 
 function FeaturesSection(props) {
   const items = [
     {
       title: "Verify Your Phone Number",
       description: "",
-      image: "https://uploads.divjoy.com/undraw-mind_map_cwng.svg",
+      image: phoneImage,
     },
     {
-      title: "Submit Details",
+      title: "Set Your Notification Preferences",
       description:
         "Let us know a few details like your postal code so we can send you relevant information",
-      image: "https://uploads.divjoy.com/undraw-personal_settings_kihd.svg",
+      image: preferencesImage,
     },
     {
-      title: "Let Your Friends Know",
+      title: "Get notifications",
       description:
-        "The best way to get back to normal is if we get everyone vaccinated asap.",
-      image: "https://uploads.divjoy.com/undraw-having_fun_iais.svg",
+        "Receive text notifications relevant to you straight to your phone",
+      image: getNotificationsImage,
     },
+    {
+      title: "Get the vaccine",
+      description:
+        "Sign up to receive the vaccine once it becomes available to you",
+      image: vaccineImage,
+    }
   ];
 
   return (

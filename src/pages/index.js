@@ -5,6 +5,7 @@ import FeaturesSection from "./../components/FeaturesSection";
 import FaqSection from "./../components/FaqSection";
 import TestimonialsSection from "./../components/TestimonialsSection";
 import NewsletterSection from "./../components/NewsletterSection";
+import heroImage from "./../images/email-campaign-cuate.svg";
 
 function IndexPage(props) {
   return (
@@ -17,7 +18,7 @@ function IndexPage(props) {
         bgImageOpacity={1}
         title="Get Vaccine Notifications Straight To Your Phone"
         subtitle="Receive text notifications whenever vaccines appointments are available in your area."
-        image="https://uploads.divjoy.com/undraw-japan_ubgk.svg"
+        image={heroImage}
         buttonText="Get Started"
         buttonColor="primary"
         buttonPath="/auth/signup"
