@@ -223,77 +223,88 @@ function AuthForm(props) {
         </>
       )}
 
-      <Button
-        variant="primary"
-        block={true}
-        size="lg"
-        type="submit"
-        disabled={pending}
-      >
-        {!pending && <span>{props.typeValues.buttonText}</span>}
+      <div className="w-100 text-center">
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={pending}
+          size="lg"
+          className="my-2"
+        >
+          {!pending && <span>{props.typeValues.buttonText}</span>}
 
-        {pending && (
-          <Spinner
-            animation="border"
-            size="sm"
-            role="status"
-            aria-hidden={true}
-            className="align-baseline"
-          >
-            <span className="sr-only">Loading...</span>
-          </Spinner>
-        )}
-      </Button>
+          {pending && (
+            <Spinner
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden={true}
+              className="align-baseline"
+            >
+              <span className="sr-only">Loading...</span>
+            </Spinner>
+          )}
+        </Button>
+      </div>
     </Form>
+    
     {showOTP && 
       <Form className="form" onSubmit={onSubmitOtp}>
-        <h2 className="mb-3">Enter OTP</h2>
-        <Form.Group>
-          <Form.Control
-            id="otp"
-            type="number"
-            name="otp"
-            placeholder="OTP"
-            onChange={onChangeHandler}
-          />
-            <Button variant="primary" type="submit">
-            {!pending && <span>Submit</span>}
-              {pending && (
-                <>
-                  <Spinner
-                    animation="border"
-                    size="sm"
-                    role="status"
-                    aria-hidden={true}
-                    className="align-baseline mr-1"
-                  >
-                  </Spinner>
-                  <span>Loading...</span>
-                </>
-              )}
-          </Button>
-        </Form.Group>
-        <Button 
-          variant="secondary"
-          size="small"
-          onClick={() => {
-            resetRecaptcha();
-            sendOTPCode(userData.phoneNumber)
-          }
-        }>
-          Resend Code
-        </Button>
-        &nbsp;
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={()=>setShowOTP(false)}
-        >
-          Go Back
-        </Button>
-      </Form>
-          }
-          {renderRecaptcha && <div id="recaptcha-container"></div>}
+        <h2 className="selectGroupText">Enter Verification Code</h2>
+          <p>A verification code was sent via SMS to the provided number. Enter the number below to activate your account.</p>
+          <Form.Group>
+            <FormField
+              id="otp"
+              type="number"
+              name="otp"
+              placeholder="Verification Code"
+              onChange={onChangeHandler}
+            />
+          </Form.Group>
+
+          <div className="d-flex">
+            <Button 
+              variant="primary" 
+              type="submit" 
+              // size="lg" 
+              className="my-2, mr-2"
+            >
+              {!pending && <span>Submit</span>}
+                {pending && (
+                  <>
+                    <Spinner
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden={true}
+                      className="align-baseline mr-1"
+                    >
+                    </Spinner>
+                    <span>Loading...</span>
+                  </>
+                )}
+            </Button>
+            <Button 
+              variant="link" 
+              onClick={() => {
+                resetRecaptcha();
+                sendOTPCode(userData.phoneNumber)
+              }}
+              // size="lg"
+            >
+              <u>Resend Link</u>
+            </Button>
+            </div>
+            {/* <Button  // TO DO ADD BACK BUTTON
+              variant="secondary" 
+              onClick={()=>setShowOTP(false)}
+              size="lg"
+            >
+                Go Back
+            </Button> */}
+        </Form>
+      }
+    {renderRecaptcha && <div id="recaptcha-container"></div>}
     </div>
   );
 }

@@ -14,6 +14,7 @@ function AuthFooter(props) {
 
       {props.type === "signin" && (
         <>
+          Don't have an account? 
           <Link to="/auth/signup">{props.typeValues.linkTextSignup}</Link>
           <Link to="/auth/forgotpass">
             {props.typeValues.linkTextForgotpass}

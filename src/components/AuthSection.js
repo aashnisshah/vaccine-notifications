@@ -45,11 +45,7 @@ function AuthSection(props) {
       bgImage={props.bgImage}
       bgImageOpacity={props.bgImageOpacity}
     >
-      <Container
-        style={{
-          maxWidth: "525px",
-        }}
-      >
+      <Container className="formContainer">
         <SectionHeader
           title={allTypeValues[currentType].title}
           subtitle=""
