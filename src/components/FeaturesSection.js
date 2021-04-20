@@ -14,29 +14,29 @@ import vaccineImage from "./../images/vaccine-bro.svg";
 function FeaturesSection(props) {
   const items = [
     {
-      title: "Verify Your Phone Number",
-      description: "",
+      title: "Create An Account",
+      description: "Create an account so we know how to reach you",
       image: phoneImage,
       alt: "image of person verifying login credentials",
     },
     {
       title: "Set Your Notification Preferences",
       description:
-        "Let us know a few details like your postal code so we can send you relevant information",
+        "Select which updates you want to receive based on your eligibility groups and postal code",
       image: preferencesImage,
       alt: "image of person toggling phone preferences",
     },
     {
       title: "Get notifications",
       description:
-        "Receive text notifications relevant to you straight to your phone",
+        "Receive text messages with vaccine information as soon as we get them",
       image: getNotificationsImage,
       alt: "image of person with a loudspeaker next to a phone",
     },
     {
       title: "Get the vaccine",
       description:
-        "Sign up to receive the vaccine once it becomes available to you",
+        "Follow the link or call the number in the text to book your vaccine appointment",
       image: vaccineImage,
       alt: "image of a person receiving a COVID-19 vaccine",
     }
