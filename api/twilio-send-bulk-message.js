@@ -1,8 +1,11 @@
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const _ = require("lodash");
 const {
   getAllVerifiedUsers,
   getTargettedUsers
 } = require("./_db.js");
+
+let messageFooter = "Manage your account at vaccinenotifications.org to stop receiving notifications";
 
 /**
   TODO:
@@ -11,10 +14,16 @@ const {
  */
 exports.handler = async (event, context, callback) => {
 
-  let selectedAgeGroups = [];
-  let province = "CA";
-  let postalCodes = [];
+  let selectedAgeGroups = ["18-49"];
+  let province = "";
+  let postalCodes = ["M5B", "L9E"];
   let eligibilityGroups = [];
+  
+  let linkToBooking = "https://elixirlabs.org";
+  let linkToSrc = "https://twitter.com/aashnisshah";
+  let message = "You can book vaccines for 18+ in Ontario";
+  let messageType = "*Vaccine Appointments Available*";
+  let numberToBooking = "";
 
   let getUserBindings = async (
     province,
@@ -39,8 +48,38 @@ exports.handler = async (event, context, callback) => {
     return bindings;
   }
 
-  let getMessageBody = () => {
-    return 'Testing sending bulk messages';
+  let getMessageBody = (province, postalCodes, selectedAgeGroups, eligibilityGroups) => {
+    let groups = _.concat([province], postalCodes, selectedAgeGroups, eligibilityGroups);
+    let messageBody;
+
+    if (messageType) {
+      messageBody = messageBody + "\n\n" + messageType;
+    }
+
+    if (message) {
+      messageBody = messageBody + "\n\n" + message;
+    }
+
+    messageBody = messageBody + "\n\nDetails We Know: " + 
+      "\nProvince: " + province + 
+      "\nPostalCodes: " + postalCodes.join(", ") + 
+      "\nSelected Age Groups: " + selectedAgeGroups.join(", ") + 
+      "\nEligibility Groups: " + eligibilityGroups.join(", ");
+
+    if (linkToBooking) {
+      messageBody = messageBody + "\n\nMore info + register here: " + linkToBooking;
+    }
+
+    if (numberToBooking) {
+      messageBody = messageBody + "\n\nCall to book here: " + numberToBooking;
+    }
+
+    if (linkToSrc) {
+      messageBody = messageBody + "\n\nSource: " + linkToSrc;
+    }
+
+    messageBody = messageBody + "\n\n" + messageFooter;
+    return messageBody;
   }
 
   let sendMessages = async (userBindings, messageBody) => {
@@ -71,7 +110,12 @@ exports.handler = async (event, context, callback) => {
     selectedAgeGroups,
     eligibilityGroups
   );
-  let messageBody = getMessageBody();
+  let messageBody = getMessageBody(
+    province,
+    postalCodes,
+    selectedAgeGroups,
+    eligibilityGroups
+  );
 
   return sendMessages(userBindings, messageBody);
 
