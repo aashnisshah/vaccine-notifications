@@ -41,15 +41,13 @@ function PostsSection(props) {
       }
     })
 
-    if (province.value && province.value != "--" && data.postal) {
+    if (province.value && province.value != "--" && data.postal.length > 0 && data.postal[0] != "") {
       setAreaError(true);
 
       for (let i = 0; i < allPostalCodes.length; i++) {                                                                    
         allPostalCodes[i].addEventListener("change", function(postal) {
           if (!province.value && postal.value || province.value && !postal.value) {
             setAreaError(false)
-          } else {
-            setAreaError(true);
           }
         });
       }
@@ -57,8 +55,6 @@ function PostsSection(props) {
       province.addEventListener("change", function(postal) {
         if (!province.value && postal.value || province.value && !postal.value) {
           setAreaError(false)
-        } else {
-          setAreaError(true);
         }
       });
 
@@ -81,6 +77,7 @@ function PostsSection(props) {
 
       data.selectedAgeGroups = selectedAgeGroups;
       data.eligibilityGroups = selectedEligibilityGroups;  
+      data.province === "All" ? data.province = "CA" : data.province = "";
 
       if (auth.user.admin) {
         auth.postMessage(data);

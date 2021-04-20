@@ -3,6 +3,7 @@ import {Form, Button, Spinner} from "react-bootstrap";
 import FormField from "./FormField";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
+import { ageGroups, eligibilityGroups, provincesWAll, error, selectAll } from "./formConstants";
 import "./Auth.scss";
 
 function AuthForm(props) {
@@ -31,15 +32,6 @@ function AuthForm(props) {
       })
     };
   }, []);
-
-  const error = (errorType, field="") => {
-    const error = {
-      required: `Please enter a ${field}`,
-      invalid: `Please enter a valid ${field}`,
-      noGroup: "Please select at least one age group or eligibility group"
-    }
-    return error[errorType];
-  }
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -169,7 +161,7 @@ function AuthForm(props) {
               <FormField
                 name="province"
                 type="select"
-                options={provinces}
+                options={provincesWAll}
                 defaultValue="--"
                 label="Province"
                 error={errors.province}
