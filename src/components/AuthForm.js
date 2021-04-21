@@ -63,8 +63,8 @@ function AuthForm(props) {
     e.preventDefault();
     setPending(true);
     const otpInput = otpCode.otp;
-
-    const success = await auth.submitOTPCode(otpInput, userData);
+    const isFirstTimeUser = props.type === "signup";
+    const success = await auth.submitOTPCode(otpInput, userData, isFirstTimeUser );
     setPending(false)
     if (success) {
       onAuth();
@@ -158,7 +158,6 @@ function AuthForm(props) {
               />
             </Form.Group>
             <Form.Group controlId="province">
-            {console.log(`provinces ${JSON.stringify(provinces)}`)}
               <FormField
                 name="province"
                 type="select"

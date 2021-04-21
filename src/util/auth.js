@@ -4,7 +4,7 @@ import firebase from "./firebase";
 import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
-
+import { sendAccountActivatedMessage } from "./twilio"
 import analytics from "./analytics";
 
 // Whether to merge extra user data from database into auth.user
@@ -117,15 +117,18 @@ function useAuthProvider() {
     return phoneNumber;
   }
 
-  const submitOTPCode = async (otpCode, userData) => {
+  const submitOTPCode = async (otpCode, userData, isFirstTimeUser) => {
     const otpConfirm = window.confirmationResult;
     try {
         const result = await otpConfirm.confirm(otpCode);
-        const user = result.user;
-        userData.phoneNumber = user.phoneNumber;
-        userData.displayName = user.phoneNumber;
-        await createUser(user.uid, userData)
-        setUser(user);
+        const newUser = result.user;
+        userData.phoneNumber = newUser.phoneNumber;
+        userData.displayName = newUser.phoneNumber;
+        await createUser(newUser.uid, userData);
+        setUser(newUser);
+        if (isFirstTimeUser) {
+          sendAccountActivatedMessage({receiver: newUser.phoneNumber});
+        }
         return true;
     } catch (err) {
         const error = err.toString();

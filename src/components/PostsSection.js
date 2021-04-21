@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Spinner, Button, Row, Col } from "react-bootstrap";
-import { Link, useRouter } from "./../util/router.js";
+import { useRouter, history } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
 import FormField from "./FormField";
@@ -26,6 +26,12 @@ function PostsSection(props) {
     const [groupError, setGroupError] = useState(false);
     const [areaError, setAreaError] = useState(false);
     const [messageStatus, setMessageStatus] = useState(false);
+
+    useEffect(()=> {
+      if (!auth.user.admin) {
+        history.replace("/dashboard");
+      }
+    },[auth])
 
     let accountConfigured =
         auth.user.phone && auth.user.province && auth.user.postalcode;
@@ -114,6 +120,8 @@ function PostsSection(props) {
                 setPending(false);
                 reset();
                 setMessageStatus(true);
+            } else {
+              alert ("Only admins can post messages");
             }
         }
     };
@@ -249,9 +257,9 @@ function PostsSection(props) {
                                                 className="postalCodesInput"
                                                 inputRef={register({
                                                     pattern: {
-                                                        value: /^[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/,
+                                                        value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
                                                         message:
-                                                            "Please enter 3 digits of a postal code",
+                                                            "Please enter 3 characters of a postal code",
                                                     },
                                                 })}
                                             />
