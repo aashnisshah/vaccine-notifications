@@ -195,7 +195,7 @@ function PostsSection(props) {
                         className="postalCodesInput"
                         inputRef={register({
                           pattern: {
-                            value: /^[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/,
+                            value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
                             message: "Please enter 3 digits of a postal code"
                           }
                         })}
