@@ -57,7 +57,7 @@ exports.handler = async (event, context, callback) => {
     messageBody = messageBody + "\n\nDetails We Know: ";
 
     if (province) {
-      let provinceText = province === "All" ? "All Provinces" : province;
+      let provinceText = province === "CA" ? "All Provinces" : province;
       messageBody = messageBody + "\nProvince: " + provinceText;
     }
 
