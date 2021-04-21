@@ -77,7 +77,7 @@ exports.handler = async (event, context, callback) => {
 
         if (eligibilityGroups.length > 0) {
             messageBody =
-                messageBody + "\nEligibility Groups: " + postalCodes.join(", ");
+                messageBody + "\nEligibility Groups: " + eligibilityGroups.join(", ");
         }
 
         // end of details
