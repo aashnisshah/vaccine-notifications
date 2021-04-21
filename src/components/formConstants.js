@@ -1,6 +1,14 @@
 
 const ageGroups = ["18-49", "50-59", "60-79", "80+"]
-const eligibilityGroups = ["Congregate living for seniors", "Health care workers", "Adults in First Nations, Métis and Inuit populations", "Adult chronic home care recipients", "High-risk congregate settings", "Individuals with high-risk chronic conditions and their caregivers"]
+const eligibilityGroups = [
+  "Faith leaders at higher risk of COVID-19 exposure (e.g. end-of-life care, care of deceased, home visits, care in health care and vulnerable settings)",
+  "Health-care workers",
+  "THose who work or live in a high-risk congregate living setting",
+  "Essential caregivers to a person with a high risk condition",
+  "Congregate living for seniors", 
+  "Adults in First Nations, Métis and Inuit populations", 
+  "Adult chronic home care recipients"
+]
 const provinces = ["AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT"]
 const provincesWAll = ["AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT", "All"]
 
