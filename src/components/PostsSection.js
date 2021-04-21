@@ -272,7 +272,7 @@ function PostsSection(props) {
             </Form.Control.Feedback>
           )}
 
-          {!messageStatus && (
+          {messageStatus && (
             <Form.Control.Feedback className="text-center groupSuccess">
               Message Sent
             </Form.Control.Feedback>
