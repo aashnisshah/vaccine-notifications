@@ -1,6 +1,6 @@
 {
   "short_name": "Vaccine Notifications",
-  "name": "Receivie text notifications when vaccine bookings are available in your area.",
+  "name": "Receivie a text notification when vaccine appointments are available close to you.",
   "icons": [
     {
       "src": "VNFavicon.png",

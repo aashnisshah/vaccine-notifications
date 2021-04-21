@@ -5,27 +5,22 @@ const {
   getTargettedUsers
 } = require("./_db.js");
 
-let messageFooter = "Manage your account at vaccinenotifications.org to stop receiving notifications";
+let messageFooter = "Manage notification settings at vaccinenotifications.org.";
 
-/**
-  TODO:
-    - update getAllVerifiedUsers to only search for users that match post requirements
-    - update message to use customer message instead of default message
- */
 exports.handler = async (event, context, callback) => {
 
-  // these variables are temp - we should be getting them 
-  //  anytime a new post is created
-  let selectedAgeGroups = ["18-49"];
-  let province = "";
-  let postalCodes = ["M5B", "L9E"];
-  let eligibilityGroups = [];
+  let data = JSON.parse(event.body);
+
+  let selectedAgeGroups = data.selectedAgeGroups;
+  let province = data.province;
+  let postalCodes = data.postal;
+  let eligibilityGroups = data.eligibilityGroups;
   
-  let linkToBooking = "https://elixirlabs.org";
-  let linkToSrc = "https://twitter.com/aashnisshah";
-  let message = "You can book vaccines for 18+ in Ontario";
-  let messageType = "*Vaccine Appointments Available*";
-  let numberToBooking = "";
+  let linkToBooking = data.linkToBooking;
+  let linkToSrc = data.linkToSrc;
+  let message = data.message;
+  let messageType = data.messageType;
+  let numberToBooking = data.numberToBooking;
 
   let getUserBindings = async (
     province,
@@ -62,11 +57,26 @@ exports.handler = async (event, context, callback) => {
       messageBody = messageBody + "\n\n" + message;
     }
 
-    messageBody = messageBody + "\n\nDetails We Know: " + 
-      "\nProvince: " + province + 
-      "\nPostalCodes: " + postalCodes.join(", ") + 
-      "\nSelected Age Groups: " + selectedAgeGroups.join(", ") + 
-      "\nEligibility Groups: " + eligibilityGroups.join(", ");
+    // start details we know
+    messageBody = messageBody + "\n\nDetails We Know: ";
+
+    if (province) {
+      messageBody = messageBody + "\nProvince: " + province;
+    }
+
+    if (postalCodes.length > 0) {
+      messageBody = messageBody + "\nPostal Codes: " + postalCodes.join(", ");
+    }
+
+    if (selectedAgeGroups.length > 0) {
+      messageBody = messageBody + "\nAge Groups: " + selectedAgeGroups.join(", ");
+    }
+
+    if (eligibilityGroups.length > 0) {
+      messageBody = messageBody + "\nEligibility Groups: " + postalCodes.join(", ");
+    }
+
+    // end of details
 
     if (linkToBooking) {
       messageBody = messageBody + "\n\nMore info + register here: " + linkToBooking;
@@ -112,6 +122,7 @@ exports.handler = async (event, context, callback) => {
     selectedAgeGroups,
     eligibilityGroups
   );
+
   let messageBody = getMessageBody(
     province,
     postalCodes,
@@ -120,5 +131,4 @@ exports.handler = async (event, context, callback) => {
   );
 
   return sendMessages(userBindings, messageBody);
-
 }

@@ -29,7 +29,7 @@ function App(props) {
           <Switch>
             <Route exact path="/" component={IndexPage} />
 
-            <Route exact path="/contact" component={ContactPage} />
+            {/* <Route exact path="/contact" component={ContactPage} /> */}
 
             <Route exact path="/dashboard" component={DashboardPage} />
 
