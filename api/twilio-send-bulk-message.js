@@ -47,11 +47,7 @@ exports.handler = async (event, context, callback) => {
 
   let getMessageBody = (province, postalCodes, selectedAgeGroups, eligibilityGroups) => {
     let groups = _.concat([province], postalCodes, selectedAgeGroups, eligibilityGroups);
-    let messageBody;
-
-    if (messageType) {
-      messageBody = messageBody + "\n\n" + messageType;
-    }
+    let messageBody = messageType;
 
     if (message) {
       messageBody = messageBody + "\n\n" + message;

@@ -39,14 +39,22 @@ async function getTargettedUsers(province, postalCodes, ageGroups, eligibilityGr
       let isTarget = true;
 
       // check if overlapping ageGroups
-      if (ageGroups && ageGroups.length > 0 && userData.ageGroups) {
+      if (ageGroups &&
+        ageGroups.length > 0 &&
+        userData.ageGroups &&
+        userData.ageGroups.length > 0
+      ) {
         if (_.intersection(userData.ageGroups, ageGroups).length == 0) {
           isTarget = false;
         }
       }
 
       // check if overlapping eligibilityGroups
-      if (eligibilityGroups && eligibilityGroups.length > 0 && userData.eligibilityGroups) {
+      if (eligibilityGroups &&
+        eligibilityGroups.length > 0 &&
+        userData.eligibilityGroups &&
+        userData.eligibilityGroups.length > 0
+      ) {
         if (_.intersection(userData.eligibilityGroups, eligibilityGroups).length == 0) {
           isTarget = false;
         }
