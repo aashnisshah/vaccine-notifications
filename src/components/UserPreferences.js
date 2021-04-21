@@ -152,7 +152,7 @@ function UserPreferences(props) {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form className="mb-4" onSubmit={handleSubmit(onSubmit)}>
       {formAlert && (
         <FormAlert type={formAlert.type} message={formAlert.message} />
       )}
