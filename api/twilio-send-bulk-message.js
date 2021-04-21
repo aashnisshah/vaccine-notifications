@@ -7,19 +7,10 @@ const {
 
 let messageFooter = "Manage notification settings at vaccinenotifications.org.";
 
-/**
-  TODO:
-    - update getAllVerifiedUsers to only search for users that match post requirements
-    - update message to use customer message instead of default message
- */
 exports.handler = async (event, context, callback) => {
 
-  // console.log(`event: ${JSON.stringify(event)}`)
   let data = JSON.parse(event.body);
-  console.log(`data: ${JSON.stringify(data, null, 2)}`)
 
-  // these variables are temp - we should be getting them 
-  //  anytime a new post is created
   let selectedAgeGroups = data.selectedAgeGroups;
   let province = data.province;
   let postalCodes = data.postal;
@@ -67,14 +58,13 @@ exports.handler = async (event, context, callback) => {
     }
 
     // start details we know
-
     messageBody = messageBody + "\n\nDetails We Know: ";
 
     if (province) {
       messageBody = messageBody + "\nProvince: " + province;
     }
 
-    if (postalCodes.length > 0) {n
+    if (postalCodes.length > 0) {
       messageBody = messageBody + "\nPostal Codes: " + postalCodes.join(", ");
     }
 

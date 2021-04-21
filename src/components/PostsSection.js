@@ -12,12 +12,13 @@ import { sendTargettedMessages } from "./../util/twilio";
 function PostsSection(props) {
   const auth = useAuth();
   const router = useRouter();
-  const { handleSubmit, register, errors } = useForm();
+  const { handleSubmit, register, errors, reset } = useForm();
 
   const [numPostals, setNumPostals] = useState(1);
   const [pending, setPending] = useState(false);
   const [groupError, setGroupError] = useState(false); 
   const [areaError, setAreaError] = useState(false);
+  const [messageStatus, setMessageStatus] = useState(false);
 
   let accountConfigured = auth.user.phone && auth.user.province && auth.user.postalcode;
 
@@ -83,6 +84,9 @@ function PostsSection(props) {
       if (auth.user.admin) {
         auth.postMessage(data);
         sendTargettedMessages(data);
+        setPending(false);
+        reset();
+        setMessageStatus(true);
       }
     }
   }
@@ -265,6 +269,12 @@ function PostsSection(props) {
           { groupError && (
             <Form.Control.Feedback className="text-left groupError">
               {error("noGroup")}
+            </Form.Control.Feedback>
+          )}
+
+          {!messageStatus && (
+            <Form.Control.Feedback className="text-center groupSuccess">
+              Message Sent
             </Form.Control.Feedback>
           )}
 
