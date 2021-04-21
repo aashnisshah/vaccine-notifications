@@ -57,7 +57,8 @@ exports.handler = async (event, context, callback) => {
     messageBody = messageBody + "\n\nDetails We Know: ";
 
     if (province) {
-      messageBody = messageBody + "\nProvince: " + province;
+      let provinceText = province === "All" ? "All Provinces" : province;
+      messageBody = messageBody + "\nProvince: " + provinceText;
     }
 
     if (postalCodes.length > 0) {
