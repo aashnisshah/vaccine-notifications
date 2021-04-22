@@ -13,6 +13,7 @@ import {
     eligibilityGroups,
     provinces,
     provincesWAll,
+    messageTypeOptions,
     error,
     selectAll,
 } from "./formConstants";
@@ -32,11 +33,11 @@ function PostsSection(props) {
     const [rawData, setRawData] = useState();
     const [previewMessage, setPreviewMessage] = useState("");
 
-    useEffect(()=> {
-      if (!auth.user.admin) {
-        history.replace("/dashboard");
-      }
-    },[auth])
+    useEffect(() => {
+        if (!auth.user.admin) {
+            history.replace("/dashboard");
+        }
+    }, [auth]);
 
     let accountConfigured =
         auth.user.phone && auth.user.province && auth.user.postalcode;
@@ -126,7 +127,7 @@ function PostsSection(props) {
                 const message = await getMessageBody(data);
                 setPreviewMessage(message);
             } else {
-              alert ("Only admins can post messages");
+                alert("Only admins can post messages");
             }
         }
     };
@@ -175,11 +176,7 @@ function PostsSection(props) {
                                     name="messageType"
                                     type="select"
                                     label="Message Type"
-                                    options={[
-                                        "Appointments Available",
-                                        "Walk In's Accepted",
-                                        "Waitlist Open",
-                                    ]}
+                                    options={messageTypeOptions}
                                     error={errors.messageType}
                                     inputRef={register({
                                         required: error(

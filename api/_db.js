@@ -16,6 +16,10 @@ function getAllUsers() {
     return firestore.collection("users").get().then(format);
 }
 
+function updateUser(uid, data) {
+    return firestore.collection("users").doc(uid).update(data);
+}
+
 function getAllVerifiedUsers() {
     return firestore
         .collection("users")
@@ -107,6 +111,7 @@ function getDoc(doc) {
 module.exports = {
     getUserByPhoneNumber,
     getAllUsers,
+    updateUser,
     getAllVerifiedUsers,
     getTargettedUsers,
 };
