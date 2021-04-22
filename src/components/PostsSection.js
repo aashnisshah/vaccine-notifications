@@ -135,8 +135,8 @@ function PostsSection(props) {
     const sendMessage = async () => {
         try {
             setPending(true);
-            auth.postMessage(rawData);
-            await sendTargettedMessages(rawData);
+            // auth.postMessage(rawData);
+            // await sendTargettedMessages(rawData);
             setMessageStatus({status:"success", message:"Message Sent!"})
         } catch (error) {
             setMessageStatus({status:"error", message:error})
