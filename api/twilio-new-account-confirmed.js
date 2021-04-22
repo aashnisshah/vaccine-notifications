@@ -2,7 +2,7 @@ const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWI
 
 exports.handler = async (event, context, callback) => {
   const body = JSON.parse(event.body);
-  let receiver = `+1${body.receiver}`;
+  let receiver = `${body.receiver}`;
   let success = true;
 
   return client.messages
