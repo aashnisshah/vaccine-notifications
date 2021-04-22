@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Spinner, Button, Row, Col } from "react-bootstrap";
+import { Container, Form, Spinner, Button, Row, Col, Card } from "react-bootstrap";
 import { useRouter, history } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
+import { getMessageBody } from '../helpers/FormatPostMessage';
 import FormField from "./FormField";
 import Section from "./Section";
 import SectionHeader from "./SectionHeader";
+import FormAlert from "./FormAlert";
 import {
     ageGroups,
     eligibilityGroups,
@@ -25,7 +27,10 @@ function PostsSection(props) {
     const [pending, setPending] = useState(false);
     const [groupError, setGroupError] = useState(false);
     const [areaError, setAreaError] = useState(false);
-    const [messageStatus, setMessageStatus] = useState(false);
+    const [messageStatus, setMessageStatus] = useState(null);
+    const [showPreviewMessage, setShowPreviewMessage] = useState(false);
+    const [rawData, setRawData] = useState();
+    const [previewMessage, setPreviewMessage] = useState("");
 
     useEffect(()=> {
       if (!auth.user.admin) {
@@ -115,16 +120,30 @@ function PostsSection(props) {
             data.province = province.value === "All" ? "CA" : province.value;
 
             if (auth.user.admin) {
-                auth.postMessage(data);
-                sendTargettedMessages(data);
                 setPending(false);
-                reset();
-                setMessageStatus(true);
+                setShowPreviewMessage(true);
+                setRawData(data);
+                const message = await getMessageBody(data);
+                setPreviewMessage(message);
             } else {
               alert ("Only admins can post messages");
             }
         }
     };
+    
+    const sendMessage = async () => {
+        try {
+            setPending(true);
+            auth.postMessage(rawData);
+            await sendTargettedMessages(rawData);
+            setMessageStatus({status:"success", message:"Message Sent!"})
+        } catch (error) {
+            setMessageStatus({status:"error", message:error})
+        }
+        reset();
+        setPending(false);
+        setShowPreviewMessage(false);
+    }
 
     return (
         <Section
@@ -134,7 +153,7 @@ function PostsSection(props) {
             bgImage={props.bgImage}
             bgImageOpacity={props.bgImageOpacity}
         >
-            <Container>
+            <Container style={{display: showPreviewMessage ? "none": null }}>
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}
@@ -142,6 +161,9 @@ function PostsSection(props) {
                     spaced={true}
                     className="text-center"
                 />
+                {messageStatus && (
+                        <FormAlert type={messageStatus.status} message={messageStatus.message} />
+                    )}
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row className="my-4">
                         <Col className="border-right">
@@ -368,12 +390,6 @@ function PostsSection(props) {
                         </Form.Control.Feedback>
                     )}
 
-                    {messageStatus && (
-                        <Form.Control.Feedback className="text-center groupSuccess">
-                            Message Sent
-                        </Form.Control.Feedback>
-                    )}
-
                     <Button
                         variant="primary"
                         block={true}
@@ -381,21 +397,68 @@ function PostsSection(props) {
                         type="submit"
                         disabled={pending}
                     >
-                        Submit Message
                         {pending && (
                             <Spinner
                                 animation="border"
                                 size="sm"
                                 role="status"
                                 aria-hidden={true}
-                                className="align-baseline"
+                                className="align-baseline mr-1"
                             >
                                 <span className="sr-only">Loading...</span>
                             </Spinner>
                         )}
+                        Preview Message
                     </Button>
                 </Form>
             </Container>
+        {showPreviewMessage &&
+           <Container style={{justifyContent: 'center', alignItems: 'center', display:'flex', flexDirection: 'column'}}>
+               <SectionHeader
+                    title={"Preview Message"}
+                    subtitle={props.subtitle}
+                    size={1}
+                    spaced={true}
+                    className="text-center"
+                />
+                <Card style={{ maxWidth: '50%', whiteSpace:'pre-wrap'}} className="mb-4">
+                    <Card.Body>
+                        {previewMessage}
+                    </Card.Body>
+                </Card>
+                <Form.Row>
+                <Button
+                    variant="primary"
+                    onClick={sendMessage}
+                    className="mr-3"
+                    size="lg"
+                    disabled={pending}
+                    >
+                        {pending && (
+                            <Spinner
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden={true}
+                                className="align-baseline mr-1"
+                            >
+                                <span className="sr-only">Loading...</span>
+                            </Spinner>
+                        )}
+                         Submit Message
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={() => {setShowPreviewMessage(false); setMessageStatus(null)}}
+                        size="lg"
+                        disabled={pending}
+                    >
+                        Go Back
+                    </Button>
+                </Form.Row>
+                
+           </Container>
+        }
         </Section>
     );
 }
