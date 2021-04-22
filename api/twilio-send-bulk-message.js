@@ -77,7 +77,9 @@ exports.handler = async (event, context, callback) => {
 
         if (eligibilityGroups.length > 0) {
             messageBody =
-                messageBody + "\nEligibility Groups: " + eligibilityGroups.join(", ");
+                messageBody +
+                "\nEligibility Groups: " +
+                eligibilityGroups.join(", ");
         }
 
         // end of details
@@ -111,7 +113,7 @@ exports.handler = async (event, context, callback) => {
                 console.log(notification.sid, "successfully sent");
                 return {
                     statusCode: 200,
-                    body: `Message sent to ${userBindings.length}`,
+                    body: `Message sent to ${userBindings.length} people`,
                 };
             })
             .catch((error) => {
@@ -129,6 +131,13 @@ exports.handler = async (event, context, callback) => {
         selectedAgeGroups,
         eligibilityGroups
     );
+
+    if (userBindings.length === 0) {
+        return {
+            statusCode: 200,
+            body: `Message sent to 0 people`,
+        };
+    }
 
     let messageBody = getMessageBody(
         province,
