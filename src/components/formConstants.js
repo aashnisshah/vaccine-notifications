@@ -10,6 +10,8 @@ const ageGroups = [
 ];
 
 const eligibilityGroups = [
+    "High Risk",
+    "Highest Risk",
     "Faith leaders at higher risk of COVID-19 exposure (e.g. end-of-life care, care of deceased, home visits, care in health care and vulnerable settings)",
     "Health-care workers",
     "Those who work or live in a high-risk congregate living setting",
