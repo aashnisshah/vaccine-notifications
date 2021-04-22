@@ -52,6 +52,14 @@ const provincesWAll = [
     "All",
 ];
 
+const messageTypeOptions = [
+    "Vaccine Notifications Update",
+    "Appointments Available",
+    "Standby List",
+    "Walk In's Accepted",
+    "Waitlist Open",
+];
+
 const error = (errorType, field = "") => {
     const error = {
         required: `Please enter a ${field}`,
@@ -74,6 +82,7 @@ export {
     ageGroups,
     eligibilityGroups,
     provinces,
+    messageTypeOptions,
     error,
     selectAll,
     provincesWAll,
