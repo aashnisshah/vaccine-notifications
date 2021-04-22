@@ -419,6 +419,7 @@ function PostsSection(props) {
                     className="text-center"
                 />
                 <Card style={{ maxWidth: '50%', whiteSpace:'pre-wrap'}} className="mb-4">
+                    <Card.Header as="h5">Text Message Preview</Card.Header>
                     <Card.Body>
                         {previewMessage}
                     </Card.Body>
