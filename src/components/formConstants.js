@@ -1,5 +1,15 @@
 
-const ageGroups = ["18-49", "50-59", "60-79", "80+"]
+const ageGroups = [
+  "18-23",
+  "24-29",
+  "30-35",
+  "36-40",
+  "41-49",
+  "50-59", 
+  "60-79", 
+  "80+"
+]
+
 const eligibilityGroups = [
   "Faith leaders at higher risk of COVID-19 exposure (e.g. end-of-life care, care of deceased, home visits, care in health care and vulnerable settings)",
   "Health-care workers",
