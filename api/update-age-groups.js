@@ -10,8 +10,8 @@ exports.handler = async (event, context, callback) => {
     users.map((user) => {
         console.log(`user: ${JSON.stringify(user)}`);
         if (user.ageGroups && user.ageGroups.includes("18-49")) {
-            let combinedAgeGroups = user.selectedAgeGroups.concat(newAgeGroups);
-            updateUser(user.uid, { selectedAgeGroups: combinedAgeGroups });
+            let combinedAgeGroups = user.ageGroups.concat(newAgeGroups);
+            updateUser(user.uid, { ageGroups: combinedAgeGroups });
             console.log(`updated ${user.uid}`);
             updateCount++;
         }
