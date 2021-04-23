@@ -1,11 +1,16 @@
 {
   "short_name": "Vaccine Notifications",
-  "name": "Receivie a text notification when vaccine appointments are available close to you.",
+  "name": "Receive a text notification when vaccine appointments are available close to you.",
   "icons": [
     {
       "src": "VNFavicon.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "sizes": "50x50",
+      "type": "image/png"
+    },
+    {
+      "src": "VNFavicon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
     }
   ],
   "start_url": ".",
