@@ -14,6 +14,7 @@ import {
     messageTypeOptions,
     error,
     selectAll,
+    cities,
 } from "./formConstants";
 import { sendTargettedMessages } from "./../util/twilio";
 
@@ -22,10 +23,12 @@ function PostsSection(props) {
     const router = useRouter();
     const { handleSubmit, register, errors, reset } = useForm();
 
+    const [locationGroup, setLocationGroup] = useState("");
+    const [citiesToDisplay, setCitiesToDisplay] = useState([]);
+    const [numCities, setNumCities] = useState(1);
     const [numPostals, setNumPostals] = useState(1);
     const [pending, setPending] = useState(false);
     const [groupError, setGroupError] = useState(false);
-    const [areaError, setAreaError] = useState(false);
     const [messageStatus, setMessageStatus] = useState(false);
 
     useEffect(() => {
@@ -34,17 +37,25 @@ function PostsSection(props) {
         }
     }, [auth]);
 
+    useEffect(() => {
+        const allCities = [];
+        for (const province of Object.keys(cities)) {
+            for (const city of cities[province]) {
+                allCities.push(city)
+            }
+        }
+        setCitiesToDisplay(allCities)
+    }, [])
+
     let accountConfigured =
         auth.user.phone && auth.user.province && auth.user.postalcode;
 
     const onSubmit = async (data) => {
         const allPostalCodes = document.querySelectorAll(".postalCodesInput");
         const province = document.querySelector(".province");
+        const allCities = document.querySelectorAll(".city")
 
-        if (
-            document.querySelectorAll('input[type="checkbox"]:checked')
-                .length === 0
-        ) {
+        if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
             setGroupError(true);
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
@@ -56,74 +67,55 @@ function PostsSection(props) {
             }
         }
 
-        data.postal = [];
-        allPostalCodes.forEach((postal) => {
-            if (
-                !data.postal.includes(postal.value.toUpperCase()) &&
-                postal.value != ""
-            ) {
-                data.postal.push(postal.value.toUpperCase());
+        if (allPostalCodes.length > 0) {
+            data.postal = [];
+            allPostalCodes.forEach((postal) => {
+                if (!data.postal.includes(postal.value.toUpperCase()) && postal.value != "") {
+                    data.postal.push(postal.value.toUpperCase());
+                }
+            });
+        } else if (allCities.length > 0) {
+            data.cities = []
+            allCities.forEach((city) => {
+                if (!data.cities.includes(city.value) && city.value != "--") {
+                    data.cities.push(city.value)
+                }
+            })
+        } else if (province.value) {
+            if (province.value === "All") {
+                data.province = "CA";
+            } else {
+                data.province = province.value
+            }
+        } 
+
+        setGroupError(false);
+        setPending(true);
+
+        const selectedAgeGroups = [];
+        const selectedEligibilityGroups = [];
+        const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked');
+
+        allSelectedGroups.forEach((group) => {
+            if (ageGroups.includes(group.id)) {
+                selectedAgeGroups.push(group.id);
+            } else if (eligibilityGroups.includes(group.id)) {
+                selectedEligibilityGroups.push(group.id);
             }
         });
 
-        if (
-            province.value &&
-            province.value != "--" &&
-            data.postal.length > 0 &&
-            data.postal[0] != ""
-        ) {
-            setAreaError(true);
+        data.selectedAgeGroups = selectedAgeGroups;
+        data.eligibilityGroups = selectedEligibilityGroups;
 
-            for (let i = 0; i < allPostalCodes.length; i++) {
-                allPostalCodes[i].addEventListener("change", function (postal) {
-                    if (
-                        (!province.value && postal.value) ||
-                        (province.value && !postal.value)
-                    ) {
-                        setAreaError(false);
-                    }
-                });
-            }
+        if (auth.user.admin) {
+            auth.postMessage(data);
+            sendTargettedMessages(data);
 
-            province.addEventListener("change", function (postal) {
-                if (
-                    (!province.value && postal.value) ||
-                    (province.value && !postal.value)
-                ) {
-                    setAreaError(false);
-                }
-            });
+            setPending(false);
+            reset();
+            setMessageStatus(true);
         } else {
-            setGroupError(false);
-            setPending(true);
-
-            const selectedAgeGroups = [];
-            const selectedEligibilityGroups = [];
-
-            const allSelectedGroups = document.querySelectorAll(
-                'input[type="checkbox"]:checked'
-            );
-            allSelectedGroups.forEach((group) => {
-                if (ageGroups.includes(group.id)) {
-                    selectedAgeGroups.push(group.id);
-                } else if (eligibilityGroups.includes(group.id)) {
-                    selectedEligibilityGroups.push(group.id);
-                }
-            });
-
-            data.selectedAgeGroups = selectedAgeGroups;
-            data.eligibilityGroups = selectedEligibilityGroups;
-            data.province = province.value === "All" ? "CA" : province.value;
-
-            if (auth.user.admin) {
-                auth.postMessage(data);
-                sendTargettedMessages(data);
-                setPending(false);
-                reset();
-                setMessageStatus(true);
-            } else {
-                alert("Only admins can post messages");
-            }
+            alert("Only admins can post messages");
         }
     };
 
@@ -199,7 +191,7 @@ function PostsSection(props) {
                                     name="numberToBooking"
                                     type="tel"
                                     label="Phone Number to Booking"
-                                    placeholder="000-000-000"
+                                    placeholder="000-000-0000"
                                     helpText="If there's a phone number users can call to book an appointment, add it here."
                                     error={errors.numberToBooking}
                                     inputRef={register({
@@ -233,53 +225,28 @@ function PostsSection(props) {
                         </Col>
                         <Col className="pl-4">
                             <h2 className="selectGroupText">
-                                Select a province OR enter the first 3 digits of
-                                the postal codes that this message is relevant
-                                for.
+                                Select a location group that this message is relevant for.
                             </h2>
-                            <Form.Row className="m-0 justify-content-between">
-                                <Col className="p-0 pr-2">
-                                    <Form.Label className="mb-1">
-                                        Postal Code
-                                    </Form.Label>
-                                    {[...Array(numPostals)].map(() => (
-                                        <Form.Group controlId="formPostal">
-                                            <FormField
-                                                name="postal"
-                                                style={{
-                                                    textTransform: "uppercase",
-                                                }}
-                                                error={errors.postal}
-                                                placeholder="A0A"
-                                                className="postalCodesInput"
-                                                inputRef={register({
-                                                    pattern: {
-                                                        value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
-                                                        message:
-                                                            "Please enter 3 characters of a postal code",
-                                                    },
-                                                })}
-                                            />
-                                        </Form.Group>
-                                    ))}
-                                    <Form.Text muted>
-                                        Add up to 10 postal codes
-                                    </Form.Text>
-                                    <Button
-                                        variant="link"
-                                        className="px-0"
-                                        onClick={() =>
-                                            setNumPostals(
-                                                numPostals < 10
-                                                    ? numPostals + 1
-                                                    : numPostals
-                                            )
-                                        }
-                                    >
-                                        Add another postal code
-                                    </Button>
-                                </Col>
-                                <Col className="p-0">
+                            <Form.Group>
+                                <FormField
+                                    id="locationGroup"
+                                    name="locationGroup"
+                                    className="locationGroup"
+                                    type="select"
+                                    options={["Province", "City", "Postal Code"]}
+                                    defaultValue="--"
+                                    label="Add a location identifier"
+                                    error={errors.locationGroup}
+                                    onChange={() => setLocationGroup(document.getElementById("locationGroup").value)}
+                                    inputRef={register({
+                                        required: {
+                                            message: error("required", "location identifier")
+                                        },
+                                    })}
+                                />
+                            </Form.Group>
+                            {locationGroup === "Province" && (
+                                <Col className="p-0 w-50">
                                     <Form.Group controlId="province">
                                         <FormField
                                             name="province"
@@ -292,12 +259,66 @@ function PostsSection(props) {
                                         />
                                     </Form.Group>
                                 </Col>
-                                {areaError && (
-                                    <Form.Control.Feedback className="text-left groupError">
-                                        {error("areaError")}
-                                    </Form.Control.Feedback>
-                                )}
-                            </Form.Row>
+                            )}
+
+                            {locationGroup === "Postal Code" && (
+                                <Col className="p-0 pr-2">
+                                    <Form.Label className="mb-1">Postal Code</Form.Label>
+                                    {[...Array(numPostals)].map(() => (
+                                        <Form.Group controlId="formPostal">
+                                            <FormField
+                                                name="postal"
+                                                style={{textTransform: "uppercase",}}
+                                                error={errors.postal}
+                                                placeholder="A0A"
+                                                className="postalCodesInput"
+                                                inputRef={register({
+                                                    pattern: {
+                                                        value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
+                                                        message:"Please enter 3 characters of a postal code",
+                                                    },
+                                                })}
+                                            />
+                                        </Form.Group>
+                                    ))}
+                                    <Form.Text muted>Add up to 10 postal codes</Form.Text>
+                                    <Button
+                                        variant="link"
+                                        className="px-0"
+                                        onClick={() => setNumPostals(numPostals < 10 ? numPostals + 1 : numPostals)}
+                                    >
+                                        Add another
+                                    </Button>
+                                </Col>
+                            )}
+
+                            {locationGroup === "City" && (
+                                <Col className="p-0 w-50">
+                                    <Form.Label className="mb-1">
+                                        City
+                                    </Form.Label>
+                                    {[...Array(numCities)].map(() => (
+                                        <Form.Group className="mr-2">
+                                            <FormField
+                                                name="city"
+                                                type="select"
+                                                options={citiesToDisplay}
+                                                defaultValue="--"
+                                                className="city"
+                                            />
+                                        </Form.Group>
+                                    ))}
+                                    <Form.Text muted>Add up to 10 cities</Form.Text>
+                                    <Button
+                                        variant="link"
+                                        className="px-0"
+                                        onClick={() => setNumCities(numCities < 10 ? numCities + 1 : numCities)}
+                                    >
+                                        Add another
+                                    </Button>
+                                </Col>
+                            )}
+
                             <div className="my-4">
                                 <h2 className="selectGroupText">
                                     Select all age groups that this message is

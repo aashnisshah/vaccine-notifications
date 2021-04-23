@@ -52,6 +52,13 @@ const provincesWAll = [
     "All",
 ];
 
+const cities = {
+    ON: ["Brampton", "Mississauga", "Toronto", "Vaughn", "Scarborough"],
+    AB: ["Calgary"],
+    BC: ["Vancouver", "Surrey"],
+    QC: ["Montreal"]
+}
+
 const messageTypeOptions = [
     "Vaccine Notifications Update",
     "Appointments Available",
@@ -86,4 +93,5 @@ export {
     error,
     selectAll,
     provincesWAll,
+    cities
 };
