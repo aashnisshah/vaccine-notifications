@@ -56,6 +56,7 @@ function PostsSection(props) {
         const allCities = document.querySelectorAll(".city")
 
         if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
+            console.log("hi")
             setGroupError(true);
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
@@ -65,59 +66,59 @@ function PostsSection(props) {
                     setGroupError(!this.checked);
                 });
             }
-        }
-
-        if (allPostalCodes.length > 0) {
-            data.postal = [];
-            allPostalCodes.forEach((postal) => {
-                if (!data.postal.includes(postal.value.toUpperCase()) && postal.value != "") {
-                    data.postal.push(postal.value.toUpperCase());
+        } else {
+            if (allPostalCodes.length > 0) {
+                data.postal = [];
+                allPostalCodes.forEach((postal) => {
+                    if (!data.postal.includes(postal.value.toUpperCase()) && postal.value != "") {
+                        data.postal.push(postal.value.toUpperCase());
+                    }
+                });
+            } else if (allCities.length > 0) {
+                data.cities = []
+                allCities.forEach((city) => {
+                    if (!data.cities.includes(city.value) && city.value != "--") {
+                        data.cities.push(city.value)
+                    }
+                })
+            } else if (province && province.value) {
+                if (province.value === "All") {
+                    data.province = "CA";
+                } else {
+                    data.province = province.value
+                }
+            } 
+    
+            setGroupError(false);
+            setPending(true);
+    
+            const selectedAgeGroups = [];
+            const selectedEligibilityGroups = [];
+            const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked');
+    
+            allSelectedGroups.forEach((group) => {
+                if (ageGroups.includes(group.id)) {
+                    selectedAgeGroups.push(group.id);
+                } else if (eligibilityGroups.includes(group.id)) {
+                    selectedEligibilityGroups.push(group.id);
                 }
             });
-        } else if (allCities.length > 0) {
-            data.cities = []
-            allCities.forEach((city) => {
-                if (!data.cities.includes(city.value) && city.value != "--") {
-                    data.cities.push(city.value)
-                }
-            })
-        } else if (province.value) {
-            if (province.value === "All") {
-                data.province = "CA";
+    
+            data.selectedAgeGroups = selectedAgeGroups;
+            data.eligibilityGroups = selectedEligibilityGroups;
+    
+            if (auth.user.admin) {
+                auth.postMessage(data);
+                sendTargettedMessages(data);
+    
+                setPending(false);
+                reset();
+                setMessageStatus(true);
             } else {
-                data.province = province.value
+                alert("Only admins can post messages");
             }
-        } 
-
-        setGroupError(false);
-        setPending(true);
-
-        const selectedAgeGroups = [];
-        const selectedEligibilityGroups = [];
-        const allSelectedGroups = document.querySelectorAll('input[type="checkbox"]:checked');
-
-        allSelectedGroups.forEach((group) => {
-            if (ageGroups.includes(group.id)) {
-                selectedAgeGroups.push(group.id);
-            } else if (eligibilityGroups.includes(group.id)) {
-                selectedEligibilityGroups.push(group.id);
-            }
-        });
-
-        data.selectedAgeGroups = selectedAgeGroups;
-        data.eligibilityGroups = selectedEligibilityGroups;
-
-        if (auth.user.admin) {
-            auth.postMessage(data);
-            sendTargettedMessages(data);
-
-            setPending(false);
-            reset();
-            setMessageStatus(true);
-        } else {
-            alert("Only admins can post messages");
         }
-    };
+    };  
 
     return (
         <Section
@@ -149,10 +150,7 @@ function PostsSection(props) {
                                     options={messageTypeOptions}
                                     error={errors.messageType}
                                     inputRef={register({
-                                        required: error(
-                                            "required",
-                                            "message type"
-                                        ),
+                                        required: error("required", "message type"),
                                     })}
                                 />
                             </Form.Group>
@@ -178,10 +176,7 @@ function PostsSection(props) {
                                     inputRef={register({
                                         pattern: {
                                             value: /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-                                            message: error(
-                                                "invalid",
-                                                "link to booking"
-                                            ),
+                                            message: error("invalid", "link to booking"),
                                         },
                                     })}
                                 />
@@ -231,7 +226,6 @@ function PostsSection(props) {
                                 <FormField
                                     id="locationGroup"
                                     name="locationGroup"
-                                    className="locationGroup"
                                     type="select"
                                     options={["Province", "City", "Postal Code"]}
                                     defaultValue="--"
@@ -239,12 +233,14 @@ function PostsSection(props) {
                                     error={errors.locationGroup}
                                     onChange={() => setLocationGroup(document.getElementById("locationGroup").value)}
                                     inputRef={register({
-                                        required: {
-                                            message: error("required", "location identifier")
+                                        pattern: {
+                                            value: /^((?!--).)*$/,
+                                            message: error("required", "location identifier"),
                                         },
                                     })}
                                 />
                             </Form.Group>
+
                             {locationGroup === "Province" && (
                                 <Col className="p-0 w-50">
                                     <Form.Group controlId="province">
@@ -256,6 +252,12 @@ function PostsSection(props) {
                                             defaultValue="--"
                                             label="Province"
                                             error={errors.province}
+                                            inputRef={register({
+                                                pattern: {
+                                                    value: /^((?!--).)*$/,
+                                                    message: error("required", "province"),
+                                                },
+                                            })}
                                         />
                                     </Form.Group>
                                 </Col>
@@ -277,6 +279,9 @@ function PostsSection(props) {
                                                         value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
                                                         message:"Please enter 3 characters of a postal code",
                                                     },
+                                                    required: {
+                                                        message: error("required", "postal code")
+                                                    }
                                                 })}
                                             />
                                         </Form.Group>
@@ -305,6 +310,12 @@ function PostsSection(props) {
                                                 options={citiesToDisplay}
                                                 defaultValue="--"
                                                 className="city"
+                                                inputRef={register({
+                                                    pattern: {
+                                                        value: /^((?!--).)*$/,
+                                                        message: error("required", "city"),
+                                                    },
+                                                })}
                                             />
                                         </Form.Group>
                                     ))}

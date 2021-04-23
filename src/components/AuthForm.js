@@ -189,10 +189,7 @@ function AuthForm(props) {
                                     inputRef={register({
                                         pattern: {
                                             value: /^((?!--).)*$/,
-                                            message: error(
-                                                "required",
-                                                "province"
-                                            ),
+                                            message: error("required", "province"),
                                         },
                                     })}
                                 />
