@@ -13,7 +13,7 @@ exports.handler = async (event, context, callback) => {
     let selectedAgeGroups = data.selectedAgeGroups;
     let province = data.province;
     let postalCodes = data.postal;
-    let city = data.city;
+    let cities = data.cities;
     let eligibilityGroups = data.eligibilityGroups;
 
     let linkToBooking = data.linkToBooking;
@@ -23,14 +23,14 @@ exports.handler = async (event, context, callback) => {
     let numberToBooking = data.numberToBooking;
 
     let getUserBindings = async (
-        city,
+        cities,
         province,
         postalCodes,
         selectedAgeGroups,
         eligibilityGroups
     ) => {
         let users = await getTargettedUsers(
-            city,
+            cities,
             province,
             postalCodes,
             selectedAgeGroups,

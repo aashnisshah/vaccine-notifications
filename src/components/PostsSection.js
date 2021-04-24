@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Spinner, Button, Row, Col } from "react-bootstrap";
+import { Container, Form, Spinner, Button, Row, Col, Card } from "react-bootstrap";
 import { useRouter, history } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
+import { getMessageBody, getSendTo } from '../helpers/FormatPostMessage';
 import FormField from "./FormField";
 import Section from "./Section";
 import SectionHeader from "./SectionHeader";
+import FormAlert from "./FormAlert";
 import {
     ageGroups,
     eligibilityGroups,
@@ -29,7 +31,11 @@ function PostsSection(props) {
     const [numPostals, setNumPostals] = useState(1);
     const [pending, setPending] = useState(false);
     const [groupError, setGroupError] = useState(false);
-    const [messageStatus, setMessageStatus] = useState(false);
+    const [messageStatus, setMessageStatus] = useState(null);
+    const [showPreviewMessage, setShowPreviewMessage] = useState(false);
+    const [rawData, setRawData] = useState();
+    const [previewMessage, setPreviewMessage] = useState("");
+    const [previewSendTo, setPreviewSendTo] = useState([]);
 
     useEffect(() => {
         if (!auth.user.admin) {
@@ -108,17 +114,34 @@ function PostsSection(props) {
             data.eligibilityGroups = selectedEligibilityGroups;
     
             if (auth.user.admin) {
-                auth.postMessage(data);
-                sendTargettedMessages(data);
-    
                 setPending(false);
-                reset();
-                setMessageStatus(true);
+                setShowPreviewMessage(true);
+                setRawData(data);
+
+                const message = await getMessageBody(data);
+                const sendTo = await getSendTo(data);
+
+                setPreviewSendTo(sendTo);
+                setPreviewMessage(message);
             } else {
                 alert("Only admins can post messages");
             }
         }
-    };  
+    };
+    
+    const sendMessage = async () => {
+        try {
+            setPending(true);
+            auth.postMessage(rawData);
+            await sendTargettedMessages(rawData);
+            setMessageStatus({status:"success", message:"Message Sent!"})
+        } catch (error) {
+            setMessageStatus({status:"error", message:error})
+        }
+        reset();
+        setPending(false);
+        setShowPreviewMessage(false);
+    }
 
     return (
         <Section
@@ -128,7 +151,7 @@ function PostsSection(props) {
             bgImage={props.bgImage}
             bgImageOpacity={props.bgImageOpacity}
         >
-            <Container>
+            <Container style={{display: showPreviewMessage ? "none": null }}>
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}
@@ -136,9 +159,13 @@ function PostsSection(props) {
                     spaced={true}
                     className="text-center"
                 />
+                {messageStatus && (
+                        <FormAlert type={messageStatus.status} message={messageStatus.message} />
+                    )
+                }
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Row className="my-4">
-                        <Col className="border-right">
+                        <Col className="border-right" sm={12} lg={6}>
                             <Form.Group
                                 controlId="messageType"
                                 className="flex-fill"
@@ -218,7 +245,7 @@ function PostsSection(props) {
                                 />
                             </Form.Group>
                         </Col>
-                        <Col className="pl-4">
+                        <Col className="pl-4" sm={12} lg={6}>
                             <h2 className="selectGroupText">
                                 Select a location group that this message is relevant for.
                             </h2>
@@ -277,7 +304,7 @@ function PostsSection(props) {
                                                 inputRef={register({
                                                     pattern: {
                                                         value: /[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/gi,
-                                                        message:"Please enter 3 characters of a postal code",
+                                                        message:"Please enter the first 3 characters of a valid postal code",
                                                     },
                                                     required: {
                                                         message: error("required", "postal code")
@@ -397,12 +424,6 @@ function PostsSection(props) {
                         </Form.Control.Feedback>
                     )}
 
-                    {messageStatus && (
-                        <Form.Control.Feedback className="text-center groupSuccess">
-                            Message Sent
-                        </Form.Control.Feedback>
-                    )}
-
                     <Button
                         variant="primary"
                         block={true}
@@ -410,21 +431,77 @@ function PostsSection(props) {
                         type="submit"
                         disabled={pending}
                     >
-                        Submit Message
                         {pending && (
                             <Spinner
                                 animation="border"
                                 size="sm"
                                 role="status"
                                 aria-hidden={true}
-                                className="align-baseline"
+                                className="align-baseline mr-1"
                             >
                                 <span className="sr-only">Loading...</span>
                             </Spinner>
                         )}
+                        Preview Message
                     </Button>
                 </Form>
             </Container>
+        {showPreviewMessage &&
+           <Container className="previewContainer">
+               <SectionHeader
+                    title={"Preview Message"}
+                    subtitle={props.subtitle}
+                    size={1}
+                    spaced={true}
+                    className="text-center"
+                />
+
+                
+                <div className="w-100 justify-content-center d-flex">
+                  <div className="w-75">
+                    <h5>Sending To: </h5>
+                    <ul>
+                      {previewSendTo.map(group => <li>{group}</li>)}
+                    </ul>
+
+                    <Card className="mb-4 previewCard">
+                        <Card.Header as="h5">Text Message Preview</Card.Header>
+                        <Card.Body>{previewMessage}</Card.Body>
+                    </Card>
+                    <Form.Row>
+                      <Button
+                          variant="primary"
+                          onClick={sendMessage}
+                          className="mr-3"
+                          size="lg"
+                          disabled={pending}
+                          >
+                              {pending && (
+                                  <Spinner
+                                      animation="border"
+                                      size="sm"
+                                      role="status"
+                                      aria-hidden={true}
+                                      className="align-baseline mr-1"
+                                  >
+                                      <span className="sr-only">Loading...</span>
+                                  </Spinner>
+                              )}
+                              Submit Message
+                          </Button>
+                          <Button
+                              variant="secondary"
+                              onClick={() => {setShowPreviewMessage(false); setMessageStatus(null)}}
+                              size="lg"
+                              disabled={pending}
+                          >
+                              Go Back
+                          </Button>
+                      </Form.Row>
+                  </div>
+                </div>
+           </Container>
+        }
         </Section>
     );
 }

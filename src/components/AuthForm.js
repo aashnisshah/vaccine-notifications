@@ -112,7 +112,6 @@ function AuthForm(props) {
                         selectedEligibilityGroups.push(group.id);
                     }
                 });
-
                 const cityElement = document.getElementById("city").value
                 if (cityElement === "Other" || cityElement === "") {
                     data.city = "";
