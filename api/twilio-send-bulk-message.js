@@ -5,7 +5,7 @@ const client = require("twilio")(
 const _ = require("lodash");
 const { getTargettedUsers } = require("./_db.js");
 
-let messageFooter = "Manage notification settings at vaccinenotifications.org.";
+let messageFooter = "Manage notifications at vaccinenotifications.org.";
 
 exports.handler = async (event, context, callback) => {
     let data = JSON.parse(event.body);
@@ -13,6 +13,7 @@ exports.handler = async (event, context, callback) => {
     let selectedAgeGroups = data.selectedAgeGroups;
     let province = data.province;
     let postalCodes = data.postal;
+    let city = data.city;
     let eligibilityGroups = data.eligibilityGroups;
 
     let linkToBooking = data.linkToBooking;
@@ -22,12 +23,14 @@ exports.handler = async (event, context, callback) => {
     let numberToBooking = data.numberToBooking;
 
     let getUserBindings = async (
+        city,
         province,
         postalCodes,
         selectedAgeGroups,
         eligibilityGroups
     ) => {
         let users = await getTargettedUsers(
+            city,
             province,
             postalCodes,
             selectedAgeGroups,
@@ -46,6 +49,7 @@ exports.handler = async (event, context, callback) => {
     };
 
     let getMessageBody = (
+        city,
         province,
         postalCodes,
         selectedAgeGroups,
@@ -58,41 +62,45 @@ exports.handler = async (event, context, callback) => {
         }
 
         // start details we know
-        messageBody = messageBody + "\n\nDetails We Know: ";
+        // messageBody = messageBody 
+        // + "\n\nDetails We Know: ";
 
-        if (province) {
-            let provinceText = province === "CA" ? "All Provinces" : province;
-            messageBody = messageBody + "\nProvince: " + provinceText;
-        }
+        // if (province) {
+        //     let provinceText = province === "CA" ? "All Provinces" : province;
+        //     messageBody = messageBody + "\nProvince: " + provinceText;
+        // }
 
-        if (postalCodes.length > 0) {
-            messageBody =
-                messageBody + "\nPostal Codes: " + postalCodes.join(", ");
-        }
+        // if (postalCodes.length > 0) {
+        //     messageBody =
+        //         messageBody + "\nPostal Codes: " + postalCodes.join(", ");
+        // }
 
-        if (selectedAgeGroups.length > 0) {
-            messageBody =
-                messageBody + "\nAge Groups: " + selectedAgeGroups.join(", ");
-        }
+        // if (selectedAgeGroups.length > 0) {
+        //     messageBody =
+        //         messageBody + "\nAge Groups: " + selectedAgeGroups.join(", ");
+        // }
 
-        if (eligibilityGroups.length > 0) {
-            messageBody =
-                messageBody +
-                "\nEligibility Groups: " +
-                eligibilityGroups.join(", ");
-        }
+        // if (eligibilityGroups.length > 0) {
+        //     messageBody =
+        //         messageBody +
+        //         "\nEligibility Groups: " +
+        //         eligibilityGroups.join(", ");
+        // }
 
         // end of details
 
-        if (linkToBooking) {
-            messageBody =
-                messageBody + "\n\nMore info + register here: " + linkToBooking;
+        if (linkToBooking && !numberToBooking) {
+          messageBody = messageBody + "\n\nBook here: " + linkToBooking;
+        } else if (!linkToBooking && numberToBooking) {
+          messageBody = messageBody + "\n\nBook here: " + numberToBooking;
+        } else if (linkToBooking && numberToBooking) {
+          messageBody = messageBody + "\n\nBook here: " + linkToBooking + ", " + numberToBooking;
         }
 
-        if (numberToBooking) {
-            messageBody =
-                messageBody + "\n\nCall to book here: " + numberToBooking;
-        }
+        // if (numberToBooking) {
+        //     messageBody =
+        //         messageBody + "\n\nCall to book here: " + numberToBooking;
+        // }
 
         if (linkToSrc) {
             messageBody = messageBody + "\n\nSource: " + linkToSrc;
