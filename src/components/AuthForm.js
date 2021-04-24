@@ -177,7 +177,7 @@ function AuthForm(props) {
                                             "postal code"
                                         ),
                                         pattern: {
-                                            value: /(^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$)|(^\d{5}$)/,
+                                            value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
                                             message: error(
                                                 "invalid",
                                                 "postal code"
