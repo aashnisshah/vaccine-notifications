@@ -11,7 +11,7 @@ function AuthSection(props) {
       // Top title
       title: "Sign In",
       // Submit button text
-      buttonText: "Manage your preferences",
+      buttonText: "Sign In",
       // Link text to other auth types
       linkTextSignup: "Create an account",
       // linkTextForgotpass: "Forgot Password?",

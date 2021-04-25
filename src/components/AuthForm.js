@@ -17,6 +17,8 @@ function AuthForm(props) {
     const { onAuth } = props;
     const auth = useAuth();
 
+    const [page, setPage] = useState(1);
+    const [usernameType, setUsernameType] = useState("email");
     const [pending, setPending] = useState(false);
     const [showOTP, setShowOTP] = useState(false);
     const [renderRecaptcha, setRenderRecaptcha] = useState(true);
@@ -25,7 +27,7 @@ function AuthForm(props) {
     const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [otpCode, setOtpCode] = useState({});
     const [groupError, setGroupError] = useState(false);
-    const { handleSubmit, register, errors, getValues } = useForm();
+    const { handleSubmit, register, errors, getValues, trigger } = useForm();
 
     useEffect(() => {
         return () => {
@@ -45,11 +47,11 @@ function AuthForm(props) {
         setOtpCode({ [name]: value });
     };
 
-    const requestOTPCode = async (data) => {
-        setUserData(data);
+    const requestOTPCode = async (phoneNumber) => {
+        // setUserData(data);
         setPending(true);
         await auth.setUpRecaptcha();
-        const otpRequestSent = await sendOTPCode(data.phoneNumber);
+        const otpRequestSent = await sendOTPCode(phoneNumber);
         setPending(false);
         if (otpRequestSent) {
             setShowOTP(true);
@@ -69,21 +71,36 @@ function AuthForm(props) {
     const onSubmitOtp = async (e) => {
         e.preventDefault();
         setPending(true);
+
         const otpInput = otpCode.otp;
-        const isFirstTimeUser = props.type === "signup";
-        const success = await auth.submitOTPCode(
-            otpInput,
-            userData,
-            isFirstTimeUser
-        );
+        const success = await auth.submitOTPCode(otpInput);
+
         setPending(false);
         if (success) {
             onAuth();
         }
     };
 
-    const onSubmit = (data) => {
-        data.phoneNumber = data.phoneNumber.replace(/[- )(]/g, "");
+    const goToNext = async () => {
+      if (props.type === "signin") {
+        const result = await trigger("username");
+        
+        if (result) { 
+          if (getValues().username.includes("@")) {
+            setPage(2)
+          } else {
+            requestOTPCode(getValues().username.replace(/[- )(]/g, ""));
+            setUsernameType("phoneNumber");
+          }
+        };
+      } else if (props.type === "signup") {
+        const result = await trigger(["email", "pass", "confirmPass"]);
+
+        if (result) { setPage(2) };
+      }
+    };
+
+    const onSubmit = async (data) => {
         if (props.type === "signup") {
             if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
                 setGroupError(true);
@@ -112,6 +129,7 @@ function AuthForm(props) {
                         selectedEligibilityGroups.push(group.id);
                     }
                 });
+
                 const cityElement = document.getElementById("city").value
                 if (cityElement === "Other" || cityElement === "") {
                     data.city = "";
@@ -125,10 +143,15 @@ function AuthForm(props) {
                 data.postal = data.postal.replace(/\s/g, "").toUpperCase();
                 data.postalShort = data.postal.substring(0, 3);
 
-                requestOTPCode(data, false);
+                console.log(data)
+                const user = await auth.signup(data.username, data.pass);
+                console.log(user)
+                console.log(data)
+                // createUser(user.uid, data)
+                // requestOTPCode(data, false);
             }
         } else if (props.type === "signin") {
-            requestOTPCode(data, true);
+            // requestOTPCode(data, true);
         }
     };
 
@@ -147,32 +170,120 @@ function AuthForm(props) {
         }
     }
 
+    const submitHandlersByType = {
+      signin: ({ email, pass }) => {
+        return auth.signin(email, pass).then((user) => {
+          // Call auth complete handler
+          props.onAuth(user);
+        });
+      },
+      forgotpass: ({ email }) => {
+        return auth.sendPasswordResetEmail(email).then(() => {
+          setPending(false);
+          // Show success alert message
+          props.onFormAlert({
+            type: "success",
+            message: "Password reset email sent",
+          });
+        });
+      },
+      changepass: ({ pass }) => {
+        return auth.confirmPasswordReset(pass).then(() => {
+          setPending(false);
+          // Show success alert message
+          props.onFormAlert({
+            type: "success",
+            message: "Your password has been changed",
+          });
+        });
+      },
+    };
+
     return (
         <div>
-            <Form
-                onSubmit={handleSubmit(onSubmit)}
-                style={{ display: showOTP ? "none" : null }}
-            >
-                {["signup", "signin"].includes(props.type) && (
-                    <Form.Group controlId="phoneNumber">
+            <Form onSubmit={handleSubmit(onSubmit)} style={{ display: showOTP ? "none" : null }}>
+                {["signin"].includes(props.type) && (
+                  <>
+                    <h6 className="mb-4">If you signed up with your email, enter below. Otherwise if you signed up with your phone number, enter below.</h6>
+                    <Form.Group controlId="username">
                         <FormField
-                            name="phoneNumber"
-                            type="tel"
-                            label="Phone Number"
-                            placeholder="000-000-0000"
-                            error={errors.phoneNumber}
+                            name="username"
+                            label="Email or Phone Number"
+                            error={errors.username}
                             inputRef={register({
-                                required: error("required", "phone number"),
+                                required: error("required", "phone number or email"),
                                 pattern: {
-                                    value: /^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$/,
-                                    message: error("invalid", "phone number"),
-                                },
+                                  value: /^([(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4})+$/,
+                                  message: error("invalid", "phone number or email")
+                                }
                             })}
                         />
                     </Form.Group>
+                  </>
                 )}
 
-                {["signup"].includes(props.type) && (
+                { page === 1 && ["signup"].includes(props.type) && (
+                  <Form.Group controlId="formEmail">
+                    <FormField
+                      label="Email"
+                      name="email"
+                      type="email"
+                      placeholder="Email"
+                      error={errors.email}
+                      inputRef={register({
+                        required: error("required", "email"),
+                      })}
+                    />
+                  </Form.Group>
+                )}
+
+                { ((page === 1 && ["signup"].includes(props.type)) ||
+                (page === 2 && ["signin"].includes(props.type) && usernameType === "email")) && (
+                  <Form.Group controlId="formPassword">
+                    <FormField
+                      label= {props.type === "changepass" ? "New Password" : "Password"}
+                      name="pass"
+                      type="password"
+                      placeholder="Password"
+                      error={errors.pass}
+                      inputRef={register({
+                        required: error("required", "password"),
+                      })}
+                    />
+                  </Form.Group>
+                )}
+
+                { page === 1 && ["signup"].includes(props.type) && (
+                  <Form.Group controlId="formConfirmPass">
+                    <FormField
+                      label="Confirm Password"
+                      name="confirmPass"
+                      type="password"
+                      placeholder="Confirm Password"
+                      error={errors.confirmPass}
+                      inputRef={register({
+                        required: error("required", "password"),
+                        validate: (value) => {
+                          if (value === getValues().pass) {
+                            return true;
+                          } else {
+                            return "This doesn't match your password";
+                          }
+                        },
+                      })}
+                    />
+                  </Form.Group>
+                )}
+
+                { page === 1 && (
+                  <div className="w-100 justify-content-end d-flex forwardBackButton">
+                    <Button variant="link" onClick={goToNext}>
+                      Next &nbsp; &#8594;
+                    </Button>
+                  </div>
+                ) }
+
+                { page === 2 && ["signup"].includes(props.type) && (
                     <>
                         <Form.Row className="m-0 justify-content-between">
                             <Form.Group className="mr-2 w-25">
@@ -283,6 +394,12 @@ function AuthForm(props) {
                             </Button>
                         </div>
 
+                        <div className="w-100 justify-content-start d-flex forwardBackButton">
+                          <Button variant="link" onClick={() => setPage(1)}>
+                            &#8592; &nbsp; Back
+                          </Button>
+                        </div>
+
                         {groupError && (
                             <Form.Control.Feedback className="text-left groupError">
                                 {error("noGroup")}
@@ -291,7 +408,8 @@ function AuthForm(props) {
                     </>
                 )}
 
-                <div className="w-100 text-center">
+                { page === 2 && (
+                  <div className="w-100 text-center">
                     <Button
                         variant="primary"
                         type="submit"
@@ -313,15 +431,16 @@ function AuthForm(props) {
                             </Spinner>
                         )}
                     </Button>
-                </div>
+                  </div>
+                )}
             </Form>
 
             {showOTP && (
-                <Form className="form" onSubmit={onSubmitOtp}>
+              <Form className="form" onSubmit={onSubmitOtp}>
                     <h2 className="selectGroupText">Enter Verification Code</h2>
                     <p>
                         A verification code was sent via SMS to the provided
-                        number. Enter the number below to activate your account.
+                        number. Enter the number below to access your account.
                     </p>
                     <Form.Group>
                         <FormField
@@ -357,11 +476,10 @@ function AuthForm(props) {
                         <Button
                             variant="link"
                             onClick={() => {
-                                resetRecaptcha();
-                                sendOTPCode(userData.phoneNumber);
+                                resetRecaptcha(); //TO DO: Display message
+                                sendOTPCode(getValues().username);
                             }}
-                            // size="lg"
-                        >
+                            >
                             <u>Resend Link</u>
                         </Button>
                     </div>
@@ -374,6 +492,7 @@ function AuthForm(props) {
             </Button> */}
                 </Form>
             )}
+
             {renderRecaptcha && <div id="recaptcha-container"></div>}
         </div>
     );

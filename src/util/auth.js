@@ -117,18 +117,12 @@ function useAuthProvider() {
     return phoneNumber;
   }
 
-  const submitOTPCode = async (otpCode, userData, isFirstTimeUser) => {
+  const submitOTPCode = async (otpCode) => {
     const otpConfirm = window.confirmationResult;
     try {
         const result = await otpConfirm.confirm(otpCode);
-        const newUser = result.user;
-        userData.phoneNumber = newUser.phoneNumber;
-        userData.displayName = newUser.phoneNumber;
-        await createUser(newUser.uid, userData);
-        setUser(newUser);
-        if (isFirstTimeUser) {
-          sendAccountActivatedMessage({receiver: newUser.phoneNumber});
-        }
+        setUser(result.user);
+
         return true;
     } catch (err) {
         const error = err.toString();
