@@ -62,7 +62,6 @@ function PostsSection(props) {
         const allCities = document.querySelectorAll(".city")
 
         if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
-            console.log("hi")
             setGroupError(true);
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
@@ -112,6 +111,7 @@ function PostsSection(props) {
     
             data.selectedAgeGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
+            delete data.locationGroup;
     
             if (auth.user.admin) {
                 setPending(false);
@@ -136,7 +136,7 @@ function PostsSection(props) {
             await sendTargettedMessages(rawData);
             setMessageStatus({status:"success", message:"Message Sent!"})
         } catch (error) {
-            setMessageStatus({status:"error", message:error})
+            setMessageStatus({status:"error", message: "Something went wrong!"})
         }
         reset();
         setPending(false);
@@ -332,7 +332,7 @@ function PostsSection(props) {
                                     {[...Array(numCities)].map(() => (
                                         <Form.Group className="mr-2">
                                             <FormField
-                                                name="city"
+                                                name="cities"
                                                 type="select"
                                                 options={citiesToDisplay}
                                                 defaultValue="--"
