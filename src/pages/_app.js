@@ -5,6 +5,7 @@ import IndexPage from "./index";
 import ContactPage from "./contact";
 import DashboardPage from "./dashboard";
 import TosPage from "./tos";
+import PasswordReset from './PasswordReset';
 import PostsPage from "./posts";
 import PrivacyPage from "./privacy";
 import AuthPage from "./auth";
@@ -38,6 +39,8 @@ function App(props) {
                             path="/dashboard"
                             component={DashboardPage}
                         />
+
+                        <Route exact path="/resetpass" component={PasswordReset} />
 
                         <Route exact path="/posts" component={PostsPage} />
 
