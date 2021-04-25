@@ -17,7 +17,7 @@ function IndexPage(props) {
         bgImage=""
         bgImageOpacity={1}
         title="Receive vaccine notifications relevant to you!"
-        subtitle="Receive text notifications whenever vaccines appointments are available in your area."
+        subtitle="Receive notifications whenever vaccines appointments are available in your area."
         image={heroImage}
         imageAlt="image of a person with a loudspeaker in front of a phone"
         buttonText="Get Started"
@@ -31,7 +31,7 @@ function IndexPage(props) {
         bgImage=""
         bgImageOpacity={1}
         title="How it works"
-        subtitle="Sign up to receive text notifications when vaccine appointments become available in your area in a few simple steps."
+        subtitle="Sign up to receive notifications when vaccine appointments become available in your area in a few simple steps."
       />
       <FaqSection
         bg="white"

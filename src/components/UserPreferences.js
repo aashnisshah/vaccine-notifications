@@ -165,14 +165,13 @@ function UserPreferences(props) {
             {formAlert && (
                 <FormAlert type={formAlert.type} message={formAlert.message} />
             )}
-            <Form.Group controlId="formPhone">
+            <Form.Group controlId="formUsername">
                 <FormField
-                    name="phoneNumber"
+                    name="username"
                     type="text"
-                    label="Phone Number"
-                    defaultValue={formatPhoneNumber(auth.user.phoneNumber)}
-                    error={errors.phone}
-                    size="lg"
+                    label="Username"
+                    defaultValue={auth.user.email ? auth.user.email : formatPhoneNumber(auth.user.phoneNumber)}
+                    error={errors.username}
                     disabled
                     inputRef={register({
                         required:
@@ -190,7 +189,6 @@ function UserPreferences(props) {
                     defaultValue={formatPostalCode(auth.user.postal)}
                     placeholder="i.e. A1A 1A1"
                     error={errors.postalcode}
-                    size="lg"
                     inputRef={register({
                         required:
                             "Please enter your Postal Code in 'A1A 1A1' format",
@@ -207,7 +205,6 @@ function UserPreferences(props) {
                     defaultValue={auth.user.province}
                     placeholder="Province"
                     error={errors.province}
-                    size="lg"
                     inputRef={register({
                         required: "Please enter your Province",
                     })}
@@ -349,7 +346,6 @@ function UserPreferences(props) {
                 <Button
                     variant="primary"
                     onClick={() => setEditing(true)}
-                    size="lg"
                     disabled={pending}
                 >
                     Edit

@@ -40,7 +40,7 @@ function useAuthProvider() {
   useIdentifyUser(finalUser);
 
   // Handle response from authentication functions
-  const handleAuth = async (response) => {
+  const handleAuth = async (response, data="") => {
     const { user, additionalUserInfo } = response;
 
     // Ensure Firebase is actually ready before we continue
@@ -48,7 +48,7 @@ function useAuthProvider() {
 
     // Create the user in the database if they are new
     if (additionalUserInfo.isNewUser) {
-      await createUser(user.uid, { email: user.email });
+      await createUser(user.uid, data);
 
       // Send email verification if enabled
       if (EMAIL_VERIFICATION) {
@@ -135,18 +135,28 @@ function useAuthProvider() {
     }
   }
 
-  const signup = (email, password) => {
-    return firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(handleAuth);
+  const signup = async (data, password) => {
+    try {
+      const response = await firebase.auth().createUserWithEmailAndPassword(data.email, password)
+      const user = await handleAuth(response, data);
+      return {status: 200, user}
+    } catch (error) {
+      alert(error.message);
+      return {status: 400, errorMessage: `ERROR: ${error.message}`};
+    }
   };
 
-  const signin = (email, password) => {
-    return firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(handleAuth);
+  const signin = async (email, password) => {
+    try {
+      const response = await firebase.auth().signInWithEmailAndPassword(email, password)
+      const user = await handleAuth(response);
+
+      return {status: 200, user}
+    } catch (error) {
+      alert(error.message);
+      
+      return {status: 400, errorMessage: `ERROR: ${error.message}`};
+    }
   };
 
   const signinWithProvider = (name) => {

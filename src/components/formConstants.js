@@ -73,6 +73,7 @@ const error = (errorType, field = "") => {
         invalid: `Please enter a valid ${field}`,
         noGroup: "Please select at least one age group or eligibility group",
         areaError: "You may only select a province OR input a postal code",
+        inUse: "This email is already in use. Please enter another email address or sign in."
     };
     return error[errorType];
 };

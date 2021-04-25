@@ -19,10 +19,11 @@ function AuthForm(props) {
 
     const [page, setPage] = useState(1);
     const [usernameType, setUsernameType] = useState("email");
+    const [usernameInput, setUsernameInput] = useState("");
+    const [passwordInput, setPasswordInput] = useState("");
     const [pending, setPending] = useState(false);
     const [showOTP, setShowOTP] = useState(false);
     const [renderRecaptcha, setRenderRecaptcha] = useState(true);
-    const [userData, setUserData] = useState({});
     const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
     const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [otpCode, setOtpCode] = useState({});
@@ -30,7 +31,16 @@ function AuthForm(props) {
     const { handleSubmit, register, errors, getValues, trigger } = useForm();
 
     useEffect(() => {
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && page === 1) {
+            e.preventDefault();
+            goToNext();
+            console.log(page)
+          }
+        })
+
         return () => {
+            // document.removeEventListener("keydown", handleEnter)
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
             );
@@ -64,8 +74,8 @@ function AuthForm(props) {
     };
 
     const resetRecaptcha = () => {
-        setRenderRecaptcha(false);
-        setRenderRecaptcha(true);
+      setRenderRecaptcha(false);
+      setTimeout(setRenderRecaptcha(true), 100);
     };
 
     const onSubmitOtp = async (e) => {
@@ -85,22 +95,26 @@ function AuthForm(props) {
       if (props.type === "signin") {
         const result = await trigger("username");
         
-        if (result) { 
+        if (result) {
           if (getValues().username.includes("@")) {
-            setPage(2)
+            setPage(2);
           } else {
             requestOTPCode(getValues().username.replace(/[- )(]/g, ""));
             setUsernameType("phoneNumber");
           }
         };
       } else if (props.type === "signup") {
-        const result = await trigger(["email", "pass", "confirmPass"]);
+        const result = await trigger(["email", "password", "confirmPassword"]);
+
+        setUsernameInput(getValues().email);
+        setPasswordInput(getValues().password);
 
         if (result) { setPage(2) };
       }
     };
 
     const onSubmit = async (data) => {
+        let authResponse = "";
         if (props.type === "signup") {
             if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
                 setGroupError(true);
@@ -130,28 +144,41 @@ function AuthForm(props) {
                     }
                 });
 
-                const cityElement = document.getElementById("city").value
-                if (cityElement === "Other" || cityElement === "") {
-                    data.city = "";
-                } else {
-                    data.city = cityElement;
+                if (document.getElementById("city")) {
+                  const cityElement = document.getElementById("city").value
+                  if (cityElement === "Other" || cityElement === "") {
+                      data.city = "";
+                  } else {
+                      data.city = cityElement;
+                  }
                 }
 
+                // TEMP WORK AROUND FOR REACT HOOK FORM ISSUES
+                if (data.email) {
+                  delete data.email
+                }
+                if (data.password) {
+                  delete data.password
+                }
+                if (data.confirmPassword) {
+                  delete data.confirmPassword
+                }
+                
                 data.optout = false;
                 data.ageGroups = selectedAgeGroups;
                 data.eligibilityGroups = selectedEligibilityGroups;
                 data.postal = data.postal.replace(/\s/g, "").toUpperCase();
                 data.postalShort = data.postal.substring(0, 3);
+                data.email = usernameInput;
 
-                console.log(data)
-                const user = await auth.signup(data.username, data.pass);
-                console.log(user)
-                console.log(data)
-                // createUser(user.uid, data)
-                // requestOTPCode(data, false);
+                authResponse = await auth.signup(data, passwordInput);
             }
         } else if (props.type === "signin") {
-            // requestOTPCode(data, true);
+          authResponse = await auth.signin(getValues().username, getValues().password);
+        }
+
+        if (authResponse.status === 200) {
+          onAuth();
         }
     };
 
@@ -170,34 +197,34 @@ function AuthForm(props) {
         }
     }
 
-    const submitHandlersByType = {
-      signin: ({ email, pass }) => {
-        return auth.signin(email, pass).then((user) => {
-          // Call auth complete handler
-          props.onAuth(user);
-        });
-      },
-      forgotpass: ({ email }) => {
-        return auth.sendPasswordResetEmail(email).then(() => {
-          setPending(false);
-          // Show success alert message
-          props.onFormAlert({
-            type: "success",
-            message: "Password reset email sent",
-          });
-        });
-      },
-      changepass: ({ pass }) => {
-        return auth.confirmPasswordReset(pass).then(() => {
-          setPending(false);
-          // Show success alert message
-          props.onFormAlert({
-            type: "success",
-            message: "Your password has been changed",
-          });
-        });
-      },
-    };
+    // const submitHandlersByType = {
+    //   signin: ({ email, pass }) => {
+    //     return auth.signin(email, pass).then((user) => {
+    //       // Call auth complete handler
+    //       props.onAuth(user);
+    //     });
+    //   },
+    //   forgotpass: ({ email }) => {
+    //     return auth.sendPasswordResetEmail(email).then(() => {
+    //       setPending(false);
+    //       // Show success alert message
+    //       props.onFormAlert({
+    //         type: "success",
+    //         message: "Password reset email sent",
+    //       });
+    //     });
+    //   },
+    //   changepass: ({ pass }) => {
+    //     return auth.confirmPasswordReset(pass).then(() => {
+    //       setPending(false);
+    //       // Show success alert message
+    //       props.onFormAlert({
+    //         type: "success",
+    //         message: "Your password has been changed",
+    //       });
+    //     });
+    //   },
+    // };
 
     return (
         <div>
@@ -205,15 +232,16 @@ function AuthForm(props) {
                 {["signin"].includes(props.type) && (
                   <>
                     <h6 className="mb-4">If you signed up with your email, enter below. Otherwise if you signed up with your phone number, enter below.</h6>
-                    <Form.Group controlId="username">
+                    <Form.Group>
                         <FormField
+                            id="username"
                             name="username"
                             label="Email or Phone Number"
                             error={errors.username}
                             inputRef={register({
                                 required: error("required", "phone number or email"),
                                 pattern: {
-                                  value: /^([(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4})+$/,
+                                  value: /^(([(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$)|(\S+@\S+\.\S))/,
                                   message: error("invalid", "phone number or email")
                                 }
                             })}
@@ -223,11 +251,12 @@ function AuthForm(props) {
                 )}
 
                 { page === 1 && ["signup"].includes(props.type) && (
-                  <Form.Group controlId="formEmail">
+                  <Form.Group>
                     <FormField
                       label="Email"
                       name="email"
                       type="email"
+                      id="email"
                       placeholder="Email"
                       error={errors.email}
                       inputRef={register({
@@ -239,13 +268,14 @@ function AuthForm(props) {
 
                 { ((page === 1 && ["signup"].includes(props.type)) ||
                 (page === 2 && ["signin"].includes(props.type) && usernameType === "email")) && (
-                  <Form.Group controlId="formPassword">
+                  <Form.Group>
                     <FormField
-                      label= {props.type === "changepass" ? "New Password" : "Password"}
-                      name="pass"
+                      id="password"
+                      label="Password"
+                      name="password"
                       type="password"
                       placeholder="Password"
-                      error={errors.pass}
+                      error={errors.password}
                       inputRef={register({
                         required: error("required", "password"),
                       })}
@@ -257,14 +287,14 @@ function AuthForm(props) {
                   <Form.Group controlId="formConfirmPass">
                     <FormField
                       label="Confirm Password"
-                      name="confirmPass"
+                      name="confirmPassword"
                       type="password"
                       placeholder="Confirm Password"
-                      error={errors.confirmPass}
+                      error={errors.confirmPassword}
                       inputRef={register({
                         required: error("required", "password"),
                         validate: (value) => {
-                          if (value === getValues().pass) {
+                          if (value === getValues().password) {
                             return true;
                           } else {
                             return "This doesn't match your password";
@@ -477,6 +507,7 @@ function AuthForm(props) {
                             variant="link"
                             onClick={() => {
                                 resetRecaptcha(); //TO DO: Display message
+                                console.log(getValues().username)
                                 sendOTPCode(getValues().username);
                             }}
                             >
