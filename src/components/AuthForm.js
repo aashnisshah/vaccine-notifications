@@ -21,26 +21,24 @@ function AuthForm(props) {
     const [usernameType, setUsernameType] = useState("email");
     const [usernameInput, setUsernameInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
-    const [pending, setPending] = useState(false);
-    const [showOTP, setShowOTP] = useState(false);
-    const [renderRecaptcha, setRenderRecaptcha] = useState(true);
     const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
     const [citiesToDisplay, setCitiesToDisplay] = useState([]);
+
+    const [showOTP, setShowOTP] = useState(false);
+    const [renderRecaptcha, setRenderRecaptcha] = useState(true);
     const [otpCode, setOtpCode] = useState({});
+
+    const [nextPending, setNextPending] = useState(false);
+    const [pending, setPending] = useState(false);
     const [groupError, setGroupError] = useState(false);
+
     const { handleSubmit, register, errors, getValues, trigger } = useForm();
 
     useEffect(() => {
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && page === 1) {
-            e.preventDefault();
-            goToNext();
-            console.log(page)
-          }
-        })
+        document.addEventListener("keydown", handleEnter);
 
         return () => {
-            // document.removeEventListener("keydown", handleEnter)
+            document.removeEventListener("keydown", handleEnter)
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
             );
@@ -51,6 +49,12 @@ function AuthForm(props) {
             });
         };
     }, []);
+
+    const handleEnter = (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+      }
+    }
 
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
@@ -92,6 +96,7 @@ function AuthForm(props) {
     };
 
     const goToNext = async () => {
+      setNextPending(true);
       if (props.type === "signin") {
         const result = await trigger("username");
         
@@ -99,7 +104,7 @@ function AuthForm(props) {
           if (getValues().username.includes("@")) {
             setPage(2);
           } else {
-            requestOTPCode(getValues().username.replace(/[- )(]/g, ""));
+            await requestOTPCode(getValues().username.replace(/[- )(]/g, ""));
             setUsernameType("phoneNumber");
           }
         };
@@ -111,6 +116,7 @@ function AuthForm(props) {
 
         if (result) { setPage(2) };
       }
+      setNextPending(false);
     };
 
     const onSubmit = async (data) => {
@@ -174,6 +180,7 @@ function AuthForm(props) {
                 authResponse = await auth.signup(data, passwordInput);
             }
         } else if (props.type === "signin") {
+          setPending(true)
           authResponse = await auth.signin(getValues().username, getValues().password);
         }
 
@@ -196,35 +203,6 @@ function AuthForm(props) {
             setShouldDisplayCity(false)
         }
     }
-
-    // const submitHandlersByType = {
-    //   signin: ({ email, pass }) => {
-    //     return auth.signin(email, pass).then((user) => {
-    //       // Call auth complete handler
-    //       props.onAuth(user);
-    //     });
-    //   },
-    //   forgotpass: ({ email }) => {
-    //     return auth.sendPasswordResetEmail(email).then(() => {
-    //       setPending(false);
-    //       // Show success alert message
-    //       props.onFormAlert({
-    //         type: "success",
-    //         message: "Password reset email sent",
-    //       });
-    //     });
-    //   },
-    //   changepass: ({ pass }) => {
-    //     return auth.confirmPasswordReset(pass).then(() => {
-    //       setPending(false);
-    //       // Show success alert message
-    //       props.onFormAlert({
-    //         type: "success",
-    //         message: "Your password has been changed",
-    //       });
-    //     });
-    //   },
-    // };
 
     return (
         <div>
@@ -307,8 +285,18 @@ function AuthForm(props) {
 
                 { page === 1 && (
                   <div className="w-100 justify-content-end d-flex forwardBackButton">
-                    <Button variant="link" onClick={goToNext}>
-                      Next &nbsp; &#8594;
+                    <Button variant="link" onClick={goToNext} disabled={nextPending}>
+                      { nextPending ? 
+                        <Spinner
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden={true}
+                          className="align-baseline"
+                        />
+                      : 
+                        <p>Next &nbsp; &#8594;</p>
+                      }
                     </Button>
                   </div>
                 ) }
