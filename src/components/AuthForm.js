@@ -8,6 +8,7 @@ import {
     eligibilityGroups,
     provinces,
     error,
+    cities,
     selectAll,
 } from "./formConstants";
 import "./Auth.scss";
@@ -20,6 +21,8 @@ function AuthForm(props) {
     const [showOTP, setShowOTP] = useState(false);
     const [renderRecaptcha, setRenderRecaptcha] = useState(true);
     const [userData, setUserData] = useState({});
+    const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
+    const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [otpCode, setOtpCode] = useState({});
     const [groupError, setGroupError] = useState(false);
     const { handleSubmit, register, errors, getValues } = useForm();
@@ -82,10 +85,7 @@ function AuthForm(props) {
     const onSubmit = (data) => {
         data.phoneNumber = data.phoneNumber.replace(/[- )(]/g, "");
         if (props.type === "signup") {
-            if (
-                document.querySelectorAll('input[type="checkbox"]:checked')
-                    .length === 0
-            ) {
+            if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
                 setGroupError(true);
                 const allCheckBoxes = document.querySelectorAll(
                     'input[type="checkbox"]'
@@ -112,12 +112,19 @@ function AuthForm(props) {
                         selectedEligibilityGroups.push(group.id);
                     }
                 });
+                const cityElement = document.getElementById("city").value
+                if (cityElement === "Other" || cityElement === "") {
+                    data.city = "";
+                } else {
+                    data.city = cityElement;
+                }
 
                 data.optout = false;
                 data.ageGroups = selectedAgeGroups;
                 data.eligibilityGroups = selectedEligibilityGroups;
                 data.postal = data.postal.replace(/\s/g, "").toUpperCase();
                 data.postalShort = data.postal.substring(0, 3);
+
                 requestOTPCode(data, false);
             }
         } else if (props.type === "signin") {
@@ -125,13 +132,20 @@ function AuthForm(props) {
         }
     };
 
-    const selectAll = (className) => {
-        document
-            .querySelectorAll(`.${className} input[type='checkbox']`)
-            .forEach((checkbox) => {
-                checkbox.checked = true;
-            });
-    };
+    const displayCity = () => {
+        const selectedProvince = document.getElementById("province").value
+        if (Object.keys(cities).includes(selectedProvince)) {
+            const citiesForProvince = cities[selectedProvince]
+            if (!citiesForProvince.includes("Other")) {
+                citiesForProvince.push("Other")
+            }
+            
+            setCitiesToDisplay(citiesForProvince)
+            setShouldDisplayCity(true)
+        } else {
+            setShouldDisplayCity(false)
+        }
+    }
 
     return (
         <div>
@@ -145,7 +159,7 @@ function AuthForm(props) {
                             name="phoneNumber"
                             type="tel"
                             label="Phone Number"
-                            placeholder="000-000-000"
+                            placeholder="000-000-0000"
                             error={errors.phoneNumber}
                             inputRef={register({
                                 required: error("required", "phone number"),
@@ -161,10 +175,37 @@ function AuthForm(props) {
                 {["signup"].includes(props.type) && (
                     <>
                         <Form.Row className="m-0 justify-content-between">
-                            <Form.Group
-                                controlId="formPostal"
-                                className="flex-fill mr-2"
-                            >
+                            <Form.Group className="mr-2 w-25">
+                                <FormField
+                                    name="province"
+                                    type="select"
+                                    options={provinces}
+                                    defaultValue="--"
+                                    label="Province"
+                                    error={errors.province}
+                                    id="province"
+                                    onChange = {displayCity}
+                                    inputRef={register({
+                                        pattern: {
+                                            value: /^((?!--).)*$/,
+                                            message: error("required", "province"),
+                                        },
+                                    })}
+                                />
+                            </Form.Group>
+                            {shouldDisplayCity && (
+                                <Form.Group className="mr-2 w-25">
+                                    <FormField
+                                        name="city"
+                                        type="select"
+                                        options={citiesToDisplay}
+                                        defaultValue="--"
+                                        label="City"
+                                        id="city"
+                                    />
+                                </Form.Group>
+                            )}
+                            <Form.Group controlId="formPostal" className="flex-grow-1">
                                 <FormField
                                     name="postal"
                                     label="Postal Code"
@@ -177,29 +218,10 @@ function AuthForm(props) {
                                             "postal code"
                                         ),
                                         pattern: {
-                                            value: /(^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$)|(^\d{5}$)/,
+                                            value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
                                             message: error(
                                                 "invalid",
                                                 "postal code"
-                                            ),
-                                        },
-                                    })}
-                                />
-                            </Form.Group>
-                            <Form.Group controlId="province">
-                                <FormField
-                                    name="province"
-                                    type="select"
-                                    options={provinces}
-                                    defaultValue="--"
-                                    label="Province"
-                                    error={errors.province}
-                                    inputRef={register({
-                                        pattern: {
-                                            value: /^((?!--).)*$/,
-                                            message: error(
-                                                "required",
-                                                "province"
                                             ),
                                         },
                                     })}

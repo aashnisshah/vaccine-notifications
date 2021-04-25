@@ -37,7 +37,6 @@ export async function findUserByPhoneNumber(phoneNumber) {
 
 // Create a new message
 export function createMessage(id, data) {
-  console.log("firestore")
   return firestore
     .collection("messages")
     .doc(id)
