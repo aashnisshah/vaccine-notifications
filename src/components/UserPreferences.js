@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
-import { ageGroups, eligibilityGroups, provinces } from "./formConstants";
+import { ageGroups, eligibilityGroups, provinces, cities } from "./formConstants";
 
 function UserPreferences(props) {
     const auth = useAuth();
@@ -14,6 +14,8 @@ function UserPreferences(props) {
     const [editing, setEditing] = useState(false);
     const { register, handleSubmit, errors } = useForm();
     const [formAlert, setFormAlert] = useState(null);
+    const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
+    const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [groupError, setGroupError] = useState(false);
     // State to control whether we show a re-authentication flow
     // Required by some security sensitive actions, such as changing password.
@@ -22,6 +24,7 @@ function UserPreferences(props) {
     });
 
     useEffect(() => {
+        showCitiesOnLoad();
         return () => {
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
@@ -33,6 +36,28 @@ function UserPreferences(props) {
             });
         };
     }, []);
+
+    const showCitiesOnLoad = async () => {
+        if (auth.user.city && auth.user.province) {
+            await displayCity();
+            document.getElementById('city').value = auth.user.city;
+        }
+    }
+
+    const displayCity = async () => {
+        const selectedProvince = document.getElementById("province").value
+        if (Object.keys(cities).includes(selectedProvince)) {
+            const citiesForProvince = cities[selectedProvince]
+            if (!citiesForProvince.includes("Other")) {
+                citiesForProvince.push("Other")
+            }
+            
+            setCitiesToDisplay(citiesForProvince)
+            setShouldDisplayCity(true)
+        } else {
+            setShouldDisplayCity(false)
+        }
+    }
 
     const formatPhoneNumber = (str) => {
         if (!str) return;
@@ -90,7 +115,19 @@ function UserPreferences(props) {
 
     const onSubmit = async (data) => {
         // data.phoneNumber = data.phoneNumber.replace(/[- )(]/g,'')
-        data.phoneNumber = auth.user.phoneNumber;
+        if (auth.user.phoneNumber) {
+            data.phoneNumber = auth.user.phoneNumber;
+        }
+        if (auth.user.email) {
+            data.email = auth.user.email;
+        }
+
+        if (document.getElementById("city")) {
+            data.city = document.getElementById("city").value;
+        } else {
+            data.city = ""
+        }
+
         if (
             document.querySelectorAll('input[type="checkbox"]:checked')
                 .length === 0
@@ -165,18 +202,13 @@ function UserPreferences(props) {
             {formAlert && (
                 <FormAlert type={formAlert.type} message={formAlert.message} />
             )}
-            <Form.Group controlId="formUsername">
+            <Form.Group>
                 <FormField
-                    name="username"
-                    type="text"
                     label="Username"
                     defaultValue={auth.user.email ? auth.user.email : formatPhoneNumber(auth.user.phoneNumber)}
                     error={errors.username}
                     disabled
-                    inputRef={register({
-                        required:
-                            "Please enter your phone number as '4161231234' format",
-                    })}
+                    
                 />
             </Form.Group>
             <Form.Group controlId="formPostalCode">
@@ -198,6 +230,7 @@ function UserPreferences(props) {
             <Form.Group controlId="formProvince">
                 <FormField
                     name="province"
+                    id="province"
                     type="select"
                     disabled={!editing}
                     options={provinces}
@@ -205,11 +238,27 @@ function UserPreferences(props) {
                     defaultValue={auth.user.province}
                     placeholder="Province"
                     error={errors.province}
+                    onChange = {displayCity}
                     inputRef={register({
                         required: "Please enter your Province",
                     })}
                 />
             </Form.Group>
+            
+            {shouldDisplayCity && (
+                <Form.Group className="mr-2 w-25">
+                    <FormField
+                        name="city"
+                        type="select"
+                        disabled={!editing}
+                        options={citiesToDisplay}
+                        defaultValue="--"
+                        // value={auth.user.city ? auth.user.city : "--"}
+                        label="City"
+                        id="city"
+                    />
+                </Form.Group>
+            )}
 
             {editing ? (
                 <>
@@ -272,7 +321,7 @@ function UserPreferences(props) {
                             Selected age groups to recieve notifications for.{" "}
                         </h2>
                         <Form.Row controlId="ageGroup" className="mx-0">
-                            {auth.user.ageGroups.map((ageGroup) => (
+                            {auth.user.ageGroups && auth.user.ageGroups.map((ageGroup) => (
                                 <div key={ageGroup}>
                                     <Form.Check
                                         className="mr-3 ageGroupField"
@@ -292,7 +341,7 @@ function UserPreferences(props) {
                             for.
                         </h2>
                         <Form.Group controlId="eligibilityGroup" required>
-                            {auth.user.eligibilityGroups.map(
+                            {auth.user.eligibilityGroups && auth.user.eligibilityGroups.map(
                                 (eligibilityGroup) => (
                                     <div key={eligibilityGroup}>
                                         <Form.Check

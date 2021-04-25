@@ -256,6 +256,10 @@ function AuthForm(props) {
                       error={errors.password}
                       inputRef={register({
                         required: error("required", "password"),
+                        pattern: {
+                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                            message: error("passwordLength")
+                          }
                       })}
                     />
                   </Form.Group>

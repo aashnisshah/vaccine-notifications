@@ -15,16 +15,17 @@ import FormAlert from "./FormAlert";
 export default function PasswordResetSection(props) {
     const auth = useAuth();
     const [pending, setPending] = useState(false);
-    const { handleSubmit, register } = useForm();
+    const { handleSubmit, register, reset } = useForm();
     const [messageStatus, setMessageStatus] = useState(null);
 
     const onSubmit = ({ email }) => {
         setPending(true);
         return auth.sendPasswordResetEmail(email).then(() => {
             setPending(false);
+            reset();
             setMessageStatus({
                 status: "success",
-                message: "Reset Password Email Sent!",
+                message: "Password Reset Email Sent!",
             });
         });
     };
@@ -33,15 +34,15 @@ export default function PasswordResetSection(props) {
         <Section
             bg={props.bg}
             textColor={props.textColor}
-            size={props.size}
             bgImage={props.bgImage}
+            size={props.size}
             bgImageOpacity={props.bgImageOpacity}
         >
             <Container className="formContainer">
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}
-                    size={1}
+                    size={2}
                     spaced={true}
                     className="text-center justify-center"
                 />
@@ -54,9 +55,9 @@ export default function PasswordResetSection(props) {
                 <Form  onSubmit={handleSubmit(onSubmit)}>
                     <Form.Group controlId="messageType" className="flex-fill">
                         <FormField
-                            size="lg"
                             name="email"
                             type="email"
+                            size={"md"}
                             placeholder="Email"
                             inputRef={register({
                                 required: "Please enter an email",
@@ -68,7 +69,7 @@ export default function PasswordResetSection(props) {
                             variant="primary"
                             type="submit"
                             disabled={pending}
-                            size="lg"
+                            size="md"
                             className="my-2"
                         >
                             {!pending && <span>Send Email</span>}
