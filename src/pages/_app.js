@@ -4,7 +4,10 @@ import NavbarCustom from "./../components/NavbarCustom";
 import IndexPage from "./index";
 import ContactPage from "./contact";
 import DashboardPage from "./dashboard";
+import TosPage from "./tos";
+import PasswordReset from './PasswordReset';
 import PostsPage from "./posts";
+import PrivacyPage from "./privacy";
 import AuthPage from "./auth";
 import { Switch, Route, Router } from "./../util/router.js";
 import FirebaseActionPage from "./firebase-action.js";
@@ -12,54 +15,64 @@ import NotFoundPage from "./not-found.js";
 import Footer from "./../components/Footer";
 import "./../util/analytics.js";
 import { AuthProvider } from "./../util/auth.js";
-import logo from "./../images/VNLogo.png"
+import logo from "./../images/VNLogo.png";
 
 function App(props) {
-  return (
-    <AuthProvider>
-      <Router>
-        <>
-          <NavbarCustom
-            bg="white"
-            variant="light"
-            expand="md"
-            logo={logo}
-          />
+    return (
+        <AuthProvider>
+            <Router>
+                <>
+                    <NavbarCustom
+                        bg="white"
+                        variant="light"
+                        expand="md"
+                        logo={logo}
+                    />
 
-          <Switch>
-            <Route exact path="/" component={IndexPage} />
+                    <Switch>
+                        <Route exact path="/" component={IndexPage} />
 
-            {/* <Route exact path="/contact" component={ContactPage} /> */}
+                        {/* <Route exact path="/contact" component={ContactPage} /> */}
 
-            <Route exact path="/dashboard" component={DashboardPage} />
+                        <Route
+                            exact
+                            path="/dashboard"
+                            component={DashboardPage}
+                        />
 
-            <Route exact path="/posts" component={PostsPage} />
+                        <Route exact path="/resetpass" component={PasswordReset} />
 
-            <Route exact path="/auth/:type" component={AuthPage} />
+                        <Route exact path="/posts" component={PostsPage} />
 
-            <Route
-              exact
-              path="/firebase-action"
-              component={FirebaseActionPage}
-            />
+                        <Route exact path="/privacy" component={PrivacyPage} />
 
-            <Route component={NotFoundPage} />
-          </Switch>
+                        <Route exact path="/tos" component={TosPage} />
 
-          <Footer
-            bg="light"
-            textColor="dark"
-            size="sm"
-            bgImage=""
-            bgImageOpacity={1}
-            description="Notify you when vaccine appointments are available in your area"
-            copyright="© 2021 Vaccine Notifications"
-            logo="https://uploads.divjoy.com/logo.svg"
-          />
-        </>
-      </Router>
-    </AuthProvider>
-  );
+                        <Route exact path="/auth/:type" component={AuthPage} />
+
+                        <Route
+                            exact
+                            path="/firebase-action"
+                            component={FirebaseActionPage}
+                        />
+
+                        <Route component={NotFoundPage} />
+                    </Switch>
+
+                    <Footer
+                        bg="light"
+                        textColor="dark"
+                        size="sm"
+                        bgImage=""
+                        bgImageOpacity={1}
+                        description="Notify you when vaccine appointments are available in your area"
+                        copyright="© 2021 Vaccine Notifications"
+                        logo="https://uploads.divjoy.com/logo.svg"
+                    />
+                </>
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;

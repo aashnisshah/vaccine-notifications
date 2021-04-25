@@ -4,7 +4,7 @@ import "./Auth.scss";
 
 function AuthFooter(props) {
   return (
-    <div className="AuthFooter text-center mt-4">
+    <div className="AuthFooter d-flex flex-column text-center mt-4">
       {props.type === "signup" && (
         <>
           Have an account already?
@@ -14,12 +14,16 @@ function AuthFooter(props) {
 
       {props.type === "signin" && (
         <>
-          Don't have an account? 
-          <Link to="/auth/signup">{props.typeValues.linkTextSignup}</Link>
-          <Link to="/auth/forgotpass">
-            {props.typeValues.linkTextForgotpass}
+        <Link to="/resetpass">
+            Forgot Password ?
           </Link>
-        </>
+        
+        <div className="d-flex justify-content-center">
+        Don't have an account?
+        <Link to="/auth/signup">{props.typeValues.linkTextSignup}</Link>
+          
+        </div>
+      </>
       )}
     </div>
   );
