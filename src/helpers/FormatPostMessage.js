@@ -1,10 +1,31 @@
-export const getMessageBody = (data) => {
-    let messageFooter = "Manage notification settings at vaccinenotifications.org.";
-    let selectedAgeGroups = data.selectedAgeGroups;
-    let province = data.province;
-    let postalCodes = data.postal;
-    let eligibilityGroups = data.eligibilityGroups;
+export const getSendTo = (data) => {
+  let selectedAgeGroups = data.selectedAgeGroups ? data.selectedAgeGroups : "";
+  let province = data.province ? data.province : "";
+  let postalCodes = data.postal ? data.postal : "";
+  let cities = data.cities ? data.cities : "";
+  let eligibilityGroups = data.eligibilityGroups ? data.eligibilityGroups : "";
 
+  const allGroupTypes = [selectedAgeGroups, province, postalCodes, cities, eligibilityGroups];
+  const allGroups = [];
+
+  for (const group of allGroupTypes) {
+    if (Array.isArray(group)) {
+      for (const each of group) {
+        allGroups.push(each);
+      }
+    } else {
+      if (group !== "") {
+        allGroups.push(group)
+      }
+    }
+  }
+
+  return allGroups
+}
+
+export const getMessageBody = (data) => {
+    let messageFooter = "Manage notifications at vaccinenotifications.org.";
+   
     let linkToBooking = data.linkToBooking;
     let linkToSrc = data.linkToSrc;
     let message = data.message;
@@ -16,47 +37,19 @@ export const getMessageBody = (data) => {
         messageBody = messageBody + "\n\n" + message;
     }
 
-    // start details we know
-    messageBody = messageBody + "\n\nDetails We Know: ";
-
-    if (province) {
-        let provinceText = province === "CA" ? "All Provinces" : province;
-        messageBody = messageBody + "\nProvince: " + provinceText;
-    }
-
-    if (postalCodes.length > 0) {
-        messageBody =
-            messageBody + "\nPostal Codes: " + postalCodes.join(", ");
-    }
-
-    if (selectedAgeGroups.length > 0) {
-        messageBody =
-            messageBody + "\nAge Groups: " + selectedAgeGroups.join(", ");
-    }
-
-    if (eligibilityGroups.length > 0) {
-        messageBody =
-            messageBody +
-            "\nEligibility Groups: " +
-            eligibilityGroups.join(", ");
-    }
-
-    // end of details
-
-    if (linkToBooking) {
-        messageBody =
-            messageBody + "\n\nMore info + register here: " + linkToBooking;
-    }
-
-    if (numberToBooking) {
-        messageBody =
-            messageBody + "\n\nCall to book here: " + numberToBooking;
+    if (linkToBooking && !numberToBooking) {
+      messageBody = messageBody + "\n\nBook here: " + linkToBooking;
+    } else if (!linkToBooking && numberToBooking) {
+      messageBody = messageBody + "\n\nBook here: " + numberToBooking;
+    } else if (linkToBooking && numberToBooking) {
+      messageBody = messageBody + "\n\nBook here: " + linkToBooking + ", " + numberToBooking;
     }
 
     if (linkToSrc) {
-        messageBody = messageBody + "\n\nSource: " + linkToSrc;
+        messageBody = messageBody + "\nSource: " + linkToSrc;
     }
 
     messageBody = messageBody + "\n\n" + messageFooter;
+
     return messageBody;
 };
