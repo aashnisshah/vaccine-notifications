@@ -36,6 +36,18 @@ function UserPreferences(props) {
             });
         };
     }, []);
+    useEffect(() => {
+        checkNeccessaryFields();
+    }, [auth])
+
+    const checkNeccessaryFields = () => {
+        if (!auth.user.postal || !auth.user.province || ! (auth.user.eligibilityGroups && auth.user.ageGroups)) {
+            setEditing(true);
+            setFormAlert({type:"warning", message: "Fill out empty fields to receive notifications!"})
+        } else {
+            setFormAlert({type:"success", message: "You're all set to receive notifications!"})
+        }
+    }
 
     const showCitiesOnLoad = async () => {
         if (auth.user.city && auth.user.province) {
@@ -167,7 +179,7 @@ function UserPreferences(props) {
                 await auth.updateProfile(data);
                 onStatus({
                     type: "success",
-                    message: "Your profile has been updated",
+                    message: "You're all set to receive notifications!",
                 });
             } catch (error) {
                 if (error.code === "auth/requires-recent-login") {
@@ -187,6 +199,7 @@ function UserPreferences(props) {
             setPending(false);
             setEditing(false);
         }
+        window.scrollTo(0,0)
     };
 
     const selectAll = (className) => {
@@ -235,7 +248,7 @@ function UserPreferences(props) {
                     disabled={!editing}
                     options={provinces}
                     label="Province"
-                    defaultValue={auth.user.province}
+                    defaultValue={auth.user.province ? auth.user.province : "--" }
                     placeholder="Province"
                     error={errors.province}
                     onChange = {displayCity}
@@ -246,7 +259,7 @@ function UserPreferences(props) {
             </Form.Group>
             
             {shouldDisplayCity && (
-                <Form.Group className="mr-2 w-25">
+                <Form.Group>
                     <FormField
                         name="city"
                         type="select"

@@ -37,7 +37,7 @@ function DashboardSection(props) {
 
         <Row>
           <Col lg={8}>
-            {accountConfigured ? `Your account is ready and you'll receive notifications at the number below.` : "Changing your preferences will change the notifications you receive."}
+            {/* {accountConfigured ? `Your account is ready and you'll receive notifications at the number below.` : "Changing your preferences will change the notifications you receive."} */}
             <UserPreferences newUser={!accountConfigured} />
           </Col>
           <Col lg={4}>
