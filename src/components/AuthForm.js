@@ -173,9 +173,14 @@ function AuthForm(props) {
                 data.optout = false;
                 data.ageGroups = selectedAgeGroups;
                 data.eligibilityGroups = selectedEligibilityGroups;
-                data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+                data.postal = data.postal.replace(/\s/g, "").toUpperCase().trim();
                 data.postalShort = data.postal.substring(0, 3);
-                data.email = usernameInput;
+                data.email = usernameInput.trim();
+
+                if (localStorage.getItem("ExpoToken")) {
+                    console.log(localStorage.getItem("ExpoToken"))
+                    data.expoToken = localStorage.getItem("ExpoToken");
+                }
 
                 authResponse = await auth.signup(data, passwordInput);
             }
@@ -183,7 +188,7 @@ function AuthForm(props) {
           setPending(true)
           authResponse = await auth.signin(getValues().username, getValues().password);
         }
-
+        setPending(false);
         if (authResponse.status === 200) {
           onAuth();
         }
@@ -351,7 +356,7 @@ function AuthForm(props) {
                                             "postal code"
                                         ),
                                         pattern: {
-                                            value: /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
+                                            value: /^[ABCEGHJ-LNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d/i,
                                             message: error(
                                                 "invalid",
                                                 "postal code"

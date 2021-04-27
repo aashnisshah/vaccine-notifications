@@ -38,14 +38,19 @@ function UserPreferences(props) {
     }, []);
     useEffect(() => {
         checkNeccessaryFields();
-    }, [auth])
+    }, [auth.user, editing])
 
     const checkNeccessaryFields = () => {
-        if (!auth.user.postal || !auth.user.province || ! (auth.user.eligibilityGroups && auth.user.ageGroups)) {
+        console.log(auth.user)
+        if (auth.user.optout) {
+            setFormAlert({type:"warning", message: "You have opted out of notifications, to opt in click the 'Opt in' button"});
+        } else if(!auth.user.expoToken) {
+            setFormAlert({type:"warning", message: "Download the 'Vaccine Notifications' app to receive mobile notifications"});
+        } else if (!auth.user.postal || !auth.user.province || ! (auth.user.eligibilityGroups && auth.user.ageGroups)) {
             setEditing(true);
-            setFormAlert({type:"warning", message: "Fill out empty fields to receive notifications!"})
+            setFormAlert({type:"warning", message: "Fill out empty fields to receive notifications!"});
         } else {
-            setFormAlert({type:"success", message: "You're all set to receive notifications!"})
+            setFormAlert({type:"success", message: "You're all set to receive mobile notifications!"});
         }
     }
 
@@ -177,10 +182,10 @@ function UserPreferences(props) {
 
             try {
                 await auth.updateProfile(data);
-                onStatus({
-                    type: "success",
-                    message: "You're all set to receive notifications!",
-                });
+                // onStatus({
+                //     type: "success",
+                //     message: "You're all set to receive notifications!",
+                // });
             } catch (error) {
                 if (error.code === "auth/requires-recent-login") {
                     onStatus({
@@ -198,8 +203,8 @@ function UserPreferences(props) {
             }
             setPending(false);
             setEditing(false);
+            window.scrollTo(0,0);
         }
-        window.scrollTo(0,0)
     };
 
     const selectAll = (className) => {
@@ -399,7 +404,7 @@ function UserPreferences(props) {
                     <Button
                         variant="secondary"
                         size="lg"
-                        onClick={() => setEditing(false)}
+                        onClick={() => {setEditing(false); window.scrollTo(0,0);}}
                     >
                         Cancel
                     </Button>

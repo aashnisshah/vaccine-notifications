@@ -27,16 +27,16 @@ function FeaturesSection(props) {
       alt: "image of person toggling phone preferences",
     },
     {
-      title: "Get Notifications",
+      title: "Get Push Notifications",
       description:
-        "Receive text messages with vaccine information as soon as we get them",
+        "Receive push notifications from the app with vaccine information as soon as we get them",
       image: getNotificationsImage,
       alt: "image of person with a loudspeaker next to a phone",
     },
     {
       title: "Get the Vaccine",
       description:
-        "Follow the link or call the number in the text to book your vaccine appointment",
+        "Follow the link or call the number in the notification to book your vaccine appointment",
       image: vaccineImage,
       alt: "image of a person receiving a COVID-19 vaccine",
     }

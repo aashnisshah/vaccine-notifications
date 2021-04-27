@@ -54,6 +54,12 @@ function useAuthProvider() {
       if (EMAIL_VERIFICATION) {
         firebase.auth().currentUser.sendEmailVerification();
       }
+    } else {
+      //check if there is an ExpoToken in local storage and add it to the account
+      const expoToken = localStorage.getItem("ExpoToken");
+      if (expoToken && !user.expoToken) {
+        await updateUser(user.uid, {expoToken: expoToken});
+      }
     }
 
     // Update user in state
@@ -121,6 +127,10 @@ function useAuthProvider() {
     const otpConfirm = window.confirmationResult;
     try {
         const result = await otpConfirm.confirm(otpCode);
+        const expoToken = localStorage.getItem("ExpoToken");
+        if (expoToken && !result.user.expoToken) {
+          await updateUser(result.user.uid, {expoToken: expoToken});
+        }
         setUser(result.user);
 
         return true;
@@ -332,7 +342,7 @@ export const requireAuth = (Component) => {
     useEffect(() => {
       // Redirect if not signed in
       if (auth.user === false) {
-        history.replace("/auth/signin");
+        history.replace("/");
       }
     }, [auth]);
 
