@@ -92,6 +92,71 @@ async function getTargettedUsers(
     return targettedUsers;
 }
 
+async function getTargettedMobileUsers(
+    province,
+    postalCodes,
+    ageGroups,
+    eligibilityGroups
+) {
+    let query = firestore.collection("users").where("optout", "==", false);
+    query = query.where("expoToken", "!=", "");
+
+    if (postalCodes && postalCodes.length > 0) {
+        query = query.where("postalShort", "in", postalCodes);
+    } else if (province && province != "CA") {
+        query = query.where("province", "==", province);
+    }
+
+    let targettedUsers = [];
+
+    await query.get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            let userData = doc.data();
+            let isTarget = true;
+
+            // check if overlapping ageGroups
+            if (
+                ageGroups &&
+                ageGroups.length > 0 &&
+                userData.ageGroups &&
+                userData.ageGroups.length > 0
+            ) {
+                if (
+                    _.intersection(userData.ageGroups, ageGroups).length === 0
+                ) {
+                    isTarget = false;
+                }
+            }
+
+            // check if overlapping eligibilityGroups
+            if (
+                eligibilityGroups &&
+                eligibilityGroups.length > 0 &&
+                userData.eligibilityGroups &&
+                userData.eligibilityGroups.length > 0
+            ) {
+                if (
+                    _.intersection(
+                        userData.eligibilityGroups,
+                        eligibilityGroups
+                    ).length === 0
+                ) {
+                    isTarget = false;
+                }
+            }
+
+            if (isTarget && userData.phoneNumber) {
+                targettedUsers.push({
+                    id: userData.uid,
+                    phoneNumber: userData.phoneNumber,
+                });
+            }
+        });
+    });
+
+    return targettedUsers;
+}
+
 /**** HELPERS ****/
 
 // Format Firestore response (handles a collection or single doc)
@@ -114,4 +179,5 @@ module.exports = {
     updateUser,
     getAllVerifiedUsers,
     getTargettedUsers,
+    getTargettedMobileUsers
 };

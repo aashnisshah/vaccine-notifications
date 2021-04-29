@@ -11,7 +11,7 @@ function NavbarCustom(props) {
   const auth = useAuth();
 
   return (
-    <Navbar bg={props.bg} variant={props.variant} expand={props.expand}>
+    <Navbar bg={props.bg} variant={props.variant} expand={props.expand} style={{paddingTop:20}}>
       <Container>
         <LinkContainer to="/">
           <Navbar.Brand>
