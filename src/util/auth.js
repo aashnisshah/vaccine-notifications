@@ -4,7 +4,6 @@ import firebase from "./firebase";
 import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
-import { sendAccountActivatedMessage } from "./twilio"
 import analytics from "./analytics";
 
 // Whether to merge extra user data from database into auth.user
@@ -342,7 +341,7 @@ export const requireAuth = (Component) => {
     useEffect(() => {
       // Redirect if not signed in
       if (auth.user === false) {
-        history.replace("/");
+        history.replace("/auth/signup");
       }
     }, [auth]);
 

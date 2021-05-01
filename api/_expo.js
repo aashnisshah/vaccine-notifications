@@ -4,9 +4,10 @@ const { Expo } = require('expo-server-sdk')
 // optionally providing an access token if you have enabled push security
 // let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
 
-function sendBulkNotifications (pushTokenList, title, body, data) {
+async function sendBulkNotifications (pushTokenList, title, body, data) {
     //TODO ADD SECURITY HERE
     let expo = new Expo();
+    const errors = [];
     // Create the messages that you want to send to clients
     let messages = [];
     for (let pushToken of pushTokenList) {
@@ -35,6 +36,7 @@ function sendBulkNotifications (pushTokenList, title, body, data) {
     // compressed).
     let chunks = expo.chunkPushNotifications(messages);
     let tickets = [];
+    
     (async () => {
     // Send the chunks to the Expo push notification service. There are
     // different strategies you could use. A simple one is to send one chunk at a
@@ -50,9 +52,15 @@ function sendBulkNotifications (pushTokenList, title, body, data) {
         // https://docs.expo.io/push-notifications/sending-notifications/#individual-errors
         } catch (error) {
         console.error(error);
+        errors.push(error);
         }
     }
     })();
+    if (errors.length) {
+        return {statusCode: 400, body:"Some Tickets Failed"}
+    } else {
+        return {statusCode: 200, body:"All Good"}
+    }
 }
 
 

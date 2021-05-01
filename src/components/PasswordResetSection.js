@@ -11,9 +11,11 @@ import FormField from "./FormField";
 import Section from "./Section";
 import SectionHeader from "./SectionHeader";
 import FormAlert from "./FormAlert";
+import { useRouter } from "./../util/router.js";
 
 export default function PasswordResetSection(props) {
     const auth = useAuth();
+    const router = useRouter();
     const [pending, setPending] = useState(false);
     const { handleSubmit, register, reset } = useForm();
     const [messageStatus, setMessageStatus] = useState(null);
@@ -38,6 +40,10 @@ export default function PasswordResetSection(props) {
             size={props.size}
             bgImageOpacity={props.bgImageOpacity}
         >
+            <Button  variant="link"onClick={()=> router.push('/auth/signin')}>
+                
+                <p>← Go back</p>
+            </Button>
             <Container className="formContainer">
                 <SectionHeader
                     title={props.title}
@@ -65,6 +71,7 @@ export default function PasswordResetSection(props) {
                         />
                     </Form.Group>
                     <div className="w-100 text-center">
+                        
                         <Button
                             variant="primary"
                             type="submit"
@@ -86,6 +93,7 @@ export default function PasswordResetSection(props) {
                                 </Spinner>
                             )}
                         </Button>
+                        
                     </div>
                 </Form>
             </Container>

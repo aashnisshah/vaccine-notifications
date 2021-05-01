@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Form, Button, Spinner } from "react-bootstrap";
 import FormField from "./FormField";
+import { Link } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
 import {
@@ -261,12 +262,17 @@ function AuthForm(props) {
                       error={errors.password}
                       inputRef={register({
                         required: error("required", "password"),
-                        pattern: {
-                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                        minLength: {
+                            value: 6,
                             message: error("passwordLength")
                           }
                       })}
                     />
+                    {["signin"].includes(props.type) && (
+                        <Link to="/resetpass">
+                            Forgot Password ?
+                        </Link>
+                    )}
                   </Form.Group>
                 )}
 
@@ -312,61 +318,58 @@ function AuthForm(props) {
 
                 { page === 2 && ["signup"].includes(props.type) && (
                     <>
-                        <Form.Row className="m-0 justify-content-between">
-                            <Form.Group className="mr-2 w-25">
+                        <Form.Group>
+                            <FormField
+                                name="province"
+                                type="select"
+                                options={provinces}
+                                defaultValue="--"
+                                label="Province"
+                                error={errors.province}
+                                id="province"
+                                onChange = {displayCity}
+                                inputRef={register({
+                                    pattern: {
+                                        value: /^((?!--).)*$/,
+                                        message: error("required", "province"),
+                                    },
+                                })}
+                            />
+                        </Form.Group>
+                        {shouldDisplayCity && (
+                            <Form.Group>
                                 <FormField
-                                    name="province"
+                                    name="city"
                                     type="select"
-                                    options={provinces}
+                                    options={citiesToDisplay}
                                     defaultValue="--"
-                                    label="Province"
-                                    error={errors.province}
-                                    id="province"
-                                    onChange = {displayCity}
-                                    inputRef={register({
-                                        pattern: {
-                                            value: /^((?!--).)*$/,
-                                            message: error("required", "province"),
-                                        },
-                                    })}
+                                    label="City"
+                                    id="city"
                                 />
                             </Form.Group>
-                            {shouldDisplayCity && (
-                                <Form.Group className="mr-2 w-25">
-                                    <FormField
-                                        name="city"
-                                        type="select"
-                                        options={citiesToDisplay}
-                                        defaultValue="--"
-                                        label="City"
-                                        id="city"
-                                    />
-                                </Form.Group>
-                            )}
-                            <Form.Group controlId="formPostal" className="flex-grow-1">
-                                <FormField
-                                    name="postal"
-                                    label="Postal Code"
-                                    style={{ textTransform: "uppercase" }}
-                                    error={errors.postal}
-                                    placeholder="A0A 0A0"
-                                    inputRef={register({
-                                        required: error(
-                                            "required",
+                        )}
+                        <Form.Group controlId="formPostal">
+                            <FormField
+                                name="postal"
+                                label="Postal Code"
+                                style={{ textTransform: "uppercase" }}
+                                error={errors.postal}
+                                placeholder="A0A 0A0"
+                                inputRef={register({
+                                    required: error(
+                                        "required",
+                                        "postal code"
+                                    ),
+                                    pattern: {
+                                        value: /^[ABCEGHJ-LNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d/i,
+                                        message: error(
+                                            "invalid",
                                             "postal code"
                                         ),
-                                        pattern: {
-                                            value: /^[ABCEGHJ-LNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d/i,
-                                            message: error(
-                                                "invalid",
-                                                "postal code"
-                                            ),
-                                        },
-                                    })}
-                                />
-                            </Form.Group>
-                        </Form.Row>
-
+                                    },
+                                })}
+                            />
+                        </Form.Group>
                         <div className="my-4">
                             <h2 className="selectGroupText">
                                 Select all relevant age groups to recieve

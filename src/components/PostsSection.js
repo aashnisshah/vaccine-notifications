@@ -18,7 +18,7 @@ import {
     selectAll,
     cities,
 } from "./formConstants";
-import { sendTargettedMessages } from "./../util/twilio";
+import { sendTargettedMessages } from "../util/expo";
 
 function PostsSection(props) {
     const auth = useAuth();
@@ -132,11 +132,16 @@ function PostsSection(props) {
     const sendMessage = async () => {
         try {
             setPending(true);
-            auth.postMessage(rawData);
-            await sendTargettedMessages(rawData);
+            // auth.postMessage(rawData);
+            console.log('hi hello')
+            const res = await sendTargettedMessages(rawData);
+            console.log(res)
             setMessageStatus({status:"success", message:"Message Sent!"})
         } catch (error) {
+            console.log('this is error')
+            console.log(error)
             setMessageStatus({status:"error", message: "Something went wrong!"})
+            // setMessageStatus({status:"success", message:"Message Sent!"})
         }
         reset();
         setPending(false);

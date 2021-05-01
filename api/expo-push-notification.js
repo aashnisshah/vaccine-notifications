@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const expo = require('./_expo');
+
 const { getTargettedMobileUsers } = require("./_db.js");
 
 let messageFooter = "Manage notifications at vaccinenotifications.org.";
@@ -33,15 +35,12 @@ exports.handler = async (event, context, callback) => {
             eligibilityGroups
         );
 
-        let bindings = users.map((user) =>
-            JSON.stringify({
-                binding_type: "sms",
-                address: user.phoneNumber,
-                identity: user.id,
-            })
+        let expoTokens = users.map((user) =>
+            user.expoToken
         );
 
-        return bindings;
+
+        return _.uniq(expoTokens);
     };
 
     let getMessageBody = (
@@ -106,37 +105,22 @@ exports.handler = async (event, context, callback) => {
         return messageBody;
     };
 
-    let sendMessages = async (userBindings, messageBody) => {
-        return await client.notify
-            .services(process.env.TWILIO_NOTIFY_SID)
-            .notifications.create({
-                toBinding: userBindings,
-                body: messageBody,
-            })
-            .then((notification) => {
-                console.log(notification.sid, "successfully sent");
-                return {
-                    statusCode: 200,
-                    body: `Message sent to ${userBindings.length} people`,
-                };
-            })
-            .catch((error) => {
-                console.log(error);
-                return {
-                    statusCode: 500,
-                    body: `Error Sending Message: ${JSON.stringify(error)}`,
-                };
-            });
+    let sendMessages = async (expoTokenList, messageData) => {
+        const title = messageType;
+        const body = message;
+        const data = {message: messageData}
+        return await expo.sendBulkNotifications(expoTokenList,title,body, data)
     };
 
-    let userBindings = await getUserBindings(
+    let expoTokenList = await getUserBindings(
         province,
         postalCodes,
         selectedAgeGroups,
         eligibilityGroups
     );
+    
 
-    if (userBindings.length === 0) {
+    if (expoTokenList.length === 0) {
         return {
             statusCode: 200,
             body: `Message sent to 0 people`,
@@ -149,6 +133,13 @@ exports.handler = async (event, context, callback) => {
         selectedAgeGroups,
         eligibilityGroups
     );
-
-    return sendMessages(userBindings, messageBody);
+    console.log(messageBody)
+    console.log(expoTokenList);
+    
+    const res = await sendMessages(expoTokenList, messageBody)
+    console.log('sendmessage res', res);
+    return {
+        statusCode:200, body:'good'
+    }
+    // return sendMessages(userBindings, messageBody);
 };

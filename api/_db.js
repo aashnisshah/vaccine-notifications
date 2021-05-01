@@ -1,7 +1,10 @@
-const firebaseAdmin = require("./_firebase");
+// const firebaseAdmin = require("./_firebase");
 const _ = require("lodash");
 
-const firestore = firebaseAdmin.firestore();
+// const firestore = firebaseAdmin.firestore();
+const firebase = require("./_firebase");
+
+const firestore = firebase.firestore();
 
 // Get user by uid
 function getUserByPhoneNumber(phone) {
@@ -145,10 +148,10 @@ async function getTargettedMobileUsers(
                 }
             }
 
-            if (isTarget && userData.phoneNumber) {
+            if (isTarget && userData.expoToken) {
                 targettedUsers.push({
                     id: userData.uid,
-                    phoneNumber: userData.phoneNumber,
+                    expoToken: userData.expoToken,
                 });
             }
         });

@@ -13,8 +13,8 @@ export async function apiRequest(path, method = "GET", data) {
     },
     body: data ? JSON.stringify(data) : undefined,
   })
-    .then((response) => response.json())
     .then((response) => {
+      
       if (response.status === "error") {
         // Automatically signout user if accessToken is no longer valid
         if (response.code === "auth/invalid-user-token") {
@@ -23,6 +23,8 @@ export async function apiRequest(path, method = "GET", data) {
 
         throw new CustomError(response.code, response.message);
       } else {
+        console.log('this is api request response')
+        console.log(response)
         return response.data;
       }
     });
