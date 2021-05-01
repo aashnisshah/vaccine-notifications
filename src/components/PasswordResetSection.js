@@ -40,11 +40,12 @@ export default function PasswordResetSection(props) {
             size={props.size}
             bgImageOpacity={props.bgImageOpacity}
         >
-            <Button  variant="link"onClick={()=> router.push('/auth/signin')}>
-                
-                <p>← Go back</p>
-            </Button>
-            <Container className="formContainer">
+
+            
+            <Container className="formContainer forwardBackButton">
+            <Button className="p-0" variant="link" onClick={()=> router.push('/auth/signin')}>
+                    <p>← Back</p>
+                </Button>
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}
