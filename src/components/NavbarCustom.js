@@ -33,6 +33,10 @@ function NavbarCustom(props) {
                   <NavDropdown.Item active={false}>Dashboard</NavDropdown.Item>
                 </LinkContainer>
 
+                <LinkContainer to="/alerts">
+                  <NavDropdown.Item active={false}>Alerts</NavDropdown.Item>
+                </LinkContainer>
+
                 {auth.user && auth.user.admin && (
                   <LinkContainer to="/posts">
                     <NavDropdown.Item active={false}>Posts</NavDropdown.Item>

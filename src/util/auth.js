@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useContext, createContext,} from "react";
 import queryString from "query-string";
 import firebase from "./firebase";
-import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber } from "./db";
+import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber, getMessages } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
 import { sendAccountActivatedMessage } from "./twilio"
@@ -261,6 +261,10 @@ function useAuthProvider() {
     await createMessage(rString, message)
   }
 
+  const retrievePastAlerts = async (lastPostTime) => {
+    return await getMessages(lastPostTime)
+  }
+
   return {
     user: finalUser,
     setUpRecaptcha,
@@ -275,8 +279,10 @@ function useAuthProvider() {
     updateEmail,
     updatePassword,
     updateProfile,
-    postMessage
+    postMessage,
+    retrievePastAlerts
   };
+  
 }
   
 // Format final user object and merge extra data from database

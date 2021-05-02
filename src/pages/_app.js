@@ -8,7 +8,7 @@ import TosPage from "./tos";
 import PasswordReset from './PasswordReset';
 import PostsPage from "./posts";
 import PrivacyPage from "./privacy";
-import PreviousAlerts from "./previousAlerts";
+import PreviousAlertsPage from "./previousAlerts";
 import AuthPage from "./auth";
 import { Switch, Route, Router } from "./../util/router.js";
 import FirebaseActionPage from "./firebase-action.js";
@@ -41,7 +41,7 @@ function App(props) {
                             component={DashboardPage}
                         />
 
-                        <Route exact path="/alerts" component={PreviousAlerts} />
+                        <Route exact path="/alerts" component={PreviousAlertsPage} />
 
                         <Route exact path="/resetpass" component={PasswordReset} />
 

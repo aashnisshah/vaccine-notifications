@@ -37,10 +37,34 @@ export async function findUserByPhoneNumber(phoneNumber) {
 
 // Create a new message
 export function createMessage(id, data) {
-  return firestore
+  try {
+    return firestore
     .collection("messages")
     .doc(id)
     .set({ id, ...data }, { merge: true });
+  } catch (error) {
+    console.log("Error posting message: ", error);
+  }
+}
+
+export function getMessages(lastPostTime) {
+  const pastMessages = [];
+  try {
+    firestore
+    .collection("messages")
+    .where("postTime", "<", lastPostTime)
+    .orderBy("postTime", "asc")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        pastMessages.push(doc.data());
+      });
+    })
+    
+    return pastMessages;
+  } catch (error) {
+    console.log("Error getting messages: ", error);
+  }
 }
 
 /**** ITEMS ****/

@@ -1,5 +1,5 @@
 import React from "react";
-import PreviousAlertsSection from "./../components/PostsSection";
+import PreviousAlertsSection from "./../components/PreviousAlertsSection";
 import { requireAuth } from "./../util/auth.js";
 
 function PreviousAlertsPage(props) {
@@ -10,8 +10,8 @@ function PreviousAlertsPage(props) {
       size="md"
       bgImage=""
       bgImageOpacity={1}
-      title="Post a Message"
-      subtitle=""
+      title="Previous Alerts"
+      subtitle="All previous updates relevant to the eligibility/age groups and locations you've subscribed to, can be found here."
     />
   );
 }

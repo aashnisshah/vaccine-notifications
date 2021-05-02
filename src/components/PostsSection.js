@@ -18,7 +18,7 @@ import {
     selectAll,
     cities,
 } from "./formConstants";
-import { sendTargettedMessages } from "./../util/twilio";
+// import { sendTargettedMessages } from "./../util/twilio";
 
 function PostsSection(props) {
     const auth = useAuth();
@@ -109,6 +109,7 @@ function PostsSection(props) {
                 }
             });
     
+            data.postTime = new Date().getTime();
             data.selectedAgeGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             delete data.locationGroup;
@@ -132,8 +133,8 @@ function PostsSection(props) {
     const sendMessage = async () => {
         try {
             setPending(true);
-            auth.postMessage(rawData);
-            await sendTargettedMessages(rawData);
+            await auth.postMessage(rawData);
+            // await sendTargettedMessages(rawData);
             setMessageStatus({status:"success", message:"Message Sent!"})
         } catch (error) {
             setMessageStatus({status:"error", message: "Something went wrong!"})
