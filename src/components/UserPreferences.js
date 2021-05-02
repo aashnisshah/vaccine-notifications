@@ -61,7 +61,7 @@ function UserPreferences(props) {
           await registerServiceWorker();
     }
 
-    function askPermission() {
+    async function askPermission() {
         return new Promise(function(resolve, reject) {
           const permissionResult = Notification.requestPermission(function(result) {
             resolve(result);
@@ -78,7 +78,7 @@ function UserPreferences(props) {
         });
     }
     
-    function subscribeUserToPush() {
+    async function subscribeUserToPush() {
         return navigator.serviceWorker.register('/service-worker.js')
         .then(function(registration) {
           const subscribeOptions = {
@@ -96,7 +96,7 @@ function UserPreferences(props) {
         });
       }
 
-    function registerServiceWorker() {
+    async function registerServiceWorker() {
         console.log('registering...')
         return navigator.serviceWorker.register('/service-worker.js')
         .then(function(registration) {
