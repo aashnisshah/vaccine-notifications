@@ -47,21 +47,15 @@ export function createMessage(id, data) {
   }
 }
 
-export function getMessages(lastPostTime) {
+export async function getMessages(lastPostTime) {
   const pastMessages = [];
   try {
-    firestore
-    .collection("messages")
-    .where("postTime", "<", lastPostTime)
-    .orderBy("postTime", "asc")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        pastMessages.push(doc.data());
-      });
-    })
-    
+    const querySnapshot = await firestore.collection("messages").where("postTime", "<", lastPostTime).orderBy("postTime", "asc").get();
+    querySnapshot.forEach((doc) => {
+      pastMessages.push(doc.data());
+    });
     return pastMessages;
+    
   } catch (error) {
     console.log("Error getting messages: ", error);
   }
