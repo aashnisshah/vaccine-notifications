@@ -25,6 +25,13 @@ function UserPreferences(props) {
 
     useEffect(() => {
         showCitiesOnLoad();
+        
+        (async () => {
+            await askPermission();
+            await subscribeToWebPush();
+            
+            await subscribeUserToPush();
+        })();
         return () => {
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
@@ -38,7 +45,82 @@ function UserPreferences(props) {
     }, []);
     useEffect(() => {
         checkNeccessaryFields();
-    }, [auth.user, editing])
+    }, [auth.user, editing]);
+
+    const subscribeToWebPush = async () => {
+        if (!('serviceWorker' in navigator)) {
+            // Service Worker isn't supported on this browser, disable or hide UI.
+            return;
+          }
+          
+          if (!('PushManager' in window)) {
+            // Push isn't supported on this browser, disable or hide UI.
+            return;
+          }
+          console.log('here')
+          await registerServiceWorker();
+    }
+
+    function askPermission() {
+        return new Promise(function(resolve, reject) {
+          const permissionResult = Notification.requestPermission(function(result) {
+            resolve(result);
+          });
+      
+          if (permissionResult) {
+            permissionResult.then(resolve, reject);
+          }
+        })
+        .then(function(permissionResult) {
+          if (permissionResult !== 'granted') {
+            throw new Error('We weren\'t granted permission.');
+          }
+        });
+    }
+    
+    function subscribeUserToPush() {
+        return navigator.serviceWorker.register('/service-worker.js')
+        .then(function(registration) {
+          const subscribeOptions = {
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+                'BE8XCSAPvh7eNfgRQjjEiFjGivtm3WfKxUBERqZrWEHUbWc3Ns5n67o1wcsaIiRcbCaTso1zuNSiHDtE9Wb1BPw'
+              )
+          };
+      
+          return registration.pushManager.subscribe(subscribeOptions);
+        })
+        .then(function(pushSubscription) {
+          console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+          return pushSubscription;
+        });
+      }
+
+    function registerServiceWorker() {
+        console.log('registering...')
+        return navigator.serviceWorker.register('/service-worker.js')
+        .then(function(registration) {
+          console.log('Service worker successfully registered.');
+          return registration;
+        })
+        .catch(function(err) {
+          console.error('Unable to register service worker.', err);
+        });
+      }
+      function urlBase64ToUint8Array(base64String) {
+        var padding = '='.repeat((4 - base64String.length % 4) % 4);
+        var base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+    
+        var rawData = window.atob(base64);
+        var outputArray = new Uint8Array(rawData.length);
+    
+        for (var i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
 
     const checkNeccessaryFields = () => {
         console.log(auth.user)
