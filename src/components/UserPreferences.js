@@ -25,6 +25,7 @@ function UserPreferences(props) {
 
     useEffect(() => {
         showCitiesOnLoad();
+        window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: true}));
         return () => {
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'

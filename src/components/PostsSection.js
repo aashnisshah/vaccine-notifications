@@ -109,6 +109,7 @@ function PostsSection(props) {
                 }
             });
     
+            data.postTime = new Date().getTime();
             data.selectedAgeGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             delete data.locationGroup;

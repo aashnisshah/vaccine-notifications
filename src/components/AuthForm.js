@@ -37,7 +37,7 @@ function AuthForm(props) {
 
     useEffect(() => {
         document.addEventListener("keydown", handleEnter);
-
+        window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: false}));
         return () => {
             document.removeEventListener("keydown", handleEnter)
             const allCheckBoxes = document.querySelectorAll(
