@@ -29,7 +29,7 @@ function PreviousAlertsSection(props) {
 
         if ("allMessages" in window.localStorage) {
           allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
-          // [].sort.call(allMessages, (a, b) => (b.postTime > a.postTime) ? 1 : -1);
+          allMessages.sort((a, b) => (b.postTime > a.postTime) ? 1 : -1);
         }
 
         const lastPostTime = allMessages[0] ? allMessages[0].postTime : null;
@@ -104,7 +104,6 @@ function PreviousAlertsSection(props) {
             <Container className="d-flex align-items-center flex-column position-relative">
                 <SectionHeader
                     title={props.title}
-                    // subtitle={props.subtitle}
                     size={1}
                     spaced={true}
                     className="text-center"
