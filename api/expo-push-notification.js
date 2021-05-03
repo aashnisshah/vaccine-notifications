@@ -105,11 +105,11 @@ exports.handler = async (event, context, callback) => {
         return messageBody;
     };
 
-    let sendMessages = async (expoTokenList, messageData) => {
+    let sendMessages = async (expoTokenList, messageBody) => {
         const title = messageType;
-        const body = message;
-        const data = {message: messageData}
-        return await expo.sendBulkNotifications(expoTokenList,title,body, data)
+        const body = messageBody;
+        const messageData = data;
+        return await expo.sendBulkNotifications(expoTokenList, title, body, messageData)
     };
 
     let expoTokenList = await getUserBindings(
