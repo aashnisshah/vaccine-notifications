@@ -11,7 +11,7 @@ function PreviousAlertsPage(props) {
       bgImage=""
       bgImageOpacity={1}
       title="Previous Alerts"
-      subtitle="All previous updates relevant to the eligibility/age groups and locations you've subscribed to, can be found here."
+      // subtitle="All previous updates relevant to the eligibility/age groups and locations you've subscribed to, can be found here."
     />
   );
 }
