@@ -50,7 +50,7 @@ export function createMessage(id, data) {
 export async function getMessages(lastPostTime) {
   const pastMessages = [];
   try {
-    const querySnapshot = await firestore.collection("messages").where("postTime", "<", lastPostTime).orderBy("postTime", "asc").get();
+    const querySnapshot = await firestore.collection("messages").where("postTime", ">", lastPostTime).orderBy("postTime", "asc").get();
     querySnapshot.forEach((doc) => {
       pastMessages.push(doc.data());
     });

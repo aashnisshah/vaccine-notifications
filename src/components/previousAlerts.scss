@@ -1,0 +1,19 @@
+.alertsTable {
+  max-width: 900px;
+
+  & > tbody tr:nth-of-type(odd), tbody tr:hover {
+    background-color: #f8f9fa !important;
+  }
+
+  & > thead th, td {
+    border: 1px solid #dee2e6 !important;
+  }
+
+  & > tbody tr {
+    cursor: pointer;
+  }
+}
+
+.emptyMessage {
+  color: rgb(59, 60, 212);
+}
