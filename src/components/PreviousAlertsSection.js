@@ -41,13 +41,10 @@ function PreviousAlertsSection(props) {
         console.log(Array.isArray(newPosts))
         console.log(newPosts)
         for (const post of newPosts) {
-          console.log("hi")
-          console.log(post)
           allMessages.unshift(post);
         }
        
-        // console.log(allMessages)
-        // window.localStorage.setItem("allMessages", allMessages.unshift(newPosts));
+        window.localStorage.setItem("allMessages", JSON.stringify(allMessages));
       }
       
       window.addEventListener("storage", async () => {
