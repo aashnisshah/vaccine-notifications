@@ -496,7 +496,7 @@ function PostsSection(props) {
                               size="lg"
                               disabled={pending}
                           >
-                              Go Back
+                              Edit
                           </Button>
                       </Form.Row>
                   </div>

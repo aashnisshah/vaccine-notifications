@@ -4,6 +4,7 @@ import { useRouter, history } from "./../util/router.js";
 import { useAuth } from "./../util/auth.js";
 import Section from "./Section";
 import SectionHeader from "./SectionHeader";
+import { getSendTo } from "../helpers/FormatPostMessage";
 import FormAlert from "./FormAlert";
 import "./previousAlerts.scss";
 
@@ -13,10 +14,12 @@ function PreviousAlertsSection(props) {
     const [previousAlerts, setPreviousAlerts] = useState([]);
     const [isEmpty, setIsEmpty] = useState(true);
     const [isAlertPage, setIsAlertPage] = useState(false);
+    const [groups, setGroups] = useState([]);
+    const [alertBody, setAlertBody] = useState("");
 
     useEffect(() => {
         if (!auth.user) {
-            history.replace("/auth/signin");
+          history.replace("/auth/signin");
         }
     }, [auth]);
 
@@ -40,7 +43,6 @@ function PreviousAlertsSection(props) {
           getPostsAfterTime = twoDaysAgoTime;
         }
         
-        console.log(getPostsAfterTime)
         const newPosts = await auth.retrievePastAlerts(getPostsAfterTime);
         if (newPosts && newPosts.length > 0) {
           for (const post of newPosts) {
@@ -75,8 +77,20 @@ function PreviousAlertsSection(props) {
       return date.split(" ").slice(0,3).join(" ");
     }
 
+    const formatPhoneNumber = (number) => {
+      let match = number.match(/^(\d{3})(\d{3})(\d{4})$/);
+
+      if (match) {
+        return '(' + match[1] + ') ' + match[2] + '-' + match[3]
+      };
+    }
+
     const displayAlert = (alert) => {
+      const alertGroups = getSendTo(alert);
+
+      setGroups(alertGroups);
       setIsAlertPage(true);
+      setAlertBody(alert);
     }
     
     return (
@@ -87,7 +101,7 @@ function PreviousAlertsSection(props) {
             bgImage={props.bgImage}
             bgImageOpacity={props.bgImageOpacity}
         >
-            <Container className="d-flex align-items-center flex-column">
+            <Container className="d-flex align-items-center flex-column position-relative">
                 <SectionHeader
                     title={props.title}
                     // subtitle={props.subtitle}
@@ -124,9 +138,41 @@ function PreviousAlertsSection(props) {
                 ) : isEmpty ? (
                   <p className="emptyMessage"> There are no recent alerts for your selected age/elibility groups or regions.</p>
                 ) : isAlertPage ? (
-                  <>
-                    <Button variant="link" onClick={() => setIsAlertPage(false)}>&#8592; &nbsp; Back</Button>
-                  </>
+                  <Container className="position-relative alertPageContainer">
+                    <Button variant="link" className="backButton left-0" onClick={() => setIsAlertPage(false)}>&#8592; &nbsp; Back</Button>
+                    <Container className="messageContainer">
+                      <h5>This message is for: </h5>
+                      <ul>
+                        {groups.map(group => <li>{group}</li>)}
+                      </ul>
+                      <Card className="mb-4">
+                        <Card.Header as="h5">Alert Preview</Card.Header>
+                        <Card.Body>
+                          {alertBody.messageType}
+                          <br/> 
+                          <br/>
+                          {alertBody.message}
+                          <br/>
+                          <br/>
+                          { alertBody.linkToBooking && !alertBody.numberToBooking && (
+                            <p>To book, visit <a href={alertBody.linkToBooking}>{alertBody.linkToBooking}</a></p>
+                          )}
+
+                          { alertBody.numberToBooking && !alertBody.linkToBooking && (
+                            <p>Call {formatPhoneNumber(alertBody.numberToBooking)} to book</p>
+                          )}
+
+                          { alertBody.numberToBooking && alertBody.linkToBooking && (
+                            <p>Call {formatPhoneNumber(alertBody.numberToBooking)} or visit <a href={alertBody.linkToBooking}>{alertBody.linkToBooking}</a> to book</p>
+                          )}
+
+                          { alertBody.linkToSrc && (
+                            <p>To learn more visit <a href={alertBody.linkToSrc}>{alertBody.linkToSrc}</a></p> 
+                          )}
+                        </Card.Body>
+                      </Card>
+                    </Container>
+                  </Container>
                 ) : (
                   <Spinner />
                 )}

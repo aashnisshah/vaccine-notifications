@@ -17,3 +17,30 @@
 .emptyMessage {
   color: rgb(59, 60, 212);
 }
+
+.backButton {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.backButton:hover {
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.alertsPageContainer {
+  max-width: 900px;
+}
+
+.messageContainer {
+  border-radius: 10px;
+  background-color: #f7f7ff;
+  padding: 40px 80px;
+}
+
+@media only screen and (max-width: 800px) {
+  .messageContainer {
+    padding: 12px;
+    margin: 12px;
+  }
+}
