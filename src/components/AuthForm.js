@@ -40,6 +40,7 @@ function AuthForm(props) {
         if (window.ReactNativeWebView) {
             window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: false}));
         }
+        resetLocalStorage();
         return () => {
             document.removeEventListener("keydown", handleEnter)
             const allCheckBoxes = document.querySelectorAll(
@@ -57,6 +58,19 @@ function AuthForm(props) {
       if (e.key === "Enter") {
         e.preventDefault()
       }
+    }
+
+    const resetLocalStorage = () => {
+        try {
+            if ("allMessages" in window.localStorage) {
+                localStorage.removeItem("allMessages")
+            }
+            if ("newMessage" in window.localStorage) {
+                localStorage.removeItem("newMessage")
+            }
+        } catch (e) {
+
+        }
     }
 
     const onChangeHandler = (event) => {
