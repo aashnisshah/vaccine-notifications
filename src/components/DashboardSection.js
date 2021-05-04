@@ -17,7 +17,6 @@ function DashboardSection(props) {
 
   let accountConfigured = auth.user.phoneNumber && auth.user.province && auth.user.postal;
 
-
   return (
     <Section
       bg={props.bg}

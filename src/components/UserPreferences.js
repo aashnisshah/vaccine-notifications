@@ -17,11 +17,19 @@ function UserPreferences(props) {
     const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
     const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [groupError, setGroupError] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     // State to control whether we show a re-authentication flow
     // Required by some security sensitive actions, such as changing password.
     const [reauthState, setReauthState] = useState({
         show: false,
     });
+
+    useEffect(() => {
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        setIsMobile(true);
+        console.log('check')
+      }
+    }, [])
 
     useEffect(() => {
         showCitiesOnLoad();
@@ -40,12 +48,12 @@ function UserPreferences(props) {
             });
         };
     }, []);
+    
     useEffect(() => {
         checkNeccessaryFields();
     }, [auth.user, editing])
 
     const checkNeccessaryFields = () => {
-        console.log(auth.user)
         if (auth.user.optout) {
             setFormAlert({type:"warning", message: "You have opted out of notifications, to opt in click the 'Opt in' button"});
         } else if(!auth.user.expoToken) {
@@ -421,6 +429,20 @@ function UserPreferences(props) {
                 >
                     Edit
                 </Button>
+            )}
+
+            {isMobile && (
+              <Button
+               variant="secondary"
+               onClick={(e) => {
+                e.preventDefault();
+                auth.signout();
+              }}
+               size="lg"
+               disabled={pending}
+              >
+                  Sign Out
+              </Button>
             )}
         </Form>
     );
