@@ -238,7 +238,6 @@ function UserPreferences(props) {
                     defaultValue={auth.user.email ? auth.user.email : formatPhoneNumber(auth.user.phoneNumber)}
                     error={errors.username}
                     disabled
-                    
                 />
             </Form.Group>
             <Form.Group controlId="formPostalCode">
@@ -395,7 +394,6 @@ function UserPreferences(props) {
                     <Button
                         variant="success"
                         type="submit"
-                        size="lg"
                         className="mr-2"
                         disabled={pending}
                     >
@@ -415,7 +413,6 @@ function UserPreferences(props) {
                     </Button>
                     <Button
                         variant="secondary"
-                        size="lg"
                         onClick={() => {setEditing(false); window.scrollTo(0,0);}}
                     >
                         Cancel
@@ -431,7 +428,7 @@ function UserPreferences(props) {
                 </Button>
             )}
 
-            {isMobile && (
+            {isMobile && !editing && (
               <Button
                variant="secondary"
                onClick={(e) => {
