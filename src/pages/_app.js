@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import "./../styles/global.scss";
 import NavbarCustom from "./../components/NavbarCustom";
 import IndexPage from "./index";
@@ -19,6 +19,14 @@ import { AuthProvider } from "./../util/auth.js";
 import logo from "./../images/VNLogo.png";
 
 function App(props) {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      setIsMobile(true);
+    }
+  }, [])
+
     return (
         <AuthProvider>
             <Router>
@@ -62,16 +70,18 @@ function App(props) {
                         <Route component={NotFoundPage} />
                     </Switch>
 
+                  {!isMobile && (
                     <Footer
-                        bg="light"
-                        textColor="dark"
-                        size="sm"
-                        bgImage=""
-                        bgImageOpacity={1}
-                        description="Notify you when vaccine appointments are available in your area"
-                        copyright="© 2021 Vaccine Notifications"
-                        logo="https://uploads.divjoy.com/logo.svg"
-                    />
+                    bg="light"
+                    textColor="dark"
+                    size="sm"
+                    bgImage=""
+                    bgImageOpacity={1}
+                    description="Notify you when vaccine appointments are available in your area"
+                    copyright="© 2021 Vaccine Notifications"
+                    logo="https://uploads.divjoy.com/logo.svg"
+                  />
+                  )}   
                 </>
             </Router>
         </AuthProvider>

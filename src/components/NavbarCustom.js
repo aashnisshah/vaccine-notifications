@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import { LinkContainer } from "react-router-bootstrap";
@@ -9,6 +9,13 @@ import { useAuth } from "./../util/auth.js";
 
 function NavbarCustom(props) {
   const auth = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      setIsMobile(true);
+    }
+  }, [])
 
   return (
     <Navbar bg={props.bg} variant={props.variant} expand={props.expand} style={{paddingTop:20}}>
@@ -24,50 +31,54 @@ function NavbarCustom(props) {
           </Navbar.Brand>
         </LinkContainer>
 
-        <Navbar.Toggle aria-controls="navbar-nav" className="border-0" />
-        <Navbar.Collapse id="navbar-nav" className="justify-content-end">
-          <Nav>
-            {auth.user && (
-              <NavDropdown id="dropdown" title="Account" alignRight={true}>
-                <LinkContainer to="/dashboard">
-                  <NavDropdown.Item active={false}>Dashboard</NavDropdown.Item>
-                </LinkContainer>
-
-                <LinkContainer to="/alerts">
-                  <NavDropdown.Item active={false}>Alerts</NavDropdown.Item>
-                </LinkContainer>
-
-                {auth.user && auth.user.admin && (
-                  <LinkContainer to="/posts">
-                    <NavDropdown.Item active={false}>Posts</NavDropdown.Item>
+        {!isMobile && (
+          <>
+          <Navbar.Toggle aria-controls="navbar-nav" className="border-0" />
+          <Navbar.Collapse id="navbar-nav" className="justify-content-end">
+            <Nav>
+              {auth.user && (
+                <NavDropdown id="dropdown" title="Account" alignRight={true}>
+                  <LinkContainer to="/dashboard">
+                    <NavDropdown.Item active={false}>Dashboard</NavDropdown.Item>
                   </LinkContainer>
-                )}
-
-                <Dropdown.Divider />
-
-                <LinkContainer to="/auth/signout">
-                  <NavDropdown.Item
-                    active={false}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      auth.signout();
-                    }}
-                  >
-                    Sign out
-                  </NavDropdown.Item>
-                </LinkContainer>
-              </NavDropdown>
-            )}
-
-            {!auth.user && (
-              <Nav.Item>
-                <LinkContainer to="/auth/signin">
-                  <Nav.Link active={false}>Sign in</Nav.Link>
-                </LinkContainer>
-              </Nav.Item>
-            )}
-          </Nav>
-        </Navbar.Collapse>
+  
+                  <LinkContainer to="/alerts">
+                    <NavDropdown.Item active={false}>Alerts</NavDropdown.Item>
+                  </LinkContainer>
+  
+                  {auth.user && auth.user.admin && (
+                    <LinkContainer to="/posts">
+                      <NavDropdown.Item active={false}>Posts</NavDropdown.Item>
+                    </LinkContainer>
+                  )}
+  
+                  <Dropdown.Divider />
+  
+                  <LinkContainer to="/auth/signout">
+                    <NavDropdown.Item
+                      active={false}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        auth.signout();
+                      }}
+                    >
+                      Sign out
+                    </NavDropdown.Item>
+                  </LinkContainer>
+                </NavDropdown>
+              )}
+  
+              {!auth.user && (
+                <Nav.Item>
+                  <LinkContainer to="/auth/signin">
+                    <Nav.Link active={false}>Sign in</Nav.Link>
+                  </LinkContainer>
+                </Nav.Item>
+              )}
+            </Nav>
+          </Navbar.Collapse>
+          </>
+        )}
       </Container>
     </Navbar>
   );
