@@ -438,8 +438,8 @@ function UserPreferences(props) {
                 e.preventDefault();
                 auth.signout();
               }}
-               size="lg"
                disabled={pending}
+               className="ml-2"
               >
                   Sign Out
               </Button>

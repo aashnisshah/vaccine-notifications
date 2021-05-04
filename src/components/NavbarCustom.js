@@ -27,6 +27,7 @@ function NavbarCustom(props) {
               src={props.logo}
               alt="Logo"
               height="30"
+              className="mt-3"
             />
           </Navbar.Brand>
         </LinkContainer>

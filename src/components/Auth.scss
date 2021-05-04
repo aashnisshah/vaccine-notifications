@@ -48,6 +48,14 @@
   text-decoration: none;
 }
 
+.bottomText {
+  font-size: 17px
+}
+
+.bottomText > a {
+  font-weight: 800;
+}
+
 @media only screen and (max-width: 800px) {
   .previewCard {
     max-width: 100%;
