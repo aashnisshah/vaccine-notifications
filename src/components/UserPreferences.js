@@ -183,6 +183,7 @@ function UserPreferences(props) {
             data.ageGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+            data.postalShort = data.postal.substring(0,3);
 
             try {
                 await auth.updateProfile(data);

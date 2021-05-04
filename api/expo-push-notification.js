@@ -122,6 +122,7 @@ exports.handler = async (event, context, callback) => {
     
 
     if (expoTokenList.length === 0) {
+        console.log('No People')
         return {
             statusCode: 200,
             body: `Message sent to 0 people`,
@@ -135,7 +136,7 @@ exports.handler = async (event, context, callback) => {
         eligibilityGroups
     );
     console.log(messageBody)
-    console.log(expoTokenList);
+    console.log("This is tokenList:", expoTokenList);
     
     const res = await sendMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
