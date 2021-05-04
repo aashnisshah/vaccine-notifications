@@ -109,6 +109,7 @@ exports.handler = async (event, context, callback) => {
         const title = messageType;
         const body = messageBody;
         const messageData = data;
+        console.log('raw data', messageData);
         return await expo.sendBulkNotifications(expoTokenList, title, body, messageData)
     };
 

@@ -20,15 +20,25 @@ function PreviousAlertsSection(props) {
         }
     }, [auth]);
 
+    useEffect(()=> {
+
+    },[])
+
     useEffect(() => {
       const getMessages = async () => {
+        // localStorage.clear();
+        
         let allMessages = [];
 
         if ("allMessages" in window.localStorage) {
-          allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
+          allMessages = await checkNewMessage();
+          // allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
           // [].sort.call(allMessages, (a, b) => (b.postTime > a.postTime) ? 1 : -1);
+        } else {
+          window.localStorage.setItem("allMessages", JSON.stringify([allMessages]));
         }
 
+        console.log(allMessages)
         const lastPostTime = allMessages[0] ? allMessages[0].postTime : null;
         const todaysTime = new Date().getTime();
         const twoDaysAgoTime = todaysTime - 172800000; // seconds in 2 days
@@ -56,16 +66,51 @@ function PreviousAlertsSection(props) {
           setIsEmpty(true);
         }
       }
-      
-      window.addEventListener("storage", async () => {
-        if (window.localStorage.getItem("newMessage") && window.localStorage.getItem("newMessage") !== "") {
-          const newMessage = JSON.parse(window.localStorage.getItem("newMessage"));
-          const allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
-  
+      async function checkNewMessage() {
+        const newMessageRaw = window.localStorage.getItem("newMessage");
+        let allMessages = JSON.parse(window.localStorage.getItem("allMessages"))
+        if (newMessageRaw && newMessageRaw !== "") {
+          const newMessage = JSON.parse(newMessageRaw);
+          
+          window.localStorage.removeItem("newMessage");
+          // if (!allMessages.includes(newMessage)) {
           allMessages.push(newMessage);
+            
           window.localStorage.setItem("allMessages", JSON.stringify(allMessages));
+          
         }
-      })
+        return allMessages;
+      }
+      
+      // window.addEventListener("storage", async (e) => {
+      // //   alert(e.key)
+      // console.log(e.key)
+      //  alert(window.localStorage.getItem("newMessage"))
+      //   if (window.localStorage.getItem("newMessage") && window.localStorage.getItem("newMessage") !== "" && window.localStorage.getItem("newMessage") !== undefined) {
+          
+      //     alert(window.localStorage.getItem("newMessage"))
+      //     const newMessage = JSON.parse(window.localStorage.getItem("newMessage"));
+      //     const allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
+      //     window.localStorage.removeItem("newMessage");
+      //     // if (!allMessages.includes(newMessage)) {
+      //     allMessages.push(newMessage);
+            
+      //     window.localStorage.setItem("allMessages", JSON.stringify(allMessages));
+      //     // }
+      //   }
+      // })
+
+      // window.addEventListener("storage", async (e) => {
+      //   const newMessageRaw = window.localStorage.getItem("newMessage");
+      //   const newMessage = JSON.parse(newMessageRaw);
+      //   const allMessages = JSON.parse(window.localStorage.getItem("allMessages"));
+      //   window.localStorage.removeItem("newMessage");
+      //   // if (!allMessages.includes(newMessage)) {
+      //   allMessages.push(newMessage);
+          
+      //   window.localStorage.setItem("allMessages", JSON.stringify(allMessages));
+      // });
+
 
       getMessages();
     }, []);
@@ -99,7 +144,6 @@ function PreviousAlertsSection(props) {
                 {!isAlertPage && (
                   <p>All previous updates relevant to the eligibility/age groups and locations you've subscribed to, can be found here.</p>
                 )}
-
                 {previousAlerts && previousAlerts.length > 0 && !isAlertPage ? (
                   <Table hover className="alertsTable">
                     <thead>
