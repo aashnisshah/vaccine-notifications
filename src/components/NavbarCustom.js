@@ -20,7 +20,7 @@ function NavbarCustom(props) {
   return (
     <Navbar bg={props.bg} variant={props.variant} expand={props.expand} style={{paddingTop:20}}>
       <Container>
-        <LinkContainer to="/">
+        {isMobile ? 
           <Navbar.Brand>
             <img
               className="d-inline-block align-top"
@@ -29,9 +29,20 @@ function NavbarCustom(props) {
               height="30"
               className="mt-3"
             />
-          </Navbar.Brand>
-        </LinkContainer>
-
+          </Navbar.Brand> 
+          : 
+          <LinkContainer to="/">
+            <Navbar.Brand>
+              <img
+                className="d-inline-block align-top"
+                src={props.logo}
+                alt="Logo"
+                height="30"
+                className="mt-3"
+              />
+            </Navbar.Brand>
+          </LinkContainer>
+        }
         {!isMobile && (
           <>
           <Navbar.Toggle aria-controls="navbar-nav" className="border-0" />
