@@ -6,7 +6,12 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import { useAuth } from "./../util/auth.js";
 import { useForm } from "react-hook-form";
-import { ageGroups, eligibilityGroups, provinces, cities } from "./formConstants";
+import {
+    ageGroups,
+    eligibilityGroups,
+    provinces,
+    cities,
+} from "./formConstants";
 
 function UserPreferences(props) {
     const auth = useAuth();
@@ -17,6 +22,7 @@ function UserPreferences(props) {
     const [shouldDisplayCity, setShouldDisplayCity] = useState(false);
     const [citiesToDisplay, setCitiesToDisplay] = useState([]);
     const [groupError, setGroupError] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
     // State to control whether we show a re-authentication flow
     // Required by some security sensitive actions, such as changing password.
     const [reauthState, setReauthState] = useState({
@@ -24,12 +30,19 @@ function UserPreferences(props) {
     });
 
     useEffect(() => {
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            setIsMobile(true);
+            console.log("check");
+        }
+    }, []);
+
+    useEffect(() => {
         showCitiesOnLoad();
-        
+
         (async () => {
             await askPermission();
             await subscribeToWebPush();
-            
+
             await subscribeUserToPush();
         })();
         return () => {
@@ -43,79 +56,86 @@ function UserPreferences(props) {
             });
         };
     }, []);
+
     useEffect(() => {
         checkNeccessaryFields();
     }, [auth.user, editing]);
 
     const subscribeToWebPush = async () => {
-        if (!('serviceWorker' in navigator)) {
+        if (!("serviceWorker" in navigator)) {
             // Service Worker isn't supported on this browser, disable or hide UI.
             return;
-          }
-          
-          if (!('PushManager' in window)) {
+        }
+
+        if (!("PushManager" in window)) {
             // Push isn't supported on this browser, disable or hide UI.
             return;
-          }
-          console.log('here')
-          await registerServiceWorker();
-    }
+        }
+        console.log("here");
+        await registerServiceWorker();
+    };
 
     async function askPermission() {
-        return new Promise(function(resolve, reject) {
-          const permissionResult = Notification.requestPermission(function(result) {
-            resolve(result);
-          });
-      
-          if (permissionResult) {
-            permissionResult.then(resolve, reject);
-          }
-        })
-        .then(function(permissionResult) {
-          if (permissionResult !== 'granted') {
-            throw new Error('We weren\'t granted permission.');
-          }
+        return new Promise(function (resolve, reject) {
+            const permissionResult = Notification.requestPermission(function (
+                result
+            ) {
+                resolve(result);
+            });
+
+            if (permissionResult) {
+                permissionResult.then(resolve, reject);
+            }
+        }).then(function (permissionResult) {
+            if (permissionResult !== "granted") {
+                throw new Error("We weren't granted permission.");
+            }
         });
     }
-    
+
     async function subscribeUserToPush() {
-        return navigator.serviceWorker.register('/service-worker.js')
-        .then(function(registration) {
-          const subscribeOptions = {
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-                'BE8XCSAPvh7eNfgRQjjEiFjGivtm3WfKxUBERqZrWEHUbWc3Ns5n67o1wcsaIiRcbCaTso1zuNSiHDtE9Wb1BPw'
-              )
-          };
-      
-          return registration.pushManager.subscribe(subscribeOptions);
-        })
-        .then(function(pushSubscription) {
-          console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-          return pushSubscription;
-        });
-      }
+        return navigator.serviceWorker
+            .register("/service-worker.js")
+            .then(function (registration) {
+                const subscribeOptions = {
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(
+                        "BE8XCSAPvh7eNfgRQjjEiFjGivtm3WfKxUBERqZrWEHUbWc3Ns5n67o1wcsaIiRcbCaTso1zuNSiHDtE9Wb1BPw"
+                    ),
+                };
+
+                return registration.pushManager.subscribe(subscribeOptions);
+            })
+            .then(function (pushSubscription) {
+                console.log(
+                    "Received PushSubscription: ",
+                    JSON.stringify(pushSubscription)
+                );
+                return pushSubscription;
+            });
+    }
 
     async function registerServiceWorker() {
-        console.log('registering...')
-        return navigator.serviceWorker.register('/service-worker.js')
-        .then(function(registration) {
-          console.log('Service worker successfully registered.');
-          return registration;
-        })
-        .catch(function(err) {
-          console.error('Unable to register service worker.', err);
-        });
-      }
-      function urlBase64ToUint8Array(base64String) {
-        var padding = '='.repeat((4 - base64String.length % 4) % 4);
+        console.log("registering...");
+        return navigator.serviceWorker
+            .register("/service-worker.js")
+            .then(function (registration) {
+                console.log("Service worker successfully registered.");
+                return registration;
+            })
+            .catch(function (err) {
+                console.error("Unable to register service worker.", err);
+            });
+    }
+    function urlBase64ToUint8Array(base64String) {
+        var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
         var base64 = (base64String + padding)
-            .replace(/\-/g, '+')
-            .replace(/_/g, '/');
-    
+            .replace(/\-/g, "+")
+            .replace(/_/g, "/");
+
         var rawData = window.atob(base64);
         var outputArray = new Uint8Array(rawData.length);
-    
+
         for (var i = 0; i < rawData.length; ++i) {
             outputArray[i] = rawData.charCodeAt(i);
         }
@@ -123,40 +143,57 @@ function UserPreferences(props) {
     }
 
     const checkNeccessaryFields = () => {
-        console.log(auth.user)
         if (auth.user.optout) {
-            setFormAlert({type:"warning", message: "You have opted out of notifications, to opt in click the 'Opt in' button"});
-        } else if(!auth.user.expoToken) {
-            setFormAlert({type:"warning", message: "Download the 'Vaccine Notifications' app to receive mobile notifications"});
-        } else if (!auth.user.postal || !auth.user.province || ! (auth.user.eligibilityGroups && auth.user.ageGroups)) {
+            setFormAlert({
+                type: "warning",
+                message:
+                    "You have opted out of notifications, to opt in click the 'Opt in' button",
+            });
+        } else if (!auth.user.expoToken) {
+            setFormAlert({
+                type: "warning",
+                message:
+                    "Download the 'Vaccine Notifications' app to receive mobile notifications",
+            });
+        } else if (
+            !auth.user.postal ||
+            !auth.user.province ||
+            !(auth.user.eligibilityGroups && auth.user.ageGroups)
+        ) {
             setEditing(true);
-            setFormAlert({type:"warning", message: "Fill out empty fields to receive notifications!"});
+            setFormAlert({
+                type: "warning",
+                message: "Fill out empty fields to receive notifications!",
+            });
         } else {
-            setFormAlert({type:"success", message: "You're all set to receive mobile notifications!"});
+            setFormAlert({
+                type: "success",
+                message: "You're all set to receive mobile notifications!",
+            });
         }
-    }
+    };
 
     const showCitiesOnLoad = async () => {
         if (auth.user.city && auth.user.province) {
             await displayCity();
-            document.getElementById('city').value = auth.user.city;
+            document.getElementById("city").value = auth.user.city;
         }
-    }
+    };
 
     const displayCity = async () => {
-        const selectedProvince = document.getElementById("province").value
+        const selectedProvince = document.getElementById("province").value;
         if (Object.keys(cities).includes(selectedProvince)) {
-            const citiesForProvince = cities[selectedProvince]
+            const citiesForProvince = cities[selectedProvince];
             if (!citiesForProvince.includes("Other")) {
-                citiesForProvince.push("Other")
+                citiesForProvince.push("Other");
             }
-            
-            setCitiesToDisplay(citiesForProvince)
-            setShouldDisplayCity(true)
+
+            setCitiesToDisplay(citiesForProvince);
+            setShouldDisplayCity(true);
         } else {
-            setShouldDisplayCity(false)
+            setShouldDisplayCity(false);
         }
-    }
+    };
 
     const formatPhoneNumber = (str) => {
         if (!str) return;
@@ -224,7 +261,7 @@ function UserPreferences(props) {
         if (document.getElementById("city")) {
             data.city = document.getElementById("city").value;
         } else {
-            data.city = ""
+            data.city = "";
         }
 
         if (
@@ -261,6 +298,7 @@ function UserPreferences(props) {
             data.ageGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             data.postal = data.postal.replace(/\s/g, "").toUpperCase();
+            data.postalShort = data.postal.substring(0, 3);
 
             try {
                 await auth.updateProfile(data);
@@ -285,7 +323,7 @@ function UserPreferences(props) {
             }
             setPending(false);
             setEditing(false);
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
     };
 
@@ -305,10 +343,13 @@ function UserPreferences(props) {
             <Form.Group>
                 <FormField
                     label="Username"
-                    defaultValue={auth.user.email ? auth.user.email : formatPhoneNumber(auth.user.phoneNumber)}
+                    defaultValue={
+                        auth.user.email
+                            ? auth.user.email
+                            : formatPhoneNumber(auth.user.phoneNumber)
+                    }
                     error={errors.username}
                     disabled
-                    
                 />
             </Form.Group>
             <Form.Group controlId="formPostalCode">
@@ -335,16 +376,18 @@ function UserPreferences(props) {
                     disabled={!editing}
                     options={provinces}
                     label="Province"
-                    defaultValue={auth.user.province ? auth.user.province : "--" }
+                    defaultValue={
+                        auth.user.province ? auth.user.province : "--"
+                    }
                     placeholder="Province"
                     error={errors.province}
-                    onChange = {displayCity}
+                    onChange={displayCity}
                     inputRef={register({
                         required: "Please enter your Province",
                     })}
                 />
             </Form.Group>
-            
+
             {shouldDisplayCity && (
                 <Form.Group>
                     <FormField
@@ -421,18 +464,19 @@ function UserPreferences(props) {
                             Selected age groups to recieve notifications for.{" "}
                         </h2>
                         <Form.Row controlId="ageGroup" className="mx-0">
-                            {auth.user.ageGroups && auth.user.ageGroups.map((ageGroup) => (
-                                <div key={ageGroup}>
-                                    <Form.Check
-                                        className="mr-3 ageGroupField"
-                                        type="checkbox"
-                                        checked={true}
-                                        disabled
-                                        id={ageGroup}
-                                        label={ageGroup}
-                                    />
-                                </div>
-                            ))}
+                            {auth.user.ageGroups &&
+                                auth.user.ageGroups.map((ageGroup) => (
+                                    <div key={ageGroup}>
+                                        <Form.Check
+                                            className="mr-3 ageGroupField"
+                                            type="checkbox"
+                                            checked={true}
+                                            disabled
+                                            id={ageGroup}
+                                            label={ageGroup}
+                                        />
+                                    </div>
+                                ))}
                         </Form.Row>
                     </div>
                     <div className="my-4">
@@ -441,20 +485,21 @@ function UserPreferences(props) {
                             for.
                         </h2>
                         <Form.Group controlId="eligibilityGroup" required>
-                            {auth.user.eligibilityGroups && auth.user.eligibilityGroups.map(
-                                (eligibilityGroup) => (
-                                    <div key={eligibilityGroup}>
-                                        <Form.Check
-                                            className="my-2 eligibilityGroupField"
-                                            type="checkbox"
-                                            checked={true}
-                                            disabled
-                                            id={eligibilityGroup}
-                                            label={eligibilityGroup}
-                                        />
-                                    </div>
-                                )
-                            )}
+                            {auth.user.eligibilityGroups &&
+                                auth.user.eligibilityGroups.map(
+                                    (eligibilityGroup) => (
+                                        <div key={eligibilityGroup}>
+                                            <Form.Check
+                                                className="my-2 eligibilityGroupField"
+                                                type="checkbox"
+                                                checked={true}
+                                                disabled
+                                                id={eligibilityGroup}
+                                                label={eligibilityGroup}
+                                            />
+                                        </div>
+                                    )
+                                )}
                         </Form.Group>
                     </div>
                 </>
@@ -465,7 +510,6 @@ function UserPreferences(props) {
                     <Button
                         variant="success"
                         type="submit"
-                        size="lg"
                         className="mr-2"
                         disabled={pending}
                     >
@@ -485,8 +529,10 @@ function UserPreferences(props) {
                     </Button>
                     <Button
                         variant="secondary"
-                        size="lg"
-                        onClick={() => {setEditing(false); window.scrollTo(0,0);}}
+                        onClick={() => {
+                            setEditing(false);
+                            window.scrollTo(0, 0);
+                        }}
                     >
                         Cancel
                     </Button>
@@ -498,6 +544,20 @@ function UserPreferences(props) {
                     disabled={pending}
                 >
                     Edit
+                </Button>
+            )}
+
+            {isMobile && !editing && (
+                <Button
+                    variant="secondary"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        auth.signout();
+                    }}
+                    disabled={pending}
+                    className="ml-2"
+                >
+                    Sign Out
                 </Button>
             )}
         </Form>

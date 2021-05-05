@@ -109,6 +109,7 @@ function PostsSection(props) {
                 }
             });
     
+            data.postTime = new Date().getTime();
             data.selectedAgeGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             delete data.locationGroup;
@@ -132,8 +133,7 @@ function PostsSection(props) {
     const sendMessage = async () => {
         try {
             setPending(true);
-            // auth.postMessage(rawData);
-            console.log('hi hello')
+            auth.postMessage(rawData);
             const res = await sendTargettedMessages(rawData);
             console.log(res)
             setMessageStatus({status:"success", message:"Message Sent!"})
@@ -500,7 +500,7 @@ function PostsSection(props) {
                               size="lg"
                               disabled={pending}
                           >
-                              Go Back
+                              Edit
                           </Button>
                       </Form.Row>
                   </div>

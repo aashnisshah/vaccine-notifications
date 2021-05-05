@@ -105,11 +105,12 @@ exports.handler = async (event, context, callback) => {
         return messageBody;
     };
 
-    let sendMessages = async (expoTokenList, messageData) => {
+    let sendMessages = async (expoTokenList, messageBody) => {
         const title = messageType;
-        const body = message;
-        const data = {message: messageData}
-        return await expo.sendBulkNotifications(expoTokenList,title,body, data)
+        const body = messageBody;
+        const messageData = data;
+        console.log('raw data', messageData);
+        return await expo.sendBulkNotifications(expoTokenList, title, body, messageData)
     };
 
     let expoTokenList = await getUserBindings(
@@ -121,6 +122,7 @@ exports.handler = async (event, context, callback) => {
     
 
     if (expoTokenList.length === 0) {
+        console.log('No People')
         return {
             statusCode: 200,
             body: `Message sent to 0 people`,
@@ -134,7 +136,7 @@ exports.handler = async (event, context, callback) => {
         eligibilityGroups
     );
     console.log(messageBody)
-    console.log(expoTokenList);
+    console.log("This is tokenList:", expoTokenList);
     
     const res = await sendMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
