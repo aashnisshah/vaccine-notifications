@@ -140,8 +140,8 @@ exports.handler = async (event, context, callback) => {
     
     const res = await sendMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
-    return {
-        statusCode:200, body:'good'
-    }
+    callback({
+        statusCode:200, body:`sent to ${expoTokenList.length} people`
+    });
     // return sendMessages(userBindings, messageBody);
 };
