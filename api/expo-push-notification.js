@@ -127,7 +127,7 @@ exports.handler = async (event) => {
         console.log('No People')
         return {
             statusCode: 400,
-            body: `Message sent to 0 people`,
+            body: `Message sent to 0 users`,
         };
     }
 
