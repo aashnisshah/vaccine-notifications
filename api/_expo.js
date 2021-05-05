@@ -5,6 +5,7 @@ const { Expo } = require('expo-server-sdk')
 // let expo = new Expo({ accessToken: process.env.EXPO_ACCESS_TOKEN });
 
 async function sendBulkNotifications (pushTokenList, title, body, data) {
+    console.log('sending bulk messages in expo now')
     //TODO ADD SECURITY HERE
     let expo = new Expo();
     const errors = [];

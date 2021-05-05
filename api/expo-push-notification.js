@@ -137,7 +137,7 @@ exports.handler = async (event, context, callback) => {
     );
     console.log(messageBody)
     console.log("This is tokenList:", expoTokenList);
-    
+    console.log('about to send bulk messages through _expo')
     const res = await sendMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
     callback({
