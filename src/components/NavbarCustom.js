@@ -18,7 +18,7 @@ function NavbarCustom(props) {
   }, [])
 
   return (
-    <Navbar bg={props.bg} variant={props.variant} expand={props.expand} style={{paddingTop:20}}>
+    <Navbar bg={props.bg} variant={props.variant} expand={props.expand} style={{paddingTop: isMobile ? 20 : 0}}>
       <Container>
         {isMobile ? 
           <Navbar.Brand>
