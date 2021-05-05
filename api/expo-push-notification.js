@@ -1,11 +1,11 @@
 const _ = require("lodash");
-const expo = require('./_expo');
+const { sendBulkNotifications } = require('./_expo');
 
 const { getTargettedMobileUsers } = require("./_db.js");
 
 let messageFooter = "Manage notifications at vaccinenotifications.org.";
 
-exports.handler = async (event, context, callback) => {
+exports.handler = async (event) => {
     let data = JSON.parse(event.body);
 
     let selectedAgeGroups = data.selectedAgeGroups;
@@ -43,7 +43,7 @@ exports.handler = async (event, context, callback) => {
         return _.uniq(expoTokens);
     };
 
-    let getMessageBody = (
+    let getMessageBody = async(
         city,
         province,
         postalCodes,
@@ -110,7 +110,9 @@ exports.handler = async (event, context, callback) => {
         const body = messageBody;
         const messageData = data;
         console.log('raw data', messageData);
-        return await expo.sendBulkNotifications(expoTokenList, title, body, messageData)
+        const res = await sendBulkNotifications(expoTokenList, title, body, messageData);
+        console.log('sendmessages: ', res);
+        return res;
     };
 
     let expoTokenList = await getUserBindings(
@@ -124,12 +126,12 @@ exports.handler = async (event, context, callback) => {
     if (expoTokenList.length === 0) {
         console.log('No People')
         return {
-            statusCode: 200,
+            statusCode: 400,
             body: `Message sent to 0 people`,
         };
     }
 
-    let messageBody = getMessageBody(
+    let messageBody = await getMessageBody(
         province,
         postalCodes,
         selectedAgeGroups,
@@ -137,11 +139,10 @@ exports.handler = async (event, context, callback) => {
     );
     console.log(messageBody)
     console.log("This is tokenList:", expoTokenList);
-    console.log('about to send bulk messages through _expo')
+    console.log('about to send bulk messages through')
     const res = await sendMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
-    callback({
-        statusCode:200, body:`sent to ${expoTokenList.length} people`
-    });
+    return res;
+    // context.succeed(res);
     // return sendMessages(userBindings, messageBody);
 };

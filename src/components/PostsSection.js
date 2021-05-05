@@ -136,11 +136,16 @@ function PostsSection(props) {
             auth.postMessage(rawData);
             const res = await sendTargettedMessages(rawData);
             console.log("this is response: ", res)
-            setMessageStatus({status:"success", message:"Message Sent!"})
+            if (res.status === 200) {
+                setMessageStatus({status:"success", message:res.data})
+
+            } else {
+                setMessageStatus({status:"error", message: res.data})
+            }
         } catch (error) {
             console.log('this is error')
             console.log(error)
-            setMessageStatus({status:"error", message: "Something went wrong!"})
+            setMessageStatus({status:"error", message: error})
             // setMessageStatus({status:"success", message:"Message Sent!"})
         }
         reset();
