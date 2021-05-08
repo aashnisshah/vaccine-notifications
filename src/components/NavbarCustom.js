@@ -1,10 +1,6 @@
-import React, {useState, useEffect} from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
+import React, { useState, useEffect} from "react";
+import { Navbar, Container, Nav, NavDropdown, Button, Dropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
-import Dropdown from "react-bootstrap/Dropdown";
 import { useAuth } from "./../util/auth.js";
 
 function NavbarCustom(props) {
@@ -76,6 +72,9 @@ function NavbarCustom(props) {
                   </LinkContainer>
                 </Nav.Item>
               )}
+              <LinkContainer to="/download">
+                <Button className="ml-2">Download</Button>
+              </LinkContainer>
             </Nav>
           </Navbar.Collapse>
           </>

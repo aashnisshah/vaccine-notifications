@@ -10,6 +10,9 @@ import Image from "react-bootstrap/Image";
 import "./HeroSection.scss";
 
 function HeroSection(props) {
+  const googlePlayLink = "https://play.google.com/store/apps/details?id=com.elixirlabs.vaccinenotifications";
+  const appStoreLink = "";
+
   return (
     <Section
       bg={props.bg}
@@ -27,12 +30,16 @@ function HeroSection(props) {
               size={1}
               spaced={true}
             />
-
-            <LinkContainer to={props.buttonPath}>
-              <Button variant={props.buttonColor} size="lg">
-                {props.buttonText}
-              </Button>
-            </LinkContainer>
+            
+            <div className="badgesContainer">
+              <LinkContainer to={googlePlayLink}>
+                <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+              </LinkContainer>
+              <LinkContainer to={googlePlayLink} disabled>
+                {/* <h2>Coming Soon</h2> */}
+                <Image className="badges second" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+              </LinkContainer>
+            </div>
           </Col>
           <Col className="offset-lg-1 mt-5 mt-lg-0 ">
             <figure className="HeroSection__image-container mx-auto">

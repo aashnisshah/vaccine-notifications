@@ -3,3 +3,22 @@
     max-width: 570px;
   }
 }
+
+.badgesContainer {
+  display: flex;
+  max-height: 100px;
+}
+
+.badges {
+  max-width: 40%;
+  height: 100%;
+  margin: -15px -10px;
+}
+
+.badges:hover {
+  cursor: pointer;
+}
+
+.second {
+  margin: -15px 0;
+}
