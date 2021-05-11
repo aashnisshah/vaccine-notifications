@@ -50,10 +50,10 @@ exports.handler = async (event) => {
         selectedAgeGroups,
         eligibilityGroups
     ) => {
-        let messageBody = messageType;
+        let messageBody = "";
 
         if (message) {
-            messageBody = messageBody + "\n\n" + message;
+            messageBody = message;
         }
 
         // start details we know
