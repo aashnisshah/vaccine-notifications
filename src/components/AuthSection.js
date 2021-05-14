@@ -57,7 +57,7 @@ function AuthSection(props) {
           <Col lg={5} className="text-center text-lg-left">
             <SectionHeader
               title="Use our platform"
-              subtitle="If you are a health care worker we'd love your help! Sign up below for an admin account, and send updates to our users when vaccines are available at your centre."
+              subtitle="If you are an admin managing and deploying vaccines at a hosptial, pharmacy, clinic or pop ups, we'd love your help! Sign up below for an admin account, and send updates to our users when vaccines are available at your centre."
               size={1}
               spaced={true}
             />
