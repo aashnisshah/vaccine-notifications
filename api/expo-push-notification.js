@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { sendBulkNotifications } = require('./_expo');
 
-const { getTargettedMobileUsers } = require("./_db.js");
+const { getTargettedUsers } = require("./_db.js");
 
 let messageFooter = "Manage notifications at vaccinenotifications.org.";
 
@@ -20,28 +20,55 @@ exports.handler = async (event) => {
     let messageType = data.messageType;
     let numberToBooking = data.numberToBooking;
 
-    let getUserBindings = async (
+    let getMobileUserBindings = async (
         cities,
         province,
         postalCodes,
         selectedAgeGroups,
         eligibilityGroups
     ) => {
-        let users = await getTargettedMobileUsers(
+        let mobileUsers = await getTargettedUsers(
             cities,
             province,
             postalCodes,
             selectedAgeGroups,
-            eligibilityGroups
+            eligibilityGroups,
+            "mobile"
         );
 
-        let expoTokens = users.map((user) =>
+        let expoTokens = mobileUsers.map((user) =>
             user.expoToken
         );
 
 
         return _.uniq(expoTokens);
     };
+
+    let getDesktopUserBindings = async (
+        cities,
+        province,
+        postalCodes,
+        selectedAgeGroups,
+        eligibilityGroups
+    ) => {
+        let desktopUsers = await getTargettedUsers(
+            cities,
+            province,
+            postalCodes,
+            selectedAgeGroups,
+            eligibilityGroups,
+            "desktop"
+        );
+
+        console.log("desktop users 1", desktopUsers);
+
+        let desktopSubscriptions = desktopUsers.map((user) =>
+            user.webPushSubscription
+        );
+        
+
+        return _.uniq(desktopSubscriptions);
+    }
 
     let getMessageBody = async(
         city,
@@ -105,7 +132,7 @@ exports.handler = async (event) => {
         return messageBody;
     };
 
-    let sendMessages = async (expoTokenList, messageBody) => {
+    let sendMobileMessages = async (expoTokenList, messageBody) => {
         const title = messageType;
         const body = messageBody;
         const messageData = data;
@@ -115,22 +142,37 @@ exports.handler = async (event) => {
         return res;
     };
 
-    let expoTokenList = await getUserBindings(
+    let sendDesktopMessages = async (desktopList, messageBody) => {
+        const title = messageType;
+        const body = messageBody;
+        const messageData = data;
+        desktopList.forEach((subscription) => {
+            
+        });
+    };
+
+    let expoTokenList = await getMobileUserBindings(
+        province,
+        postalCodes,
+        selectedAgeGroups,
+        eligibilityGroups
+    );
+
+    const desktopList = await getDesktopUserBindings(
         province,
         postalCodes,
         selectedAgeGroups,
         eligibilityGroups
     );
     
-
-    if (expoTokenList.length === 0) {
+    if (expoTokenList.length === 0 && desktopList.length === 0) {
         console.log('No People')
         return {
             statusCode: 400,
             body: `Message sent to 0 users`,
         };
     }
-
+  
     let messageBody = await getMessageBody(
         province,
         postalCodes,
@@ -138,9 +180,10 @@ exports.handler = async (event) => {
         eligibilityGroups
     );
     console.log(messageBody)
+    console.log("This is DesktopList: ", desktopList);
     console.log("This is tokenList:", expoTokenList);
     console.log('about to send bulk messages through')
-    const res = await sendMessages(expoTokenList, messageBody)
+    // const res = await sendMobileMessages(expoTokenList, messageBody)
     console.log('sendmessage res', res);
     return res;
     // context.succeed(res);
