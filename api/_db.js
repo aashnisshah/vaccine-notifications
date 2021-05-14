@@ -153,8 +153,6 @@ async function getTargettedUsers(
                     isTarget = false;
                 }
             }
-            console.log("user:", userData);
-            console.log("isTarget", isTarget)
             if (isTarget) {
                 if (userData.expoToken) {
                     targettedUsers.push({

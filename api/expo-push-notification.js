@@ -5,6 +5,36 @@ const { getTargettedUsers } = require("./_db.js");
 
 let messageFooter = "Manage notifications at vaccinenotifications.org.";
 
+const webpush = require("web-push");
+
+const vapidKeys = {
+    publicKey:process.env.WEB_PUSH_PUBLIC_KEY,
+    privateKey:  process.env.WEB_PUSH_PRIVATE_KEY
+};
+
+webpush.setVapidDetails(
+    `mailto:${process.env.MAIL_SEND_TO}`,
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+);
+
+const triggerPushMsg = function (subscription, dataToSend) {
+    return webpush
+        .sendNotification(subscription, dataToSend)
+        .then((res) => console.log("notification res:", res))
+        .catch((err) => {
+            if (err.statusCode === 404 || err.statusCode === 410) {
+                console.log(
+                    "Subscription has expired or is no longer valid: ",
+                    err
+                );
+                // return deleteSubscriptionFromDatabase(subscription._id);
+            } else {
+                throw err;
+            }
+        });
+};
+
 exports.handler = async (event) => {
     let data = JSON.parse(event.body);
 
@@ -63,7 +93,7 @@ exports.handler = async (event) => {
         console.log("desktop users 1", desktopUsers);
 
         let desktopSubscriptions = desktopUsers.map((user) =>
-            user.webPushSubscription
+            JSON.parse(user.webPushSubscription)
         );
         
 
@@ -147,7 +177,11 @@ exports.handler = async (event) => {
         const body = messageBody;
         const messageData = data;
         desktopList.forEach((subscription) => {
-            
+            try {
+                triggerPushMsg(subscription, title);
+            } catch (error) {
+                console.log(error);
+            }
         });
     };
 
@@ -182,9 +216,17 @@ exports.handler = async (event) => {
     console.log(messageBody)
     console.log("This is DesktopList: ", desktopList);
     console.log("This is tokenList:", expoTokenList);
-    console.log('about to send bulk messages through')
-    // const res = await sendMobileMessages(expoTokenList, messageBody)
+
+    const desktopRes = await sendDesktopMessages(desktopList, messageBody);
+    const res = await sendMobileMessages(expoTokenList, messageBody);
     console.log('sendmessage res', res);
+
+    if (expoTokenList.length === 0) {
+        return {
+            statusCode: 200,
+            body: `Message sent!`,
+        };
+    }
     return res;
     // context.succeed(res);
     // return sendMessages(userBindings, messageBody);

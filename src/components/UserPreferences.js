@@ -44,11 +44,7 @@ function UserPreferences(props) {
         showCitiesOnLoad();
 
         (async () => {
-            await askPermission();
-            // await subscribeToWebPush();
-            
-
-            
+            await subscribeToWebPush();
         })();
         return () => {
             const allCheckBoxes = document.querySelectorAll(
@@ -67,6 +63,9 @@ function UserPreferences(props) {
     }, [auth.user, editing]);
 
     const subscribeToWebPush = async () => {
+        if (isMobile) {
+            return
+        }
         if (!("serviceWorker" in navigator)) {
             // Service Worker isn't supported on this browser, disable or hide UI.
             console.log("service worker not available")
@@ -75,11 +74,11 @@ function UserPreferences(props) {
 
         if (!("PushManager" in window)) {
             // Push isn't supported on this browser, disable or hide UI.
-            console.log("push not available");
+            alert("Push notifications are not available on this browser");
             return;
         }
         console.log("here");
-        await subscribeUserToPush();
+        await askPermission();
         
     };
 
@@ -119,7 +118,7 @@ function UserPreferences(props) {
                 // TODO check if existingSubscription == user.webPushSubscription
                 setWebPushSubscribed(true);
             } else {
-                await subscribeToWebPush();
+                await subscribeUserToPush();
             }
         }
     }
