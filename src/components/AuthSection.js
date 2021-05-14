@@ -3,6 +3,8 @@ import Section from "./Section";
 import Container from "react-bootstrap/Container";
 import SectionHeader from "./SectionHeader";
 import Auth from "./Auth";
+import { Row, Col, Image } from "react-bootstrap";
+import heroImage from "./../images/homescreen-rafiki.svg";
 
 function AuthSection(props) {
   // Values for each auth type
@@ -29,6 +31,10 @@ function AuthSection(props) {
       title: "Choose a new password",
       buttonText: "Change password",
     },
+    admin: {
+      title: "Sign Up to be an Admin",
+      buttonText: "Sign Up"
+    }
   };
 
   // Ensure we have a valid auth type
@@ -45,6 +51,26 @@ function AuthSection(props) {
       bgImage={props.bgImage}
       bgImageOpacity={props.bgImageOpacity}
     >
+      {props.type === "admin" && (
+        <Container className="pb-5 mb-5">
+        <Row className="align-items-center">
+          <Col lg={5} className="text-center text-lg-left">
+            <SectionHeader
+              title="Use our platform"
+              subtitle="If you are a health care worker we'd love your help! Sign up below for an admin account, and send updates to our users when vaccines are available at your centre."
+              size={1}
+              spaced={true}
+            />
+          </Col>
+          <Col className="offset-lg-1 mt-5 mt-lg-0 ">
+            <figure className="HeroSection__image-container mx-auto">
+              <Image src={heroImage} fluid={true} />
+            </figure>
+          </Col>
+        </Row>
+        </Container>
+      )}
+      
       <Container className="formContainer">
         <SectionHeader
           title={allTypeValues[currentType].title}
