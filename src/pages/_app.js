@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import "./../styles/global.scss";
 import NavbarCustom from "./../components/NavbarCustom";
 import IndexPage from "./index";
-import ContactPage from "./contact";
 import DashboardPage from "./dashboard";
 import TosPage from "./tos";
 import PasswordReset from './PasswordReset';
