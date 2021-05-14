@@ -32,10 +32,12 @@
 }
 
 .appStore {
-  background-color: grey;
+  background-color: rgb(151, 151, 151);
   border-radius: 8px;
   padding: 5px 10px;
   height: 57px;
+  font-size:medium;
+  font-weight: bold;
   max-width: 200px;
-  color: white !important;
+  color: rgb(240, 240, 240) !important;
 }

@@ -32,7 +32,7 @@ function DownloadSection(props) {
                       />
                       
                       <div className="badgesContainer">
-                        <a href={googlePlayLink}>
+                        <a href={googlePlayLink} target="_blank">
                           <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
                         </a>
                         <div>
