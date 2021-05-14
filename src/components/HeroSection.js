@@ -32,13 +32,16 @@ function HeroSection(props) {
             />
             
             <div className="badgesContainer">
-              <LinkContainer to={googlePlayLink}>
+              <a href={googlePlayLink} target="_blank">
                 <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-              </LinkContainer>
-              <LinkContainer to={googlePlayLink} disabled>
-                {/* <h2>Coming Soon</h2> */}
+              </a>
+              <a href={googlePlayLink} target="_blank">
+                <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
+              </a>
+              {/* <LinkContainer to={googlePlayLink} disabled>
+
                 <Image className="badges second" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-              </LinkContainer>
+              </LinkContainer> */}
             </div>
           </Col>
           <Col className="offset-lg-1 mt-5 mt-lg-0 ">

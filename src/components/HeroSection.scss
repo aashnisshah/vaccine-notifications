@@ -10,15 +10,19 @@
 }
 
 .badges {
-  max-width: 40%;
-  height: 100%;
-  margin: -15px -10px;
+  max-width: 90%;
+  // height: 100%;
+  margin: -5px -10px;
 }
 
+.badgeLinkContainer {
+  display:flex;
+  justify-content: start;
+}
 .badges:hover {
   cursor: pointer;
 }
 
 .second {
-  margin: -15px 0;
+  // margin: -15px 0;
 }
