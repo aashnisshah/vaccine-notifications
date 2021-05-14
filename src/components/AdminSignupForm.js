@@ -76,6 +76,7 @@ function AdminSignupForm(props) {
         }
       }
     }
+    data.admin = false;
     const authResponse = await auth.signup(data, passwordInput);
     setPending(false);
 
