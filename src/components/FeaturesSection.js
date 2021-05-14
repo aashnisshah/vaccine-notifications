@@ -29,7 +29,7 @@ function FeaturesSection(props) {
     {
       title: "Get Push Notifications",
       description:
-        "Receive push notifications from the app with vaccine information as soon as we get them",
+        "Receive push notifications from  or browser with vaccine information as soon as we get them",
       image: getNotificationsImage,
       alt: "image of person with a loudspeaker next to a phone",
     },

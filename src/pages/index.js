@@ -28,7 +28,7 @@ function IndexPage(props) {
             bgImage=""
             bgImageOpacity={1}
             title="Receive vaccine notifications relevant to you!"
-            subtitle="Receive push notifications through the app whenever vaccines appointments are available in your area."
+            subtitle="Receive push notifications through the app or browser whenever vaccines appointments are available in your area."
             image={heroImage}
             imageAlt="image of a person with a loudspeaker in front of a phone"
             buttonText="Get Started"
