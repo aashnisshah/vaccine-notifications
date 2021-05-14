@@ -95,5 +95,5 @@ export {
     error,
     selectAll,
     provincesWAll,
-    cities
+    cities, 
 };

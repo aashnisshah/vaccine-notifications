@@ -261,6 +261,10 @@ function AuthForm(props) {
                       error={errors.email}
                       inputRef={register({
                         required: error("required", "email"),
+                        pattern: {
+                          value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                          message: error("invalid", "email")
+                        }
                       })}
                     />
                   </Form.Group>
