@@ -15,7 +15,7 @@ function Footer(props) {
             className="footer"
         >
             <Container>
-                <div className="FooterComponent__inner">
+                <div className="FooterComponent__inner py-5">
                     <div className="copyright left">
                         {props.copyright}
                         <br />
