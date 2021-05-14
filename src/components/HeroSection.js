@@ -35,9 +35,11 @@ function HeroSection(props) {
               <a href={googlePlayLink} target="_blank">
                 <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
               </a>
-              <a href={googlePlayLink} target="_blank">
-                <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-              </a>
+              <div>
+                <a className="disabled appStore">
+                  Coming soon to the App Store!
+                </a>
+              </div>
               {/* <LinkContainer to={googlePlayLink} disabled>
 
                 <Image className="badges second" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />

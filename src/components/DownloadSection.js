@@ -7,6 +7,7 @@ import { getSendTo } from "../helpers/FormatPostMessage";
 import FormAlert from "./FormAlert";
 import "./DownloadSection.scss";
 import heroImage from "../images/push-notifications-rafiki.png";
+import appStoreImage from "../images/app-store-badge.png";
 
 function DownloadSection(props) {    
     const googlePlayLink = "https://play.google.com/store/apps/details?id=com.elixirlabs.vaccinenotifications";
@@ -31,13 +32,14 @@ function DownloadSection(props) {
                       />
                       
                       <div className="badgesContainer">
-                        <LinkContainer to={googlePlayLink}>
+                        <a href={googlePlayLink}>
                           <Image className="badges" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-                        </LinkContainer>
-                        <LinkContainer to={googlePlayLink} disabled>
-                          {/* <h2>Coming Soon</h2> */}
-                          <Image className="badges second" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" />
-                        </LinkContainer>
+                        </a>
+                        <div>
+                          <a className="disabled appStore">
+                            Coming soon to the App Store!
+                          </a>
+                        </div>
                       </div>
                       <LinkContainer to="/">
                         <Button className="worksButton" variant="link">How it works &nbsp; &#8594;</Button>
