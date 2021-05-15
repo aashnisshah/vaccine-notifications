@@ -178,7 +178,7 @@ exports.handler = async (event) => {
         const messageData = data;
         desktopList.forEach((subscription) => {
             try {
-                triggerPushMsg(subscription, title);
+                await triggerPushMsg(subscription, title);
             } catch (error) {
                 console.log(error);
             }
