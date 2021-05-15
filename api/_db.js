@@ -156,12 +156,12 @@ async function getTargettedUsers(
                 }
             }
             if (isTarget) {
-                if (userData.expoToken) {
+                if (userGroupType == "mobile" && userData.expoToken) {
                     targettedUsers.push({
                         id: userData.uid,
                         expoToken: userData.expoToken,
                     });
-                } else if (userData.webPushSubscription) {
+                } else if (userGroupType == "desktop" && userData.webPushSubscription) {
                     targettedUsers.push({
                         id: userData.uid,
                         webPushSubscription: userData.webPushSubscription,

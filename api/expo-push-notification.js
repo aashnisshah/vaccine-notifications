@@ -50,7 +50,6 @@ exports.handler = async (event) => {
     let messageType = data.messageType;
     let numberToBooking = data.numberToBooking;
 
-    console.log("cities:", cities)
     let getMobileUserBindings = async (
         cities,
         province,
