@@ -33,14 +33,6 @@ function UserPreferences(props) {
         show: false,
     });
 
-    useEffect(() => {
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
-            setIsMobile(true);
-        }
-        if (localStorage.getItem("ExpoToken")) {
-            setIsMobile(true);
-        }
-    }, []);
 
     useEffect(() => {
         if (window.ReactNativeWebView) {
@@ -68,7 +60,16 @@ function UserPreferences(props) {
     }, [auth.user, editing]);
 
     const subscribeToWebPush = async () => {
-        if (isMobile) {
+        let isMobileNew = false;
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+            setIsMobile(true);
+            isMobileNew = true;
+        }
+        if (localStorage.getItem("ExpoToken")) {
+            setIsMobile(true);
+            isMobileNew = true;
+        }
+        if (isMobileNew) {
             return
         }
         if (!("serviceWorker" in navigator)) {
