@@ -176,13 +176,15 @@ exports.handler = async (event) => {
         const title = messageType;
         const body = messageBody;
         const messageData = data;
-        desktopList.forEach(async (subscription) => {
+
+        for (const subscription in desktopList) {
             try {
                 await triggerPushMsg(subscription, title);
+                console.log("message sent")
             } catch (error) {
                 console.log(error);
             }
-        });
+        }
     };
 
     let expoTokenList = await getMobileUserBindings(
