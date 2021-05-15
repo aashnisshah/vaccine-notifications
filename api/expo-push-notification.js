@@ -71,7 +71,6 @@ exports.handler = async (event) => {
             user.expoToken
         );
 
-
         return _.uniq(expoTokens);
     };
 
