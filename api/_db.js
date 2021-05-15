@@ -110,11 +110,13 @@ async function getTargettedUsers(
         query = query.where("webPushSubscription", "!=", "");
     }
 
-    // if (postalCodes && postalCodes.length > 0) {
-    //     query = query.where("postalShort", "in", postalCodes);
-    // } else if (province && province != "CA") {
-    //     query = query.where("province", "==", province);
-    // }
+    if (postalCodes && postalCodes.length > 0) {
+        query = query.where("postalShort", "in", postalCodes);
+    } else if (province && province != "CA") {
+        query = query.where("province", "==", province);
+    } else if (cities && cities.length > 0) {
+        query = query.where("city", "in", cities);
+    }
 
     let targettedUsers = [];
 

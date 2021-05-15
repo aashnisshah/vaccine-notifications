@@ -50,6 +50,7 @@ exports.handler = async (event) => {
     let messageType = data.messageType;
     let numberToBooking = data.numberToBooking;
 
+    console.log("cities:", cities)
     let getMobileUserBindings = async (
         cities,
         province,
@@ -186,6 +187,7 @@ exports.handler = async (event) => {
     };
 
     let expoTokenList = await getMobileUserBindings(
+        cities,
         province,
         postalCodes,
         selectedAgeGroups,
@@ -193,6 +195,7 @@ exports.handler = async (event) => {
     );
 
     const desktopList = await getDesktopUserBindings(
+        cities,
         province,
         postalCodes,
         selectedAgeGroups,
