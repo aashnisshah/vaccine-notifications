@@ -1,12 +1,14 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import "./../styles/global.scss";
 import NavbarCustom from "./../components/NavbarCustom";
 import IndexPage from "./index";
-import ContactPage from "./contact";
 import DashboardPage from "./dashboard";
 import TosPage from "./tos";
+import PasswordReset from './PasswordReset';
 import PostsPage from "./posts";
 import PrivacyPage from "./privacy";
+import DownloadPage from "./download"; 
+import PreviousAlertsPage from "./previousAlerts";
 import AuthPage from "./auth";
 import { Switch, Route, Router } from "./../util/router.js";
 import FirebaseActionPage from "./firebase-action.js";
@@ -17,6 +19,14 @@ import { AuthProvider } from "./../util/auth.js";
 import logo from "./../images/VNLogo.png";
 
 function App(props) {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      setIsMobile(true);
+    }
+  }, [])
+
     return (
         <AuthProvider>
             <Router>
@@ -39,11 +49,17 @@ function App(props) {
                             component={DashboardPage}
                         />
 
+                        <Route exact path="/alerts" component={PreviousAlertsPage} />
+
+                        <Route exact path="/resetpass" component={PasswordReset} />
+
                         <Route exact path="/posts" component={PostsPage} />
 
                         <Route exact path="/privacy" component={PrivacyPage} />
 
                         <Route exact path="/tos" component={TosPage} />
+
+                        <Route exact path="/download" component={DownloadPage} />
 
                         <Route exact path="/auth/:type" component={AuthPage} />
 
@@ -56,16 +72,18 @@ function App(props) {
                         <Route component={NotFoundPage} />
                     </Switch>
 
+                  {!isMobile && (
                     <Footer
-                        bg="light"
-                        textColor="dark"
-                        size="sm"
-                        bgImage=""
-                        bgImageOpacity={1}
-                        description="Notify you when vaccine appointments are available in your area"
-                        copyright="© 2021 Vaccine Notifications"
-                        logo="https://uploads.divjoy.com/logo.svg"
-                    />
+                    bg="light"
+                    textColor="dark"
+                    size="sm"
+                    bgImage=""
+                    bgImageOpacity={1}
+                    description="Notify you when vaccine appointments are available in your area"
+                    copyright="© 2021 Vaccine Notifications"
+                    logo="https://uploads.divjoy.com/logo.svg"
+                  />
+                  )}   
                 </>
             </Router>
         </AuthProvider>

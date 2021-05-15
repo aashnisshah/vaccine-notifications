@@ -1,31 +1,33 @@
 import firebase from "./firebase";
+import axios from 'axios';
 
 export async function apiRequest(path, method = "GET", data) {
   const accessToken = firebase.auth().currentUser
     ? await firebase.auth().currentUser.getIdToken()
     : undefined;
+  const requestHeaders = { headers: { Authorization: `Bearer ${accessToken}` }};
+  let response;
 
-  return fetch(`/api/${path}`, {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: data ? JSON.stringify(data) : undefined,
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      if (response.status === "error") {
-        // Automatically signout user if accessToken is no longer valid
-        if (response.code === "auth/invalid-user-token") {
-          firebase.auth().signOut();
-        }
+  if (method == "GET") {
+    response = await axios.get(`/api/${path}`, requestHeaders).then(res => {
+      console.log(res)
+      return res;
+    }).catch(error => {
+      console.log("error: ", error);
+      return error;
+    })
 
-        throw new CustomError(response.code, response.message);
-      } else {
-        return response.data;
-      }
-    });
+  } else if (method == "POST") {
+    response = await axios.post(`/api/${path}`, data, requestHeaders).then(res => {
+      console.log(res)
+      return res;
+    }).catch(error => {
+      console.log("error: ", error.response.data);
+      return {status: 400, data: error.response.data};
+    })
+  }
+
+  return response;
 }
 
 // Create an Error with custom message and code

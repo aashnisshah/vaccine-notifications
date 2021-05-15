@@ -3,3 +3,41 @@
     max-width: 570px;
   }
 }
+
+.badgesContainer {
+  display: flex;
+  max-height: 100px;
+
+  & > a, & > div {
+    height: 85px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+}
+
+.badges {
+  height: 100%;
+  margin: -5px 0;
+  margin-left: -12px;
+}
+
+.badgeLinkContainer {
+  display:flex;
+  justify-content: start;
+}
+
+.badges:hover {
+  cursor: pointer;
+}
+
+.appStore {
+  background-color: rgb(143, 143, 143);
+  border-radius: 8px;
+  padding: 5px 10px;
+  height: 57px;
+  // font-size:medium;
+  // font-weight: bold;
+  max-width: 200px;
+  color: rgb(248, 248, 248) !important;
+}

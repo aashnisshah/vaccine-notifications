@@ -4,22 +4,22 @@ import "./Auth.scss";
 
 function AuthFooter(props) {
   return (
-    <div className="AuthFooter text-center mt-4">
+    <div className="AuthFooter d-flex flex-column text-center mt-4">
       {props.type === "signup" && (
-        <>
-          Have an account already?
+        <div className="d-flex justify-content-center bottomText">
+          <p>Have an account already?</p>
           <Link to="/auth/signin">{props.typeValues.linkTextSignin}</Link>
-        </>
+        </div>
       )}
 
       {props.type === "signin" && (
         <>
-          Don't have an account? 
-          <Link to="/auth/signup">{props.typeValues.linkTextSignup}</Link>
-          <Link to="/auth/forgotpass">
-            {props.typeValues.linkTextForgotpass}
-          </Link>
-        </>
+        <div className="d-flex justify-content-center bottomText">
+        <p>Don't have an account?</p>
+        <Link to="/auth/signup">{props.typeValues.linkTextSignup}</Link>
+          
+        </div>
+      </>
       )}
     </div>
   );

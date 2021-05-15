@@ -28,13 +28,14 @@ function UpdateNotificationPreference(props) {
 
     optInUser()
       .then(() => {
-        setSuccessMessage("You have successfully opted in to notifications.");
+        // setSuccessMessage("You have successfully opted in to notifications.");
       })
       .catch((error) => {
         setErrorMessage("There was an error updating your preferences. Please try again.");
       })
       .finally(() => {
         setPending(false);
+        window.scrollTo(0,0);
       });
   }
 
@@ -61,13 +62,14 @@ function UpdateNotificationPreference(props) {
     optOutUser()
       .then(() => {
         trackOptOutReason(optOutReason);
-        setSuccessMessage("You have successfully opted out of notifications.");
+        // setSuccessMessage("You have successfully opted out of notifications.");
       })
       .catch((error) => {
         setErrorMessage("There was an error updating your preferences. Please try again.");
       })
       .finally(() => {
         setPending(false);
+        window.scrollTo(0,0);
       });
   }
 
@@ -102,7 +104,7 @@ function UpdateNotificationPreference(props) {
   const renderOptOutForm = () => {
     return (
       <div>
-        <p>You are set to receive notifications.</p>
+        {/* <p>You are set to receive notifications.</p> */}
 
         <Form onSubmit={processOptOut}>
 

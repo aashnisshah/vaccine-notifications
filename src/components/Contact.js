@@ -5,7 +5,7 @@ import FormField from "./FormField";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Col from "react-bootstrap/Col";
-import contact from "./../util/contact.js";
+import contact from "../util/contact.js";
 import { useForm } from "react-hook-form";
 
 function Contact(props) {

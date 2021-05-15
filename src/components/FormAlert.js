@@ -5,7 +5,7 @@ function FormAlert(props) {
   const { type, message, ...otherProps } = props;
 
   return (
-    <Alert variant={type === "error" ? "danger" : "success"} {...otherProps}>
+    <Alert variant={type === "error" ? "danger" : type} {...otherProps}>
       {message}
     </Alert>
   );

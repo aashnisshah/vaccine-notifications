@@ -1,7 +1,10 @@
-const firebaseAdmin = require("./_firebase");
+// const firebaseAdmin = require("./_firebase");
 const _ = require("lodash");
 
-const firestore = firebaseAdmin.firestore();
+// const firestore = firebaseAdmin.firestore();
+const firebase = require("./_firebase");
+
+const firestore = firebase.firestore();
 
 // Get user by uid
 function getUserByPhoneNumber(phone) {
@@ -28,19 +31,90 @@ function getAllVerifiedUsers() {
         .then(format);
 }
 
+// async function getTargettedUsers(
+//     province,
+//     postalCodes,
+//     ageGroups,
+//     eligibilityGroups
+// ) {
+//     let query = firestore.collection("users").where("optout", "==", false);
+
+//     if (postalCodes && postalCodes.length > 0) {
+//         query = query.where("postalShort", "in", postalCodes);
+//     } else if (province && province != "CA") {
+//         query = query.where("province", "==", province);
+//     }
+
+//     let targettedUsers = [];
+
+//     await query.get().then((querySnapshot) => {
+//         querySnapshot.forEach((doc) => {
+//             let userData = doc.data();
+//             let isTarget = true;
+
+//             // check if overlapping ageGroups
+//             if (
+//                 ageGroups &&
+//                 ageGroups.length > 0 &&
+//                 userData.ageGroups &&
+//                 userData.ageGroups.length > 0
+//             ) {
+//                 if (
+//                     _.intersection(userData.ageGroups, ageGroups).length === 0
+//                 ) {
+//                     isTarget = false;
+//                 }
+//             }
+
+//             // check if overlapping eligibilityGroups
+//             if (
+//                 eligibilityGroups &&
+//                 eligibilityGroups.length > 0 &&
+//                 userData.eligibilityGroups &&
+//                 userData.eligibilityGroups.length > 0
+//             ) {
+//                 if (
+//                     _.intersection(
+//                         userData.eligibilityGroups,
+//                         eligibilityGroups
+//                     ).length === 0
+//                 ) {
+//                     isTarget = false;
+//                 }
+//             }
+
+//             if (isTarget && userData.phoneNumber) {
+//                 targettedUsers.push({
+//                     id: userData.uid,
+//                     phoneNumber: userData.phoneNumber,
+//                 });
+//             }
+//         });
+//     });
+
+//     return targettedUsers;
+// }
+
 async function getTargettedUsers(
+    cities,
     province,
     postalCodes,
     ageGroups,
-    eligibilityGroups
+    eligibilityGroups,
+    userGroupType = "mobile"
 ) {
     let query = firestore.collection("users").where("optout", "==", false);
-
-    if (postalCodes && postalCodes.length > 0) {
-        query = query.where("postalShort", "in", postalCodes);
-    } else if (province && province != "CA") {
-        query = query.where("province", "==", province);
+    if (userGroupType == "mobile") {
+        query = query.where("expoToken", "!=", "");
+    } else if (userGroupType == "desktop") {
+        query = query.where("webPushSubscription", "!=", "");
     }
+
+    // if (postalCodes && postalCodes.length > 0) {
+    //     query = query.where("postalShort", "in", postalCodes);
+    // } else if (province && province != "CA") {
+    //     query = query.where("province", "==", province);
+    // }
 
     let targettedUsers = [];
 
@@ -79,12 +153,18 @@ async function getTargettedUsers(
                     isTarget = false;
                 }
             }
-
-            if (isTarget && userData.phoneNumber) {
-                targettedUsers.push({
-                    id: userData.uid,
-                    phoneNumber: userData.phoneNumber,
-                });
+            if (isTarget) {
+                if (userData.expoToken) {
+                    targettedUsers.push({
+                        id: userData.uid,
+                        expoToken: userData.expoToken,
+                    });
+                } else if (userData.webPushSubscription) {
+                    targettedUsers.push({
+                        id: userData.uid,
+                        webPushSubscription: userData.webPushSubscription,
+                    });
+                }
             }
         });
     });
@@ -114,4 +194,5 @@ module.exports = {
     updateUser,
     getAllVerifiedUsers,
     getTargettedUsers,
+    // getTargettedMobileUsers
 };

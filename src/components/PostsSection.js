@@ -18,7 +18,7 @@ import {
     selectAll,
     cities,
 } from "./formConstants";
-import { sendTargettedMessages } from "./../util/twilio";
+import { sendTargettedMessages } from "../util/expo";
 
 function PostsSection(props) {
     const auth = useAuth();
@@ -109,6 +109,7 @@ function PostsSection(props) {
                 }
             });
     
+            data.postTime = new Date().getTime();
             data.selectedAgeGroups = selectedAgeGroups;
             data.eligibilityGroups = selectedEligibilityGroups;
             delete data.locationGroup;
@@ -133,10 +134,19 @@ function PostsSection(props) {
         try {
             setPending(true);
             auth.postMessage(rawData);
-            await sendTargettedMessages(rawData);
-            setMessageStatus({status:"success", message:"Message Sent!"})
+            const res = await sendTargettedMessages(rawData);
+            console.log("this is response: ", res)
+            if (res.status === 200) {
+                setMessageStatus({status:"success", message:res.data})
+
+            } else {
+                setMessageStatus({status:"error", message: res.data})
+            }
         } catch (error) {
-            setMessageStatus({status:"error", message: "Something went wrong!"})
+            console.log('this is error')
+            console.log(error)
+            setMessageStatus({status:"error", message: error})
+            // setMessageStatus({status:"success", message:"Message Sent!"})
         }
         reset();
         setPending(false);
@@ -495,7 +505,7 @@ function PostsSection(props) {
                               size="lg"
                               disabled={pending}
                           >
-                              Go Back
+                              Edit
                           </Button>
                       </Form.Row>
                   </div>

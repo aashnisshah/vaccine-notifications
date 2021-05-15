@@ -1,10 +1,9 @@
 import React, {useState, useEffect, useMemo, useContext, createContext,} from "react";
 import queryString from "query-string";
 import firebase from "./firebase";
-import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber } from "./db";
+import { useUser, createMessage, createUser, updateUser, findUserByPhoneNumber, getMessages } from "./db";
 import { history } from "./router";
 import PageLoader from "./../components/PageLoader";
-import { sendAccountActivatedMessage } from "./twilio"
 import analytics from "./analytics";
 
 // Whether to merge extra user data from database into auth.user
@@ -40,7 +39,7 @@ function useAuthProvider() {
   useIdentifyUser(finalUser);
 
   // Handle response from authentication functions
-  const handleAuth = async (response) => {
+  const handleAuth = async (response, data="") => {
     const { user, additionalUserInfo } = response;
 
     // Ensure Firebase is actually ready before we continue
@@ -48,11 +47,17 @@ function useAuthProvider() {
 
     // Create the user in the database if they are new
     if (additionalUserInfo.isNewUser) {
-      await createUser(user.uid, { email: user.email });
+      await createUser(user.uid, data);
 
       // Send email verification if enabled
       if (EMAIL_VERIFICATION) {
         firebase.auth().currentUser.sendEmailVerification();
+      }
+    } else {
+      //check if there is an ExpoToken in local storage and add it to the account
+      const expoToken = localStorage.getItem("ExpoToken");
+      if (expoToken && !user.expoToken) {
+        await updateUser(user.uid, {expoToken: expoToken});
       }
     }
 
@@ -117,18 +122,16 @@ function useAuthProvider() {
     return phoneNumber;
   }
 
-  const submitOTPCode = async (otpCode, userData, isFirstTimeUser) => {
+  const submitOTPCode = async (otpCode) => {
     const otpConfirm = window.confirmationResult;
     try {
         const result = await otpConfirm.confirm(otpCode);
-        const newUser = result.user;
-        userData.phoneNumber = newUser.phoneNumber;
-        userData.displayName = newUser.phoneNumber;
-        await createUser(newUser.uid, userData);
-        setUser(newUser);
-        if (isFirstTimeUser) {
-          sendAccountActivatedMessage({receiver: newUser.phoneNumber});
+        const expoToken = localStorage.getItem("ExpoToken");
+        if (expoToken && !result.user.expoToken) {
+          await updateUser(result.user.uid, {expoToken: expoToken});
         }
+        setUser(result.user);
+
         return true;
     } catch (err) {
         const error = err.toString();
@@ -141,18 +144,28 @@ function useAuthProvider() {
     }
   }
 
-  const signup = (email, password) => {
-    return firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(handleAuth);
+  const signup = async (data, password) => {
+    try {
+      const response = await firebase.auth().createUserWithEmailAndPassword(data.email, password)
+      const user = await handleAuth(response, data);
+      return {status: 200, user}
+    } catch (error) {
+      alert(error.message);
+      return {status: 400, errorMessage: `ERROR: ${error.message}`};
+    }
   };
 
-  const signin = (email, password) => {
-    return firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(handleAuth);
+  const signin = async (email, password) => {
+    try {
+      const response = await firebase.auth().signInWithEmailAndPassword(email, password)
+      const user = await handleAuth(response);
+
+      return {status: 200, user}
+    } catch (error) {
+      alert(error.message);
+      
+      return {status: 400, errorMessage: `ERROR: ${error.message}`};
+    }
   };
 
   const signinWithProvider = (name) => {
@@ -247,6 +260,10 @@ function useAuthProvider() {
     await createMessage(rString, message)
   }
 
+  const retrievePastAlerts = async (lastPostTime) => {
+    return await getMessages(lastPostTime)
+  }
+
   return {
     user: finalUser,
     setUpRecaptcha,
@@ -261,8 +278,10 @@ function useAuthProvider() {
     updateEmail,
     updatePassword,
     updateProfile,
-    postMessage
+    postMessage,
+    retrievePastAlerts
   };
+  
 }
   
 // Format final user object and merge extra data from database
@@ -328,7 +347,7 @@ export const requireAuth = (Component) => {
     useEffect(() => {
       // Redirect if not signed in
       if (auth.user === false) {
-        history.replace("/auth/signin");
+        history.replace("/auth/signup");
       }
     }, [auth]);
 

@@ -17,7 +17,6 @@ function DashboardSection(props) {
 
   let accountConfigured = auth.user.phoneNumber && auth.user.province && auth.user.postal;
 
-
   return (
     <Section
       bg={props.bg}
@@ -37,7 +36,7 @@ function DashboardSection(props) {
 
         <Row>
           <Col lg={8}>
-            {accountConfigured ? `Your account is ready and you'll receive notifications at the number below.` : "Please configure your account below to start receiving text notifications"}
+            {/* {accountConfigured ? `Your account is ready and you'll receive notifications at the number below.` : "Changing your preferences will change the notifications you receive."} */}
             <UserPreferences newUser={!accountConfigured} />
           </Col>
           <Col lg={4}>

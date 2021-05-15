@@ -9,5 +9,7 @@ export async function sendAccountActivatedMessage(data) {
 }
 
 export async function sendTargettedMessages(data) {
-    return apiRequest("twilio-send-bulk-message", "POST", data);
+   const res = await apiRequest("expo-push-notification", "POST", data);
+   console.log('look here', res)
+   return res;
 }
