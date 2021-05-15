@@ -36,11 +36,16 @@ function UserPreferences(props) {
     useEffect(() => {
         if (/Mobi|Android/i.test(navigator.userAgent)) {
             setIsMobile(true);
-            console.log("check");
+        }
+        if (localStorage.getItem("ExpoToken")) {
+            setIsMobile(true);
         }
     }, []);
 
     useEffect(() => {
+        if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: true}));
+        }
         showCitiesOnLoad();
 
         (async () => {
