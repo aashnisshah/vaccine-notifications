@@ -38,11 +38,13 @@ function AuthForm(props) {
     useEffect(() => {
         document.addEventListener("keydown", handleEnter);
         if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: false}));
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({ isSignedIn: false })
+            );
         }
         resetLocalStorage();
         return () => {
-            document.removeEventListener("keydown", handleEnter)
+            document.removeEventListener("keydown", handleEnter);
             const allCheckBoxes = document.querySelectorAll(
                 'input[type="checkbox"]'
             );
@@ -55,23 +57,21 @@ function AuthForm(props) {
     }, []);
 
     const handleEnter = (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault()
-      }
-    }
+        if (e.key === "Enter") {
+            e.preventDefault();
+        }
+    };
 
     const resetLocalStorage = () => {
         try {
             if ("allMessages" in window.localStorage) {
-                localStorage.removeItem("allMessages")
+                localStorage.removeItem("allMessages");
             }
             if ("newMessage" in window.localStorage) {
-                localStorage.removeItem("newMessage")
+                localStorage.removeItem("newMessage");
             }
-        } catch (e) {
-
-        }
-    }
+        } catch (e) {}
+    };
 
     const onChangeHandler = (event) => {
         const { name, value } = event.target;
@@ -95,8 +95,8 @@ function AuthForm(props) {
     };
 
     const resetRecaptcha = () => {
-      setRenderRecaptcha(false);
-      setTimeout(setRenderRecaptcha(true), 100);
+        setRenderRecaptcha(false);
+        setTimeout(setRenderRecaptcha(true), 100);
     };
 
     const onSubmitOtp = async (e) => {
@@ -113,33 +113,44 @@ function AuthForm(props) {
     };
 
     const goToNext = async () => {
-      setNextPending(true);
-      if (props.type === "signin") {
-        const result = await trigger("username");
-        
-        if (result) {
-          if (getValues().username.includes("@")) {
-            setPage(2);
-          } else {
-            await requestOTPCode(getValues().username.replace(/[- )(]/g, ""));
-            setUsernameType("phoneNumber");
-          }
-        };
-      } else if (props.type === "signup") {
-        const result = await trigger(["email", "password", "confirmPassword"]);
+        setNextPending(true);
+        if (props.type === "signin") {
+            const result = await trigger("username");
 
-        setUsernameInput(getValues().email);
-        setPasswordInput(getValues().password);
+            if (result) {
+                if (getValues().username.includes("@")) {
+                    setPage(2);
+                } else {
+                    await requestOTPCode(
+                        getValues().username.replace(/[- )(]/g, "")
+                    );
+                    setUsernameType("phoneNumber");
+                }
+            }
+        } else if (props.type === "signup") {
+            const result = await trigger([
+                "email",
+                "password",
+                "confirmPassword",
+            ]);
 
-        if (result) { setPage(2) };
-      }
-      setNextPending(false);
+            setUsernameInput(getValues().email);
+            setPasswordInput(getValues().password);
+
+            if (result) {
+                setPage(2);
+            }
+        }
+        setNextPending(false);
     };
 
     const onSubmit = async (data) => {
         let authResponse = "";
         if (props.type === "signup") {
-            if (document.querySelectorAll('input[type="checkbox"]:checked').length === 0) {
+            if (
+                document.querySelectorAll('input[type="checkbox"]:checked')
+                    .length === 0
+            ) {
                 setGroupError(true);
                 const allCheckBoxes = document.querySelectorAll(
                     'input[type="checkbox"]'
@@ -168,175 +179,198 @@ function AuthForm(props) {
                 });
 
                 if (document.getElementById("city")) {
-                  const cityElement = document.getElementById("city").value
-                  if (cityElement === "Other" || cityElement === "") {
-                      data.city = "";
-                  } else {
-                      data.city = cityElement;
-                  }
+                    const cityElement = document.getElementById("city").value;
+                    if (cityElement === "Other" || cityElement === "") {
+                        data.city = "";
+                    } else {
+                        data.city = cityElement;
+                    }
                 }
 
                 // TEMP WORK AROUND FOR REACT HOOK FORM ISSUES
                 if (data.email) {
-                  delete data.email
+                    delete data.email;
                 }
                 if (data.password) {
-                  delete data.password
+                    delete data.password;
                 }
                 if (data.confirmPassword) {
-                  delete data.confirmPassword
+                    delete data.confirmPassword;
                 }
-                
+
                 data.optout = false;
                 data.ageGroups = selectedAgeGroups;
                 data.eligibilityGroups = selectedEligibilityGroups;
-                data.postal = data.postal.replace(/\s/g, "").toUpperCase().trim();
+                data.postal = data.postal
+                    .replace(/\s/g, "")
+                    .toUpperCase()
+                    .trim();
                 data.postalShort = data.postal.substring(0, 3);
                 data.email = usernameInput.trim();
 
                 if (localStorage.getItem("ExpoToken")) {
-                    console.log(localStorage.getItem("ExpoToken"))
+                    console.log(localStorage.getItem("ExpoToken"));
                     data.expoToken = localStorage.getItem("ExpoToken");
                 }
 
                 authResponse = await auth.signup(data, passwordInput);
             }
         } else if (props.type === "signin") {
-          setPending(true)
-          authResponse = await auth.signin(getValues().username, getValues().password);
+            setPending(true);
+            authResponse = await auth.signin(
+                getValues().username,
+                getValues().password
+            );
         }
         setPending(false);
         if (authResponse.status === 200) {
-          onAuth();
+            onAuth();
         }
     };
 
     const displayCity = () => {
-        const selectedProvince = document.getElementById("province").value
+        const selectedProvince = document.getElementById("province").value;
         if (Object.keys(cities).includes(selectedProvince)) {
-            const citiesForProvince = cities[selectedProvince]
+            const citiesForProvince = cities[selectedProvince];
             if (!citiesForProvince.includes("Other")) {
-                citiesForProvince.push("Other")
+                citiesForProvince.push("Other");
             }
-            
-            setCitiesToDisplay(citiesForProvince)
-            setShouldDisplayCity(true)
+
+            setCitiesToDisplay(citiesForProvince);
+            setShouldDisplayCity(true);
         } else {
-            setShouldDisplayCity(false)
+            setShouldDisplayCity(false);
         }
-    }
+    };
 
     return (
         <div>
-            <Form onSubmit={handleSubmit(onSubmit)} style={{ display: showOTP ? "none" : null }}>
+            <Form
+                onSubmit={handleSubmit(onSubmit)}
+                style={{ display: showOTP ? "none" : null }}
+            >
                 {["signin"].includes(props.type) && (
-                  <>
-                    <h6 className="mb-4">If you signed up with your email, enter below. Otherwise if you signed up with your phone number, enter below.</h6>
+                    <>
+                        <h6 className="mb-4">
+                            If you signed up with your email, enter below.
+                            Otherwise if you signed up with your phone number,
+                            enter below.
+                        </h6>
+                        <Form.Group>
+                            <FormField
+                                id="username"
+                                name="username"
+                                label="Email or Phone Number"
+                                error={errors.username}
+                                inputRef={register({
+                                    required: error(
+                                        "required",
+                                        "phone number or email"
+                                    ),
+                                    pattern: {
+                                        value: /^(([(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$)|(\S+@\S+\.\S))/,
+                                        message: error(
+                                            "invalid",
+                                            "phone number or email"
+                                        ),
+                                    },
+                                })}
+                            />
+                        </Form.Group>
+                    </>
+                )}
+
+                {page === 1 && ["signup"].includes(props.type) && (
                     <Form.Group>
                         <FormField
-                            id="username"
-                            name="username"
-                            label="Email or Phone Number"
-                            error={errors.username}
+                            label="Email"
+                            name="email"
+                            type="email"
+                            id="email"
+                            placeholder="Email"
+                            error={errors.email}
                             inputRef={register({
-                                required: error("required", "phone number or email"),
+                                required: error("required", "email"),
                                 pattern: {
-                                  value: /^(([(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$)|(\S+@\S+\.\S))/,
-                                  message: error("invalid", "phone number or email")
-                                }
+                                    value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                    message: error("invalid", "email"),
+                                },
                             })}
                         />
                     </Form.Group>
-                  </>
                 )}
 
-                { page === 1 && ["signup"].includes(props.type) && (
-                  <Form.Group>
-                    <FormField
-                      label="Email"
-                      name="email"
-                      type="email"
-                      id="email"
-                      placeholder="Email"
-                      error={errors.email}
-                      inputRef={register({
-                        required: error("required", "email"),
-                        pattern: {
-                          value: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                          message: error("invalid", "email")
-                        }
-                      })}
-                    />
-                  </Form.Group>
-                )}
-
-                { ((page === 1 && ["signup"].includes(props.type)) ||
-                (page === 2 && ["signin"].includes(props.type) && usernameType === "email")) && (
-                  <Form.Group>
-                    <FormField
-                      id="password"
-                      label="Password"
-                      name="password"
-                      type="password"
-                      placeholder="Password"
-                      error={errors.password}
-                      inputRef={register({
-                        required: error("required", "password"),
-                        minLength: {
-                            value: 6,
-                            message: error("passwordLength")
-                          }
-                      })}
-                    />
-                    {["signin"].includes(props.type) && (
-                        <Link to="/resetpass">
-                            Forgot Password ?
-                        </Link>
-                    )}
-                  </Form.Group>
-                )}
-
-                { page === 1 && ["signup"].includes(props.type) && (
-                  <Form.Group controlId="formConfirmPass">
-                    <FormField
-                      label="Confirm Password"
-                      name="confirmPassword"
-                      type="password"
-                      placeholder="Confirm Password"
-                      error={errors.confirmPassword}
-                      inputRef={register({
-                        required: error("required", "password"),
-                        validate: (value) => {
-                          if (value === getValues().password) {
-                            return true;
-                          } else {
-                            return "This doesn't match your password";
-                          }
-                        },
-                      })}
-                    />
-                  </Form.Group>
-                )}
-
-                { page === 1 && (
-                  <div className="w-100 justify-content-end d-flex forwardBackButton">
-                    <Button variant="link" onClick={goToNext} disabled={nextPending}>
-                      { nextPending ? 
-                        <Spinner
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden={true}
-                          className="align-baseline"
+                {((page === 1 && ["signup"].includes(props.type)) ||
+                    (page === 2 &&
+                        ["signin"].includes(props.type) &&
+                        usernameType === "email")) && (
+                    <Form.Group>
+                        <FormField
+                            id="password"
+                            label="Password"
+                            name="password"
+                            type="password"
+                            placeholder="Password"
+                            error={errors.password}
+                            inputRef={register({
+                                required: error("required", "password"),
+                                minLength: {
+                                    value: 6,
+                                    message: error("passwordLength"),
+                                },
+                            })}
                         />
-                      : 
-                        <p>Next &nbsp; &#8594;</p>
-                      }
-                    </Button>
-                  </div>
-                ) }
+                        {["signin"].includes(props.type) && (
+                            <Link to="/resetpass">Forgot Password ?</Link>
+                        )}
+                    </Form.Group>
+                )}
 
-                { page === 2 && ["signup"].includes(props.type) && (
+                {page === 1 && ["signup"].includes(props.type) && (
+                    <Form.Group controlId="formConfirmPass">
+                        <FormField
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="Confirm Password"
+                            error={errors.confirmPassword}
+                            inputRef={register({
+                                required: error("required", "password"),
+                                validate: (value) => {
+                                    if (value === getValues().password) {
+                                        return true;
+                                    } else {
+                                        return "This doesn't match your password";
+                                    }
+                                },
+                            })}
+                        />
+                    </Form.Group>
+                )}
+
+                {page === 1 && (
+                    <div className="w-100 justify-content-end d-flex forwardBackButton">
+                        <Button
+                            variant="link"
+                            onClick={goToNext}
+                            disabled={nextPending}
+                        >
+                            {nextPending ? (
+                                <Spinner
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden={true}
+                                    className="align-baseline"
+                                />
+                            ) : (
+                                <p>Next &nbsp; &#8594;</p>
+                            )}
+                        </Button>
+                    </div>
+                )}
+
+                {page === 2 && ["signup"].includes(props.type) && (
                     <>
                         <Form.Group>
                             <FormField
@@ -347,7 +381,7 @@ function AuthForm(props) {
                                 label="Province"
                                 error={errors.province}
                                 id="province"
-                                onChange = {displayCity}
+                                onChange={displayCity}
                                 inputRef={register({
                                     pattern: {
                                         value: /^((?!--).)*$/,
@@ -376,12 +410,9 @@ function AuthForm(props) {
                                 error={errors.postal}
                                 placeholder="A0A 0A0"
                                 inputRef={register({
-                                    required: error(
-                                        "required",
-                                        "postal code"
-                                    ),
+                                    required: error("required", "postal code"),
                                     pattern: {
-                                        value: /^[ABCEGHJ-LNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d/i,
+                                        value: /^[A-Za-z]\d[A-Za-z][ ]\d[A-Za-z]\d$/i,
                                         message: error(
                                             "invalid",
                                             "postal code"
@@ -445,9 +476,9 @@ function AuthForm(props) {
                         </div>
 
                         <div className="w-100 justify-content-start d-flex forwardBackButton">
-                          <Button variant="link" onClick={() => setPage(1)}>
-                            &#8592; &nbsp; Back
-                          </Button>
+                            <Button variant="link" onClick={() => setPage(1)}>
+                                &#8592; &nbsp; Back
+                            </Button>
                         </div>
 
                         {groupError && (
@@ -458,35 +489,37 @@ function AuthForm(props) {
                     </>
                 )}
 
-                { page === 2 && (
-                  <div className="w-100 text-center">
-                    <Button
-                        variant="primary"
-                        type="submit"
-                        disabled={pending}
-                        size="lg"
-                        className="my-2"
-                    >
-                        {!pending && <span>{props.typeValues.buttonText}</span>}
+                {page === 2 && (
+                    <div className="w-100 text-center">
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            disabled={pending}
+                            size="lg"
+                            className="my-2"
+                        >
+                            {!pending && (
+                                <span>{props.typeValues.buttonText}</span>
+                            )}
 
-                        {pending && (
-                            <Spinner
-                                animation="border"
-                                size="sm"
-                                role="status"
-                                aria-hidden={true}
-                                className="align-baseline"
-                            >
-                                <span className="sr-only">Loading...</span>
-                            </Spinner>
-                        )}
-                    </Button>
-                  </div>
+                            {pending && (
+                                <Spinner
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden={true}
+                                    className="align-baseline"
+                                >
+                                    <span className="sr-only">Loading...</span>
+                                </Spinner>
+                            )}
+                        </Button>
+                    </div>
                 )}
             </Form>
 
             {showOTP && (
-              <Form className="form" onSubmit={onSubmitOtp}>
+                <Form className="form" onSubmit={onSubmitOtp}>
                     <h2 className="selectGroupText">Enter Verification Code</h2>
                     <p>
                         A verification code was sent via SMS to the provided
@@ -527,10 +560,10 @@ function AuthForm(props) {
                             variant="link"
                             onClick={() => {
                                 resetRecaptcha(); //TO DO: Display message
-                                console.log(getValues().username)
+                                console.log(getValues().username);
                                 sendOTPCode(getValues().username);
                             }}
-                            >
+                        >
                             <u>Resend Link</u>
                         </Button>
                     </div>
