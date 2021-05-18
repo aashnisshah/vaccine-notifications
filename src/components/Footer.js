@@ -31,6 +31,9 @@ function Footer(props) {
                             </span>
                         </a>
                         <Link to="/#faq">FAQ</Link>
+                        <a href="mailto:vaccinenotifications@elixirlabs.org">
+                            Contact Us
+                        </a>
                         <Link to="/privacy">Privacy Policy</Link>
                         <Link to="/tos">Terms of Service</Link>
                     </div>

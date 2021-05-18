@@ -50,6 +50,11 @@ function FaqSection(props) {
             answer:
                 "We're working on getting the iPhone App approved, and will notify you as soon as it's available. In the meantime you can create an account through the web on a computer, and get push notifications through your browser.",
         },
+        {
+            question: "How can I help?",
+            answer:
+                "We are always open to more volunteers! Send an email to vaccinenotifications@elixirlabs.org.",
+        },
     ];
 
     return (
