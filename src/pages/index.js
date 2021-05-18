@@ -37,6 +37,7 @@ function IndexPage(props) {
                     <HealthCareWorkerSection />
                 </>
             )}
+
             <FeaturesSection
                 bg="white"
                 textColor="dark"
@@ -45,7 +46,9 @@ function IndexPage(props) {
                 bgImageOpacity={1}
                 title="How it works"
                 subtitle="Download the app and create an account. We'll share updates based on location, age and eligibility requirements that match your account. We're also sending updates on receiving second doses, or getting children vaccinated too."
+                isMobile={isMobile}
             />
+
             <FaqSection
                 bg="white"
                 textColor="dark"

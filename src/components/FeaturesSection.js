@@ -10,6 +10,7 @@ import getNotificationsImage from "./../images/email-campaign-rafiki.svg";
 import preferencesImage from "./../images/preferences-amico.svg";
 import phoneImage from "./../images/mobile-login-pana.svg";
 import vaccineImage from "./../images/vaccine-bro.svg";
+import DownloadButtons from "./DownloadButtons";
 
 function FeaturesSection(props) {
     const items = [
@@ -58,6 +59,7 @@ function FeaturesSection(props) {
                     spaced={true}
                     className="text-center"
                 />
+                {props.isMobile && <DownloadButtons />}
                 <div className="FeaturesSection__features">
                     {items.map((item, index) => (
                         <Row className="align-items-center" key={index}>
