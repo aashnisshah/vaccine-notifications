@@ -2,7 +2,7 @@
 
 // COLORS
 $theme-colors: (
-  "primary": rgb(59, 60, 212),
+  "primary": #254FA4,
   "secondary": #6c757d,
   "success": #28a745,
   "danger": #ff4136,
@@ -70,7 +70,7 @@ input[type=number] {
 
 .formContainer {
   border-radius: 10px;
-  background-color: #f7f7ff;
+  background-color: #e6eefc;
   width: 55%;
   padding: 40px 80px;
 }
