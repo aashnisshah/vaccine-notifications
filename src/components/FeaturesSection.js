@@ -50,7 +50,7 @@ function FeaturesSection(props) {
             bgImage={props.bgImage}
             bgImageOpacity={props.bgImageOpacity}
         >
-            <Container>
+            <Container className="mt-4">
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}

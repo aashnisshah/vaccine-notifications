@@ -42,7 +42,7 @@ export default function PasswordResetSection(props) {
         >
 
             
-            <Container className="formContainer forwardBackButton">
+            <Container className="formContainer forwardBackButton mt-4">
             <Button className="p-0" variant="link" onClick={()=> router.push('/auth/signin')}>
                     <p>← Back</p>
                 </Button>

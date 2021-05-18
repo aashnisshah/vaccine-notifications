@@ -61,7 +61,7 @@ function FaqSection(props) {
             bgImageOpacity={props.bgImageOpacity}
             id="faq"
         >
-            <Container>
+            <Container className="mt-4">
                 <SectionHeader
                     title={props.title}
                     subtitle={props.subtitle}

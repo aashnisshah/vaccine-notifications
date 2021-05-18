@@ -76,7 +76,7 @@ function AuthSection(props) {
                 </Container>
             )}
 
-            <Container className="formContainer">
+            <Container className="formContainer mt-4">
                 <SectionHeader
                     title={allTypeValues[currentType].title}
                     subtitle=""
