@@ -1,16 +1,22 @@
 .SectionHeader {
-  // Add bottom margin if element below
-  &:not(:last-child) {
-    margin-bottom: 2rem;
-  }
+    // Add bottom margin if element below
+    &:not(:last-child) {
+        margin-bottom: 2rem;
+    }
 
-  &__subtitle {
-    // Subtitle text generally isn't very long
-    // so usually looks better to limit width.
-    max-width: 700px;
-    // So we can have max-width but still
-    // have alignment controlled by text-align.
-    display: inline-block;
-    font-size: 1.2rem;
-  }
+    &__subtitle {
+        // Subtitle text generally isn't very long
+        // so usually looks better to limit width.
+        max-width: 700px;
+        // So we can have max-width but still
+        // have alignment controlled by text-align.
+        display: inline-block;
+        font-size: 1.2rem;
+    }
+
+    &__steps {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+    }
 }
