@@ -81,6 +81,7 @@ const cities = {
 const messageTypeOptions = [
     "Vaccine Notifications Update",
     "Appointments Available",
+    "Drop In",
     "Standby List",
     "Walk In's Accepted",
     "Waitlist Open",
