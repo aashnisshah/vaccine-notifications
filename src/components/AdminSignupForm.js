@@ -241,7 +241,7 @@ function AdminSignupForm(props) {
                         <Form.Check
                             className="mt-4"
                             type="checkbox"
-                            label="Would you like to recieve updates about vaccine availability?"
+                            label="Would you like to receive updates about vaccine availability?"
                             id="receiveUpdates"
                             onClick={updateOptedIn}
                         />
@@ -306,7 +306,7 @@ function AdminSignupForm(props) {
                             </Form.Group>
                             <div className="my-4">
                                 <h2 className="selectGroupText">
-                                    Select all relevant age groups to recieve
+                                    Select all relevant age groups to receive
                                     notifications for.{" "}
                                 </h2>
                                 <Form.Row controlId="ageGroup" className="mx-0">
@@ -333,7 +333,7 @@ function AdminSignupForm(props) {
                             <div className="my-4">
                                 <h2 className="selectGroupText">
                                     Select all relevant eligibility groups to
-                                    recieve notifications for.
+                                    receive notifications for.
                                 </h2>
                                 <Form.Group
                                     controlId="eligibilityGroup"

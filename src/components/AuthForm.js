@@ -423,7 +423,7 @@ function AuthForm(props) {
                         </Form.Group>
                         <div className="my-4">
                             <h2 className="selectGroupText">
-                                Select all relevant age groups to recieve
+                                Select all relevant age groups to receive
                                 notifications for.{" "}
                             </h2>
                             <Form.Row controlId="ageGroup" className="mx-0">
@@ -450,7 +450,7 @@ function AuthForm(props) {
                         <div className="my-4">
                             <h2 className="selectGroupText">
                                 Select all relevant eligibility groups to
-                                recieve notifications for.
+                                receive notifications for.
                             </h2>
                             <Form.Group controlId="eligibilityGroup" required>
                                 {eligibilityGroups.map((eligibilityGroup) => (

@@ -33,10 +33,11 @@ function UserPreferences(props) {
         show: false,
     });
 
-
     useEffect(() => {
         if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({isSignedIn: true}));
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({ isSignedIn: true })
+            );
         }
         showCitiesOnLoad();
 
@@ -61,7 +62,10 @@ function UserPreferences(props) {
 
     const subscribeToWebPush = async () => {
         let isMobileNew = false;
-        if (/Mobi|Android/i.test(navigator.userAgent) && localStorage.getItem("ExpoToken")) {
+        if (
+            /Mobi|Android/i.test(navigator.userAgent) &&
+            localStorage.getItem("ExpoToken")
+        ) {
             setIsMobile(true);
             isMobileNew = true;
         }
@@ -70,11 +74,11 @@ function UserPreferences(props) {
         //     isMobileNew = true;
         // }
         if (isMobileNew) {
-            return
+            return;
         }
         if (!("serviceWorker" in navigator)) {
             // Service Worker isn't supported on this browser, disable or hide UI.
-            console.log("service worker not available")
+            console.log("service worker not available");
             return;
         }
 
@@ -85,7 +89,6 @@ function UserPreferences(props) {
         }
         console.log("here");
         await askPermission();
-        
     };
 
     // async function askPermission() {
@@ -108,19 +111,24 @@ function UserPreferences(props) {
     //     });
     // }
     async function askPermission() {
-        console.log('hi')
+        console.log("hi");
         setPageLoading(false);
         const permissionResult = await Notification.requestPermission();
-        
-        console.log("Permission status:", permissionResult)
+
+        console.log("Permission status:", permissionResult);
         if (permissionResult !== "granted") {
-            console.log("No Permission Granted")
+            console.log("No Permission Granted");
             // throw new Error("We weren't granted permission.");
             setWebNotifsEnabled(false);
         } else {
             console.log("granted");
-            const existingSubscription = localStorage.getItem("webPushSubscription");
-            if (existingSubscription && existingSubscription == auth.user.webPushSubscription) {
+            const existingSubscription = localStorage.getItem(
+                "webPushSubscription"
+            );
+            if (
+                existingSubscription &&
+                existingSubscription == auth.user.webPushSubscription
+            ) {
                 // TODO check if existingSubscription == user.webPushSubscription
                 setWebPushSubscribed(true);
             } else {
@@ -131,9 +139,11 @@ function UserPreferences(props) {
 
     async function subscribeUserToPush() {
         try {
-            const registration = await navigator.serviceWorker.register("/service-worker.js")
-           
-            await navigator.serviceWorker.ready; 
+            const registration = await navigator.serviceWorker.register(
+                "/service-worker.js"
+            );
+
+            await navigator.serviceWorker.ready;
             const subscribeOptions = {
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(
@@ -142,15 +152,22 @@ function UserPreferences(props) {
             };
             console.log("registration", registration);
 
-            const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+            const pushSubscription = await registration.pushManager.subscribe(
+                subscribeOptions
+            );
             console.log(
                 "Received PushSubscription: ",
                 JSON.stringify(pushSubscription)
             );
             setWebPushSubscribed(true);
-            localStorage.setItem("webPushSubscription", JSON.stringify(pushSubscription));
+            localStorage.setItem(
+                "webPushSubscription",
+                JSON.stringify(pushSubscription)
+            );
             try {
-                await auth.updateProfile({webPushSubscription: JSON.stringify(pushSubscription)});
+                await auth.updateProfile({
+                    webPushSubscription: JSON.stringify(pushSubscription),
+                });
             } catch (error) {
                 console.log(error);
             }
@@ -162,7 +179,9 @@ function UserPreferences(props) {
     async function registerServiceWorker() {
         console.log("registering...");
         try {
-            const registration = await navigator.serviceWorker.register("/service-worker.js");
+            const registration = await navigator.serviceWorker.register(
+                "/service-worker.js"
+            );
             console.log("registration", registration);
             if (registration) {
                 // await subscribeUserToPush();
@@ -171,12 +190,10 @@ function UserPreferences(props) {
             } else {
                 setWebNotifsEnabled(false);
             }
-
-        }catch (error) {
+        } catch (error) {
             setWebNotifsEnabled(false);
-            console.log(error)
+            console.log(error);
         }
-          
     }
     function urlBase64ToUint8Array(base64String) {
         var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -387,21 +404,45 @@ function UserPreferences(props) {
     };
 
     const renderWebNotificationPrompt = () => {
-        return(
+        return (
             <>
-                <FormAlert type="warning" message="Please 'Allow Notifications' to receive Vaccine news on this browser" />
+                <FormAlert
+                    type="warning"
+                    message="Please 'Allow Notifications' to receive Vaccine news on this browser"
+                />
             </>
-        )
-    }
+        );
+    };
 
     return (
         <Form className="mb-4" onSubmit={handleSubmit(onSubmit)}>
             {formAlert && (
                 <FormAlert type={formAlert.type} message={formAlert.message} />
             )}
-            
-            {!isMobile && !webPushSubscribed && (browserSupportsPush ? ( webNotifsEnabled ? renderWebNotificationPrompt()  : <FormAlert type="error" message="Enable web-notifications to receive alerts on this browser" />) : <FormAlert type="error" message="This browser does not support push notifications. Please use Firefox/Chrome/Edge" /> )}
-            {webPushSubscribed  && <FormAlert type="success" message="Push Notifications for this browser are enabled!" />}
+
+            {!isMobile &&
+                !webPushSubscribed &&
+                (browserSupportsPush ? (
+                    webNotifsEnabled ? (
+                        renderWebNotificationPrompt()
+                    ) : (
+                        <FormAlert
+                            type="error"
+                            message="Enable web-notifications to receive alerts on this browser"
+                        />
+                    )
+                ) : (
+                    <FormAlert
+                        type="error"
+                        message="This browser does not support push notifications. Please use Firefox/Chrome/Edge"
+                    />
+                ))}
+            {webPushSubscribed && (
+                <FormAlert
+                    type="success"
+                    message="Push Notifications for this browser are enabled!"
+                />
+            )}
             <Form.Group>
                 <FormField
                     label="Username"
@@ -469,7 +510,7 @@ function UserPreferences(props) {
                 <>
                     <div className="my-4">
                         <h2 className="selectGroupText">
-                            Select all relevant age groups to recieve
+                            Select all relevant age groups to receive
                             notifications for.{" "}
                         </h2>
                         <Form.Row controlId="ageGroup" className="mx-0">
@@ -495,7 +536,7 @@ function UserPreferences(props) {
 
                     <div className="my-4">
                         <h2 className="selectGroupText">
-                            Select all relevant eligibility groups to recieve
+                            Select all relevant eligibility groups to receive
                             notifications for.
                         </h2>
                         <Form.Group controlId="eligibilityGroup" required>
@@ -523,7 +564,7 @@ function UserPreferences(props) {
                 <>
                     <div className="my-4">
                         <h2 className="selectGroupText">
-                            Selected age groups to recieve notifications for.{" "}
+                            Selected age groups to receive notifications for.{" "}
                         </h2>
                         <Form.Row controlId="ageGroup" className="mx-0">
                             {auth.user.ageGroups &&
@@ -543,7 +584,7 @@ function UserPreferences(props) {
                     </div>
                     <div className="my-4">
                         <h2 className="selectGroupText">
-                            Selected eligibility groups to recieve notifications
+                            Selected eligibility groups to receive notifications
                             for.
                         </h2>
                         <Form.Group controlId="eligibilityGroup" required>
