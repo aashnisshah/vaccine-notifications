@@ -61,14 +61,14 @@ function UserPreferences(props) {
 
     const subscribeToWebPush = async () => {
         let isMobileNew = false;
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
+        if (/Mobi|Android/i.test(navigator.userAgent) && localStorage.getItem("ExpoToken")) {
             setIsMobile(true);
             isMobileNew = true;
         }
-        if (localStorage.getItem("ExpoToken")) {
-            setIsMobile(true);
-            isMobileNew = true;
-        }
+        // if (localStorage.getItem("ExpoToken")) {
+        //     setIsMobile(true);
+        //     isMobileNew = true;
+        // }
         if (isMobileNew) {
             return
         }

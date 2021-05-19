@@ -22,7 +22,7 @@ function App(props) {
   const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
+    if (/Mobi|Android/i.test(navigator.userAgent) && localStorage.getItem("ExpoToken")) {
       setIsMobile(true);
     }
   }, [])
