@@ -1,18 +1,26 @@
 .fullContainer {
   display: flex;
   max-width: 65%;
+  
   align-items: center;
   justify-content: center;
   padding: 40px 60px;
   border-radius: 10px;
   background-color: #e6eefc;
   border: 1.5px solid  #254FA4;
-  
+  @media screen and (max-width: 769px) {
+    max-width: 90%;
+    padding: 40px 30px;
+    flex-direction: column;
+  }
   & > a {
     margin: 0px 40px;
   }
 
   & > h4 {
     margin-bottom: 0;
+    @media screen and (max-width: 769px) {
+      margin-bottom: 20px;
+    }
   }
 }

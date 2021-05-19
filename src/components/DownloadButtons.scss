@@ -20,11 +20,16 @@
   height: 100%;
   margin: -5px 0;
   margin-left: -12px;
+  
+  @media screen and (max-width: 769px) {
+    max-width: 180px;
+    height: auto;
+  }
 }
 
 .badgeLinkContainer {
   display:flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .badges:hover {
@@ -36,8 +41,15 @@
   border-radius: 8px;
   padding: 5px 10px;
   height: 57px;
+  min-width: 180px;
   // font-size:medium;
   // font-weight: bold;
+  @media screen and (max-width: 769px) {
+    max-width: 180px;
+    min-width: 0;
+    height: 50px;
+    font-size: small;
+  }
   max-width: 200px;
   color: rgb(248, 248, 248) !important;
 }
