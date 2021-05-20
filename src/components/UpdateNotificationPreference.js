@@ -103,7 +103,7 @@ function UpdateNotificationPreference(props) {
 
   const renderOptOutForm = () => {
     return (
-      <div>
+      <div className="mb-5">
         {/* <p>You are set to receive notifications.</p> */}
 
         <Form onSubmit={processOptOut}>
@@ -130,7 +130,7 @@ function UpdateNotificationPreference(props) {
 
   const renderOptInForm = () => {
     return (
-      <div>
+      <div className="mb-5">
         <p>Opt in to notifications</p>
         <Form>
           {formAlert && renderFormAlert()}

@@ -69,10 +69,6 @@ function UserPreferences(props) {
             setIsMobile(true);
             isMobileNew = true;
         }
-        // if (localStorage.getItem("ExpoToken")) {
-        //     setIsMobile(true);
-        //     isMobileNew = true;
-        // }
         if (isMobileNew) {
             return;
         }
