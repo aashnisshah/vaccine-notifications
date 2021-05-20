@@ -8,6 +8,7 @@ import TosPage from "./tos";
 import PasswordReset from './PasswordReset';
 import PostsPage from "./posts";
 import PrivacyPage from "./privacy";
+import DownloadPage from "./download"; 
 import PreviousAlertsPage from "./previousAlerts";
 import AuthPage from "./auth";
 import { Switch, Route, Router } from "./../util/router.js";
@@ -58,6 +59,8 @@ function App(props) {
                         <Route exact path="/privacy" component={PrivacyPage} />
 
                         <Route exact path="/tos" component={TosPage} />
+
+                        <Route exact path="/download" component={DownloadPage} />
 
                         <Route exact path="/auth/:type" component={AuthPage} />
 

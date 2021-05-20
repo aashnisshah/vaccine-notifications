@@ -7,6 +7,7 @@ import TestimonialsSection from "./../components/TestimonialsSection";
 import NewsletterSection from "./../components/NewsletterSection";
 import heroImage from "./../images/email-campaign-cuate.svg";
 import { useAuth } from "./../util/auth.js";
+
 function IndexPage(props) {
   const auth = useAuth();
   const [isMobile, setIsMobile] = useState(false);
@@ -30,9 +31,9 @@ function IndexPage(props) {
          subtitle="Receive push notifications through the app whenever vaccines appointments are available in your area."
          image={heroImage}
          imageAlt="image of a person with a loudspeaker in front of a phone"
-         buttonText="Get Started"
-         buttonColor="primary"
-         buttonPath={auth.user ? "/dashboard" : "/auth/signup"}
+        //  buttonText="Get Started"
+        //  buttonColor="primary"
+        //  buttonPath={auth.user ? "/dashboard" : "/auth/signup"}
        />
       )}
       <FeaturesSection
