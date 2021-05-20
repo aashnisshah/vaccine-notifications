@@ -84,6 +84,7 @@ const messageTypeOptions = [
     "Drop In",
     "Standby List",
     "Walk In's Accepted",
+    "Pop Up Clinic",
     "Waitlist Open",
 ];
 
